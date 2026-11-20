@@ -12,8 +12,8 @@ const CHART_Z := 0.60
 const CHART_YAW := 32.0
 
 var field := Field.new()
-var spread := 1050.0
-var moment := 0.25
+var spread := Field.DEFAULT_SPREAD
+var moment := Field.DEFAULT_MOMENT
 var top: Field.Barrier
 var apparatus := Apparatus.new()
 var panels: Array[InstrumentPanel] = []
@@ -74,10 +74,7 @@ func _ready() -> void:
 		if side < 0:
 			_touch_face(face, loss_surface, face_size)
 	assemble()
-	top = field.barrier(moment * Field.KEV)
-	panels[InstrumentPanel.Face.LOSS].update_boundary()
-	_refresh()
-	apparatus.restart(spread, moment, top, false)
+	reset_defaults()
 
 func _signage() -> void:
 	# Face the threshold with one inscription above the field and a clear axis below.
@@ -90,10 +87,10 @@ func _signage() -> void:
 	box(Vector3(0, 3.98, face_z), Vector3(4.48, 0.012, 0.01), "lip")
 	_label("Which particles turn back,\nand which escape through the ends?", Vector3(0, 3.70, face_z), 0.185, InstrumentPanel.PAPER)
 	_label("━━", Vector3(-1.44, 3.36, face_z), 0.16, InstrumentPanel.TURN_LINE)
-	_label("Confined ions", Vector3(-0.82, 3.36, face_z), 0.114, InstrumentPanel.PAPER)
+	_label("Confined particles", Vector3(-0.77, 3.36, face_z), 0.114, InstrumentPanel.PAPER)
 	_label("━━", Vector3(0.23, 3.36, face_z), 0.16, InstrumentPanel.ESCAPE_LINE)
-	_label("Escaping ions", Vector3(0.86, 3.36, face_z), 0.114, InstrumentPanel.PAPER)
-	_label("Idealized deuterium ion trajectories", Vector3(0, 3.16, face_z), 0.097, InstrumentPanel.PAPER)
+	_label("Escaping particles", Vector3(0.96, 3.36, face_z), 0.114, InstrumentPanel.PAPER)
+	_label("Idealized particle trajectories   ·   One positive elementary charge (q = +e)   ·   Deuterium mass", Vector3(0, 3.16, face_z), 0.097, InstrumentPanel.PAPER)
 	var scale_text := "Axial scale %.2f×    ·    Radial scale %.1f×    ·    %.2f× relative radial enlargement"
 	_label(scale_text % [Apparatus.SCALE.x, Apparatus.SCALE.y, Apparatus.SCALE.y / Apparatus.SCALE.x],
 		Vector3(0, 3.00, face_z), 0.080, InstrumentPanel.BRASS)
@@ -206,7 +203,7 @@ func set_gallery(doorway: Vector3, opening: float, width: float, depth: float) -
 	var inscription := edge + Vector3(0, 0.017, STRIPE_DEPTH + 0.27)
 	box(inscription, Vector3(opening - 0.08, 0.006, 0.46), "back")
 	assemble()
-	var instruction := _label("Cross the stripe to set the ions in motion.", inscription + Vector3.UP * 0.007, 0.16, InstrumentPanel.PAPER)
+	var instruction := _label("Cross the stripe to set the particles in motion.", inscription + Vector3.UP * 0.007, 0.15, InstrumentPanel.PAPER)
 	instruction.name = "DoorwayInstruction"
 	instruction.rotation.x = -PI / 2
 
@@ -216,7 +213,7 @@ func contains_visitor(eye: Vector3) -> bool:
 
 func _process(delta: float) -> void:
 	var camera := get_viewport().get_camera_3d()
-	if camera and grabbed == InstrumentPanel.Widget.NONE and contains_visitor(camera.global_position):
+	if camera and contains_visitor(camera.global_position):
 		apparatus.advance(delta)
 
 func _pixel(world_point: Vector3) -> Vector2:
@@ -227,29 +224,28 @@ func widget_at(surface: Object, world_point: Vector3) -> int:
 	if surface == loss_surface:
 		var point := loss_surface.to_local(world_point)
 		var pixel := Vector2(point.x, -point.y) * InstrumentPanel.PLOT_SIZE.x / CHART_WIDTH + Vector2(InstrumentPanel.PLOT_SIZE) / 2
-		return panels[InstrumentPanel.Face.LOSS].ion_at(pixel)
+		return panels[InstrumentPanel.Face.LOSS].particle_at(pixel)
 	return InstrumentPanel.widget_at(_pixel(world_point))
 
 func highlight(widget: int) -> void:
 	for id: int in [InstrumentPanel.Face.CONTROLS, InstrumentPanel.Face.LOSS]:
 		var panel := panels[id]
-		var target := widget if (id == InstrumentPanel.Face.LOSS) == (widget >= InstrumentPanel.Widget.FIRST_ION) else -1
+		var target := widget if (id == InstrumentPanel.Face.LOSS) == (widget >= InstrumentPanel.Widget.FIRST_PARTICLE) else -1
 		if panel.hover != target:
 			panel.hover = target
 			panel.refresh()
 
 func press(widget: int, world_point: Vector3) -> void:
-	if widget >= InstrumentPanel.Widget.FIRST_ION:
-		var line := widget - InstrumentPanel.Widget.FIRST_ION
+	if widget >= InstrumentPanel.Widget.FIRST_PARTICLE:
+		var line := widget - InstrumentPanel.Widget.FIRST_PARTICLE
 		apparatus.follow(line, spread)
 		panels[InstrumentPanel.Face.LOSS].followed = line
 		panels[InstrumentPanel.Face.LOSS].refresh()
 	elif widget == InstrumentPanel.Widget.RESET:
-		apparatus.restart(spread, moment, top, false)
+		reset_defaults()
 	elif widget >= 0:
 		grabbed = widget
 		_set_from_pixel(_pixel(world_point).x)
-		apparatus.restart(spread, moment, top, true)
 		panels[InstrumentPanel.Face.CONTROLS].dragging = grabbed
 		panels[InstrumentPanel.Face.CONTROLS].refresh()
 
@@ -257,8 +253,7 @@ func drag(origin: Vector3, direction: Vector3) -> Vector3:
 	var plane := Plane(desk.global_basis.z, desk.global_position)
 	var hit = plane.intersects_ray(origin, direction)
 	if hit != null:
-		if _set_from_pixel(_pixel(hit).x):
-			apparatus.restart(spread, moment, top, true)
+		_set_from_pixel(_pixel(hit).x)
 		return hit
 	return origin
 
@@ -267,33 +262,47 @@ func release() -> void:
 		grabbed = InstrumentPanel.Widget.NONE
 		panels[InstrumentPanel.Face.CONTROLS].dragging = grabbed
 		panels[InstrumentPanel.Face.CONTROLS].refresh()
-		apparatus.restart(spread, moment, top, false)
 
-func _set_from_pixel(px: float) -> bool:
+func reset_defaults() -> void:
+	release()
+	if field.ratio != Field.REF_RATIO:
+		field.set_ratio(Field.REF_RATIO)
+		apparatus.rebuild_lines()
+	field.volts = Field.DEFAULT_VOLTS
+	spread = Field.DEFAULT_SPREAD
+	moment = Field.DEFAULT_MOMENT
+	panels[InstrumentPanel.Face.LOSS].update_boundary()
+	apparatus.followed = InstrumentPanel.DEFAULT_FOLLOWED
+	panels[InstrumentPanel.Face.LOSS].followed = apparatus.followed
+	top = field.barrier(moment * Field.KEV)
+	apparatus.set_launches(spread, moment, top, true)
+	_refresh()
+
+func _set_from_pixel(px: float) -> void:
 	var value := InstrumentPanel.track_value(grabbed, px)
 	match grabbed:
 		InstrumentPanel.Widget.RATIO:
 			if value == field.ratio:
-				return false
+				return
 			field.set_ratio(value)
 			apparatus.rebuild_lines()
 		InstrumentPanel.Widget.SPREAD:
 			if value == spread:
-				return false
+				return
 			spread = value
 		InstrumentPanel.Widget.MOMENT:
 			if value == moment:
-				return false
+				return
 			moment = value
 		InstrumentPanel.Widget.POTENTIAL:
 			if is_equal_approx(field.volts, value * 1000.0):
-				return false
+				return
 			field.volts = value * 1000.0
 	if grabbed == InstrumentPanel.Widget.RATIO or grabbed == InstrumentPanel.Widget.POTENTIAL:
 		panels[InstrumentPanel.Face.LOSS].update_boundary()
 	top = field.barrier(moment * Field.KEV)
+	apparatus.set_launches(spread, moment, top)
 	_refresh()
-	return true
 
 func _refresh() -> void:
 	for panel in panels:

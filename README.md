@@ -10,9 +10,9 @@ Open `project.godot` with Godot 4.7 and press **F5**. On the laptop, run this co
 flatpak run org.godotengine.Godot --path . --xr-mode off
 ```
 
-The desktop visitor is 1.83 m tall with a standing eye height of 1.71 m. Walk with **WASD** and look with the **mouse**. Press **Esc** to release the pointer and click the window to resume. Hold **Home** to return to the foyer. Releasing the key before the circle fills cancels the return.
+Choose **Enter the museum** from the title screen. The desktop visitor is 1.83 m tall with a standing eye height of 1.71 m. Walk with **WASD** and look with the **mouse**. Press **Esc** to pause, see the controls, and adjust or mute the audio. Choose **Resume visit** to continue, or **Reset to title** to start a fresh visit. Hold **Home** to return to the foyer. Releasing the key before the circle fills cancels the return.
 
-On a system with an active OpenXR runtime and Touch controllers, launch with `--xr-mode on`. Walk with the left stick, snap-turn with the right stick, and aim either controller at the floor near a gallery entrance and squeeze the trigger to teleport. Hold left **X** to return. Standalone Quest deployment and headset performance checks are pending.
+On a system with an active OpenXR runtime and Touch controllers, launch with `--xr-mode on`. Walk with the left stick, snap-turn with the right stick, and aim either controller at the floor near a gallery entrance and squeeze the trigger to teleport. Hold left **X** to return to the foyer. Press right **A** for the pause menu and use either trigger to select a menu button. Standalone Quest deployment and headset performance checks are pending.
 
 ## Gallery layout
 
@@ -22,8 +22,8 @@ The shared entry scene is [museum.tscn](museum/museum.tscn). [Museum geometry](m
 
 ## Try the magnetic mirror
 
-Cross the broad striped threshold at the first gallery on the left. Follow ion **6 (+450 km/s)** and leave the speed, magnetic moment and potential at their opening settings. Aim at **15** on the mirror-ratio track, hold the left mouse button or either trigger, then release. Watch the ion cross the right ring, follow the expander to its tip, and reappear at the midplane. Set the ratio to **20** and it turns inside the ring.
+Cross the broad striped threshold at the first gallery on the left. Follow **particle 6 (+171.4 km/s)** with the opening speed spread of **400 km/s**, magnetic moment of **1.00 keV/T**, and midplane potential of **0.0 kV**. Lower the mirror ratio to **1** and watch it cross the right ring. Return to the **31.41** thesis mark and it turns inside the ring. Each particle carries one positive elementary charge.
 
-Select any numbered point on the loss-cone plot to follow its ion. **Reset** relaunches the ions with the current settings. The trial runs throughout the gallery. Walk around either end of the 7.2 m mirror to look through the rings. Returning to the atrium pauses the trial, and crossing the threshold again resumes it. Bright blue field lines carry confined launches and dark blue-grey lines carry escaping launches.
+Select any numbered point on the loss-cone plot to follow its particle. Drag a slider to compare the new trajectories at the same launch ages. **Reset** restores all four opening settings, selects particle 6, and restarts the releases. The trial runs throughout the gallery. Walk around either end of the 7.2 m mirror to look through the rings. Returning to the atrium pauses the trial, and crossing the threshold again resumes it. Bright blue field lines carry confined launches and dark blue-grey lines carry escaping launches.
 
 The [geometry manifest](museum/mirror/reference/manifest.json) records the saved field and coordinate maps, comparisons at the midplane, throat, and expander ends, and the display scales. Rebuild the [400-cell reference cut](museum/mirror/reference/field-profile.csv) with `python3 tools/export_mirror_geometry.py` and Postgkyl using the raw files in `data/1x-beams/`. Run the geometry, ten-bounce and interaction checks with `flatpak run org.godotengine.Godot --headless --path . --xr-mode off --script res://tools/check_mirror.gd`.

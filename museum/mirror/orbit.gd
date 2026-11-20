@@ -46,7 +46,7 @@ func _build_leg(top: Field.Barrier) -> void:
 	# Integrate dt = (ds/dZ)dZ / |v_parallel| and d(phase) = Ω dt / 64.
 	# A cosine change of variable regularizes the square-root turning point.
 	var extent := end_z * (1.0 - 2e-6) if _asymptotic else end_z
-	# A barely passing ion can also spend most of its transit very near an
+	# A barely passing particle can also spend most of its transit very near an
 	# interior maximum. Cluster integration points on both sides of that peak.
 	var cell_end := minf(extent, field.throat)
 	if outcome == Field.Outcome.ESCAPE and top.z > 0 and top.z < cell_end:

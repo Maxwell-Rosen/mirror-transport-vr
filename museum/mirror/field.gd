@@ -13,6 +13,9 @@ const CHARGE := 1.602176487e-19
 const MASS := 2.014 * 1.672621637e-27
 const KEV := 1000.0 * CHARGE
 const SCAN := 128
+const DEFAULT_VOLTS := 0.0  # Midplane relative to the grounded throats.
+const DEFAULT_SPREAD := 400.0  # km/s
+const DEFAULT_MOMENT := 1.0    # keV/T
 
 enum Outcome { REST, TURN, ESCAPE, BOUNDARY }
 
@@ -21,7 +24,7 @@ class Barrier:
 	var joules := 0.0
 
 var ratio := REF_RATIO
-var volts := 0.0
+var volts := DEFAULT_VOLTS
 var width := REF_WIDTH
 var throat: float
 var _offset: float
@@ -78,10 +81,14 @@ func magnitude(z: float) -> float:
 	return f * sqrt(1.0 + slope(z, f) ** 2)
 
 func potential(z: float) -> float:
-	return volts * (1.0 - minf(1.0, (z / throat) ** 2))
+	return volts * (1.0 - _drop_fraction(z))
+
+func _drop_fraction(z: float) -> float:
+	return minf(1.0, (z / throat) ** 2)
 
 func rise(z: float, mu: float) -> float:
-	return mu * (magnitude(z) - B0) - CHARGE * volts * minf(1.0, (z / throat) ** 2)
+	# U(Z) - U(0) = μ[B(Z) - B₀] + q[φ(Z) - φ(0)], with q = +e.
+	return mu * (magnitude(z) - B0) - CHARGE * volts * _drop_fraction(z)
 
 func barrier(mu: float) -> Barrier:
 	var result := Barrier.new()

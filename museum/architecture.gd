@@ -1,5 +1,7 @@
 extends Node3D
 ## Repeated architectural pieces share geometry and draw calls within each room.
+const Board := preload("res://museum/board_style.gd")
+
 var finishes := {}
 var batches := {}
 var prototypes := {}
@@ -31,6 +33,10 @@ func finish(key: String, hex: String, metallic := 0.0, roughness := 0.84) -> voi
 			m.vertex_color_use_as_albedo = true
 			m.vertex_color_is_srgb = true
 	finishes[key] = m
+
+func finish_board() -> void:
+	finish("board", Board.FACE.to_html(false))
+	finishes.board.metallic_specular = 0.0
 
 func piece(kind: String, at: Vector3, size: Vector3, surface: String, angles := Vector3.ZERO) -> void:
 	var key := "%s/%s/%s" % [zone, kind, surface]

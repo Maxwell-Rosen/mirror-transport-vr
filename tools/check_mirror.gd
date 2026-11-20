@@ -7,6 +7,7 @@ const Orbit := preload("res://museum/mirror/orbit.gd")
 const Exhibit := preload("res://museum/mirror/exhibit.gd")
 const Face := preload("res://museum/mirror/panel.gd")
 const Visitor := preload("res://museum/visitor.gd")
+const Menu := preload("res://museum/visit_menu.gd")
 var errors := 0
 var exhibit: Exhibit
 var visitor: Visitor
@@ -25,6 +26,7 @@ func _run() -> void:
 	await scene_changed
 	await physics_frame
 	await process_frame
+	await _menu_checks()
 	exhibit = current_scene.get_node("MagneticMirror")
 	visitor = current_scene.get_node("Visitor")
 	exhibit.set_process(false)
@@ -33,7 +35,7 @@ func _run() -> void:
 	if "--pictures" in OS.get_cmdline_user_args():
 		await _desktop_pictures()
 	if errors == 0:
-		print("PASS saved geometry, expander transits and relaunches, eight entrances, axial walkways, doorway activation, desktop and both controller rays.")
+		print("PASS title, pause, fresh visit, signed loss barriers, saved geometry, live sliders, reset, expander transits, gallery entrances, desktop and both controller rays.")
 	for type: String in ["AudioStreamPlayer", "AudioStreamPlayer3D"]:
 		for player in current_scene.find_children("*", type, true, false):
 			player.stop()
@@ -41,6 +43,97 @@ func _run() -> void:
 	unload_current_scene()
 	await create_timer(0.20).timeout
 	quit(1 if errors else 0)
+
+func _menu_checks() -> void:
+	var menu: Menu = current_scene.get_node("VisitMenu")
+	var mirror: Exhibit = current_scene.get_node("MagneticMirror")
+	var player: Visitor = current_scene.get_node("Visitor")
+	var promenade: AudioStreamPlayer = current_scene.get_node("Promenade")
+	check(paused and menu.screen == Menu.Screen.TITLE and menu.music.playing and not promenade.playing and not current_scene.cascade.playing, "Title owns the opening audio")
+	check(is_equal_approx(menu.music.stream.get_length(), 30.0) and menu.music.stream.loop, "Title quartet loops at 30 seconds")
+	if "--pictures" in OS.get_cmdline_user_args():
+		await _menu_picture("title")
+	_key(KEY_ENTER)
+	check(menu.screen == Menu.Screen.ENTERING and paused, "Enter starts the title transition")
+	await _finish_entry(menu)
+	check(not paused and menu.screen == Menu.Screen.VISIT and not menu.music.playing and promenade.playing, "Keyboard enters the foyer and switches music")
+	# Positional audio begins mixing on the first unpaused physics tick.
+	await physics_frame
+	await physics_frame
+	player.position = mirror.to_global(Vector3(0, 0.01, 2.1))
+	mirror._process(0.6)
+	var track_point := mirror.desk.to_global(Vector3(0.35, 0, 0))
+	mirror.press(Face.Widget.SPREAD, track_point)
+	player.drag_pointer = Visitor.MOUSE_POINTER
+	var spread := mirror.spread
+	var elapsed := mirror.apparatus.clock
+	var water_time: float = current_scene.visit_time
+	var location := player.position
+	_key(KEY_ESCAPE)
+	check(paused and menu.screen == Menu.Screen.PAUSE and mirror.grabbed == -1 and player.drag_pointer == -1, "Escape pauses and releases the current drag")
+	if "--pictures" in OS.get_cmdline_user_args():
+		await _menu_picture("pause")
+	await create_timer(Menu.DUCK_SECONDS + 0.15).timeout
+	check(mirror.apparatus.clock == elapsed and player.position == location and current_scene.visit_time == water_time and current_scene.cascade.stream_paused, "Pause freezes the visitor, particles and fountain")
+	check(promenade.playing and is_equal_approx(promenade.volume_linear, menu.visit_gain * db_to_linear(Menu.DUCK_DB)), "The promenade continues at its pause level")
+	_click_menu(menu.face.primary)
+	check(not paused and menu.screen == Menu.Screen.VISIT and mirror.spread == spread and mirror.apparatus.clock == elapsed, "Click resumes the same trial")
+	_key(KEY_ESCAPE)
+	_click_menu(menu.face.restart)
+	var previous_scene := current_scene
+	for i in 8:
+		await process_frame
+		if current_scene and current_scene != previous_scene:
+			break
+	check(current_scene != previous_scene, "Reset to title replaces the visit")
+	menu = current_scene.get_node("VisitMenu")
+	mirror = current_scene.get_node("MagneticMirror")
+	player = current_scene.get_node("Visitor")
+	promenade = current_scene.get_node("Promenade")
+	check(paused and menu.screen == Menu.Screen.TITLE and menu.music.playing and not promenade.playing and not current_scene.cascade.playing, "Reset to title switches back to the quartet")
+	check(player.position == Visitor.START and _at_opening_settings(mirror) and mirror.apparatus.clock == 0, "Fresh visit restores the foyer and opening controls")
+	_click_menu(menu.face.primary)
+	await _finish_entry(menu)
+	check(menu.screen == Menu.Screen.VISIT and not paused, "Mouse enters a new visit")
+	_key(KEY_ESCAPE)
+	_key(KEY_ESCAPE)
+	check(menu.screen == Menu.Screen.VISIT and not paused, "Escape resumes a paused visit")
+
+func _at_opening_settings(mirror: Exhibit) -> bool:
+	return (mirror.field.ratio == Field.REF_RATIO and mirror.spread == 400.0
+		and mirror.moment == 1.0 and mirror.field.volts == 0.0)
+
+func _finish_entry(menu: Menu) -> void:
+	var deadline := create_timer(Menu.FADE_OUT + Menu.FADE_IN + 2.0)
+	while menu.screen == Menu.Screen.ENTERING and deadline.time_left > 0:
+		await process_frame
+
+func _menu_picture(filename: String) -> void:
+	var folder := "res://.godot/review"
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(folder))
+	await process_frame
+	await RenderingServer.frame_post_draw
+	root.get_texture().get_image().save_png(folder + "/" + filename + ".png")
+
+func _key(code: Key) -> void:
+	var event := InputEventKey.new()
+	event.keycode = code
+	event.physical_keycode = code
+	for down: bool in [true, false]:
+		event.pressed = down
+		root.push_input(event, true)
+
+func _click_menu(button: Button) -> void:
+	var point := button.get_global_rect().get_center()
+	var motion := InputEventMouseMotion.new()
+	motion.position = point
+	root.push_input(motion, true)
+	var event := InputEventMouseButton.new()
+	event.position = point
+	event.button_index = MOUSE_BUTTON_LEFT
+	for down: bool in [true, false]:
+		event.pressed = down
+		root.push_input(event, true)
 
 func _physics_checks() -> void:
 	var model := Field.new()
@@ -66,14 +159,20 @@ func _physics_checks() -> void:
 	for point: Dictionary in Face.REFERENCE.data.checks:
 		if point.quantity == "r_m":
 			check(absf(model.radius(point.z_m) / point.saved - 1.0) < 0.001, "Runtime radius at saved node")
-	var mu := 0.25 * Field.KEV
-	var top := model.barrier(mu)
-	var threshold := sqrt(2.0 * top.joules / Field.MASS)
-	check(absf(threshold / 1000.0 - 619.4) < 0.1, "Opening loss cone")
+	var opening: Dictionary = display.opening_controls
+	check(model.volts == 0.0 and opening.midplane_potential_kV == model.volts / 1000.0
+		and opening.parallel_speed_spread_km_s == Field.DEFAULT_SPREAD and opening.magnetic_moment_keV_T == Field.DEFAULT_MOMENT, "Opening controls match the manifest")
+	var top := model.barrier(Field.DEFAULT_MOMENT * Field.KEV)
+	check(absf(sqrt(2.0 * top.joules / Field.MASS) / 1000.0 - 1238.84) < 0.01, "Opening magnetic escape threshold")
 	for i in 8:
-		var speed := (2 * i - 7) * 150000.0
-		var expected := Field.Outcome.TURN if absf(speed) <= 450000 else Field.Outcome.ESCAPE
-		check(Field.outcome(speed, top) == expected, "Opening ion %d" % (i + 1))
+		var speed := (2 * i - 7) * Field.DEFAULT_SPREAD * 1000.0 / 7
+		check(Field.outcome(speed, top) == Field.Outcome.TURN, "Opening particle %d" % (i + 1))
+	_check_loss_cone(model)
+	model.volts = 0.0
+	var mu := 0.25 * Field.KEV
+	top = model.barrier(mu)
+	var threshold := sqrt(2.0 * top.joules / Field.MASS)
+	check(absf(threshold / 1000.0 - 619.4) < 0.1, "Purely magnetic reference loss cone")
 	var boundary := Orbit.new(model, threshold, mu, top)
 	check(boundary.outcome == Field.Outcome.BOUNDARY and absf(boundary.sample(200).x - model.throat) < 1e-5, "Nonzero separatrix")
 	var rest := Orbit.new(model, 0.0, mu, top)
@@ -102,9 +201,10 @@ func _physics_checks() -> void:
 			crossings += 1
 		previous_z = z
 	check(crossings == 10 and worst < 0.001 and absf(max_z - 0.86424) < 0.001, "Ten-bounce energy and position")
-	print("Opening threshold %.3f km/s; turn %.6f m; full bounce %.6f exhibit s; %d bounces, max relative kinetic-energy error %.6f%%" % [threshold / 1000, max_z, period, crossings, 100 * worst])
+	print("Zero-potential reference: %.3f km/s, turn %.6f m, full bounce %.6f exhibit s, %d bounces, max relative energy error %.6f%%" % [threshold / 1000, max_z, period, crossings, 100 * worst])
 	model.volts = 4000.0
 	top = model.barrier(mu)
+	check(absf(sqrt(2.0 * top.joules / Field.MASS) / 1000.0 - 95.9711) < 0.001, "+4 kV reference loss cone")
 	var slow := Orbit.new(model, 70000.0, mu, top)
 	check(absf(top.joules / Field.KEV - 0.097) < 0.001 and absf(top.z - 0.964) < 0.001, "Interior maximum")
 	check(slow.outcome == Field.Outcome.TURN and absf(slow.end_z - 0.950) < 0.001, "First reachable +70 km/s turn")
@@ -130,6 +230,39 @@ func _physics_checks() -> void:
 	model.set_ratio(1.0)
 	model.volts = -4000.0
 	check(Orbit.new(model, 70000.0, 0.0, model.barrier(0)).outcome == Field.Outcome.TURN, "Pure electrostatic trapping")
+
+func _check_loss_cone(model: Field) -> void:
+	var chart := Face.new()
+	chart.field = model
+	model.volts = 4000.0
+	chart.update_boundary()
+	check(chart.boundary[0].x == 0 and absf(chart.boundary[0].y - 0.243899) < 0.00001, "Two branches meet at the physical +4 kV tip")
+	for i in range(1, chart.boundary.size()):
+		check(chart.boundary[i].x > 0, "No zero-speed stem below the cone")
+	var particle: Dictionary = Face.REFERENCE.data.analytic_exhibit.particle
+	check(absf(Field.CHARGE / particle.charge_C - 1) < 1e-12 and absf(Field.MASS / particle.mass_kg - 1) < 1e-12, "Run mass and positive elementary charge")
+	for ratio: float in [1.0, 2.5, Field.REF_RATIO, 50.0]:
+		model.set_ratio(ratio)
+		for volts: float in [-5000, 0, 4000]:
+			model.volts = volts
+			chart.update_boundary()
+			check(model.potential(0) == volts and is_equal_approx(model.potential(model.throat / 2), 0.75 * volts) and model.potential(-model.throat) == 0 and model.potential(model.throat) == 0 and model.potential(Field.LIMIT) == 0, "Signed parabolic midplane potential with grounded ends")
+			if ratio == 1 and volts >= 0:
+				check(chart.boundary.is_empty(), "Uniform field without a barrier has no separatrix")
+			if ratio == 1 and volts < 0:
+				var speed := sqrt(2.0 * Field.CHARGE * -volts / Field.MASS) / 1000
+				check(absf(chart.boundary[0].x - speed) < 0.001 and absf(chart.boundary[-1].x - speed) < 0.001, "Electrostatic threshold is independent of magnetic moment")
+			for moment: float in [0, 0.24, 0.25, 1]:
+				# Direct dense scan of H = mv²/2 + μB + eφ, independent of
+				# the runtime rise(), cached scan and refined peak search.
+				var highest := 0.0
+				for j in 4097:
+					var z := model.throat * j / 4096.0
+					var delta_u := moment * (model.magnitude(z) - model.magnitude(0)) + (model.potential(z) - volts) / 1000.0
+					highest = maxf(highest, delta_u)
+				check(absf(model.barrier(moment * Field.KEV).joules / Field.KEV - highest) < 0.0001, "Independent barrier at ratio %.2f, %.0f V, μ=%.2f" % [ratio, volts, moment])
+	chart.free()
+	model.set_ratio(Field.REF_RATIO)
 
 func _visit_checks() -> void:
 	for bay in 4:
@@ -189,20 +322,28 @@ func _visit_checks() -> void:
 		var origin := visitor.camera.global_position
 		if pointer != Visitor.MOUSE_POINTER:
 			origin = visitor.global_position + Vector3(0, 1.08, 0.16 * (2 * pointer - 1))
-		_aim(pointer, origin, _track_point(0, 15), true)
-		check(exhibit.field.ratio == 15 and visitor.drag_pointer == pointer, "Ray acquires ratio 15")
+		exhibit._process(7.0)
+		var before := exhibit.apparatus.clock
+		var spacing := exhibit.apparatus.tracks[5].release_ticks
+		_aim(pointer, origin, _track_point(0, 1), true)
+		check(exhibit.field.ratio == 1 and visitor.drag_pointer == pointer, "Ray acquires the straight-field setting")
 		_check_line_colour(5, Face.ESCAPE_LINE)
 		exhibit._process(0.7)
-		check(exhibit.apparatus.clock == 0.0 and exhibit.apparatus.tails.get_surface_count() == 0, "Hold clears trails and freezes ions")
-		_aim(pointer, origin, _track_point(0, 20), true)
-		_aim(pointer, origin, _track_point(0, 20), false)
-		check(exhibit.field.ratio == 20 and exhibit.grabbed == -1 and exhibit.apparatus.tracks[5].orbit.outcome == Field.Outcome.TURN, "Release launches selected ratio")
+		check(is_equal_approx(exhibit.apparatus.clock, before + 0.7) and exhibit.apparatus.tails.get_surface_count() == 1, "Drag keeps the clock and trails running")
+		_aim(pointer, origin, _track_point(0, Field.REF_RATIO), true)
+		_aim(pointer, origin, _track_point(0, Field.REF_RATIO), false)
+		check(exhibit.grabbed == -1 and exhibit.apparatus.tracks[5].orbit.outcome == Field.Outcome.TURN and exhibit.apparatus.tracks[5].release_ticks == spacing, "Release preserves launch ages and shows the revised orbit")
 		_check_line_colour(5, Face.TURN_LINE)
-		exhibit._process(0.4)
+		_set_slider(0, 20, visitor.camera.global_position)
+		_set_slider(1, 490, visitor.camera.global_position)
+		_set_slider(2, 0.5, visitor.camera.global_position)
+		_set_slider(3, -2, visitor.camera.global_position)
+		_select_launch(3, pointer, origin)
+		check(exhibit.field.ratio == 20 and exhibit.spread == 490 and exhibit.moment == 0.5 and exhibit.field.volts == -2000 and exhibit.apparatus.followed == 3, "Each slider retains the other three settings")
 		var reset_at := _world_pixel(Face.RESET_RECT.get_center())
 		_aim(pointer, origin, reset_at, true)
 		_aim(pointer, origin, reset_at, false)
-		check(exhibit.apparatus.clock == 0.0 and exhibit.field.ratio == 20, "Reset retains controls")
+		check(exhibit.apparatus.clock == 0.0 and exhibit.apparatus.tails.get_surface_count() == 0 and _at_opening_settings(exhibit) and exhibit.apparatus.followed == Face.DEFAULT_FOLLOWED, "Pedestal reset restores the complete opening trial")
 	var eye := visitor.camera.global_position
 	_set_slider(0, Field.REF_RATIO, eye)
 	_set_slider(1, 490, eye)
@@ -249,18 +390,19 @@ func _check_displayed_relaunch(eye: Vector3) -> void:
 	_set_slider(2, 0.0, eye)
 	var display := exhibit.apparatus
 	var spacing: float = display.tracks[7].release_ticks / float(display.HZ)
-	var age := 4.0 * spacing + 0.005
-	display.advance(age)
+	var transit := Field.LIMIT / (1050000.0 * Orbit.CLOCK)
+	var cycle := transit + Orbit.TIP_FADE_SECONDS
+	var age := maxf(display.clock, 4.0 * spacing) + 0.005
+	display.advance(age - display.clock)
 	for track: int in [0, 7]:
 		var direction := -1 if track == 0 else 1
 		for copy in display.COPIES:
 			var p: int = (track * display.COPIES + copy) * (display.TAIL + 1) * 2
 			var head_x: float = (display._vertices[p].x + display._vertices[p + 1].x) / 2
-			var expected_z := (age - copy * spacing) * Orbit.CLOCK * 1050000.0 * direction
+			var elapsed := fmod(age - copy * spacing, cycle)
+			var expected_z := minf(elapsed * Orbit.CLOCK * 1050000.0, Field.LIMIT) * direction
 			check(absf(head_x - expected_z * display.SCALE.x) < 0.001, "Displayed expander position of copy %d" % copy)
-		check(4.0 * spacing * Orbit.CLOCK * 1050000.0 > Field.LIMIT * 0.85, "Five copies span the expander")
-	var transit := Field.LIMIT / (1050000.0 * Orbit.CLOCK)
-	display.advance(transit + Orbit.TIP_FADE_SECONDS + 0.025 - age)
+	display.advance(cycle - fmod(age, cycle) + 0.025)
 	var start := 7 * display.COPIES * (display.TAIL + 1) * 2
 	for j in 2 * (display.TAIL + 1):
 		check(absf(display._vertices[start + j].x) < 0.20, "No trail joins the expander tip to the next midplane launch")
@@ -272,9 +414,9 @@ func _set_slider(widget: int, value: float, origin: Vector3) -> void:
 	_aim(Visitor.MOUSE_POINTER, origin, point, true)
 	_aim(Visitor.MOUSE_POINTER, origin, point, false)
 
-func _select_launch(ion: int, pointer: int, origin: Vector3) -> void:
+func _select_launch(particle: int, pointer: int, origin: Vector3) -> void:
 	var panel := exhibit.panels[Face.Face.LOSS]
-	var offset := (panel.launch_badge(ion) - Vector2(Face.PLOT_SIZE) / 2) * Exhibit.CHART_WIDTH / Face.PLOT_SIZE.x
+	var offset := (panel.launch_badge(particle) - Vector2(Face.PLOT_SIZE) / 2) * Exhibit.CHART_WIDTH / Face.PLOT_SIZE.x
 	var point := exhibit.loss_surface.to_global(Vector3(offset.x, -offset.y, 0))
 	_aim(pointer, origin, point, true)
 	_aim(pointer, origin, point, false)
@@ -316,7 +458,9 @@ func _desktop_pictures() -> void:
 	await process_frame
 	visitor._physics_process(0.0)
 	check(exhibit.grabbed == -1, "Captured desktop release")
-	_set_slider(0, Field.REF_RATIO, visitor.camera.global_position)
+	var reset_at := _world_pixel(Face.RESET_RECT.get_center())
+	_aim(Visitor.MOUSE_POINTER, visitor.camera.global_position, reset_at, true)
+	_aim(Visitor.MOUSE_POINTER, visitor.camera.global_position, reset_at, false)
 	exhibit.apparatus.advance(4.45)
 	var folder := "res://.godot/review"
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(folder))
@@ -328,9 +472,21 @@ func _desktop_pictures() -> void:
 	await _picture(folder + "/gallery-three-approach.png", Vector3(5.9, 1.18, 10.3), Vector3(6.9, 1.55, 5.5))
 	await _picture(folder + "/mirror-console.png", Vector3(0.0, 1.65, 2.10), Vector3(0, 1.01, 0.88))
 	_set_slider(1, 490, visitor.camera.global_position)
+	_set_slider(2, 0.25, visitor.camera.global_position)
 	_set_slider(3, 4, visitor.camera.global_position)
 	_select_launch(4, Visitor.MOUSE_POINTER, visitor.camera.global_position)
 	await _picture(folder + "/mirror-loss.png", Vector3(-Exhibit.CHART_X + 1.2, 1.34, Exhibit.CHART_Z + 2.8), Vector3(-Exhibit.CHART_X, Exhibit.CHART_Y, Exhibit.CHART_Z))
+	var chart := exhibit.panels[Face.Face.LOSS]
+	var chart_image := chart.get_viewport().get_texture().get_image()
+	var centre := Face.GRAPH.get_center().x
+	var below_tip := Vector2i(roundi(centre), roundi(Face.GRAPH.end.y - 0.10 * Face.GRAPH.size.y))
+	var curve_luminance := Face.CURVE.get_luminance()
+	check(absf(chart_image.get_pixelv(below_tip).get_luminance() - curve_luminance) > 0.20, "No centre stroke below the loss boundary")
+	var speed := sqrt(2 * exhibit.field.barrier(0.5 * Field.KEV).joules / Field.MASS) / 1000
+	for direction: int in [-1, 1]:
+		var x := roundi(centre + direction * speed * Face.GRAPH.size.x / 2800.0)
+		var sample := chart_image.get_pixel(x, roundi(Face.GRAPH.get_center().y))
+		check(absf(sample.get_luminance() - curve_luminance) < 0.12, "Rendered boundary at μ = 0.5 on each velocity branch")
 	await _picture(folder + "/mirror-potential.png", Vector3(Exhibit.CHART_X - 1.2, 1.34, Exhibit.CHART_Z + 2.8), Vector3(Exhibit.CHART_X, Exhibit.CHART_Y, Exhibit.CHART_Z))
 
 func _picture(path: String, eye: Vector3, target: Vector3) -> void:

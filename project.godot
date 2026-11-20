@@ -14,6 +14,12 @@ renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
 anti_aliasing/quality/msaa_3d=1
 
+[shader_globals]
+visit_time={
+"type": "float",
+"value": 0.0
+}
+
 [xr]
 openxr/enabled=true
 openxr/startup_alert=false

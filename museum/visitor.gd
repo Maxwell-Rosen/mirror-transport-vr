@@ -40,6 +40,7 @@ func _ready() -> void:
 		get_viewport().use_xr = true
 		DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
 		origin = XROrigin3D.new()
+		origin.process_mode = Node.PROCESS_MODE_ALWAYS
 		add_child(origin)
 		camera = XRCamera3D.new()
 		origin.add_child(camera)
@@ -60,7 +61,6 @@ func _ready() -> void:
 		capsule.height = DESKTOP_HEIGHT
 		$Body.position.y = DESKTOP_HEIGHT/2
 		camera.position.y = DESKTOP_EYE_HEIGHT
-		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 		var overlay := CanvasLayer.new()
 		add_child(overlay)
 		reticle = Control.new()
@@ -84,9 +84,6 @@ func _unhandled_input(event: InputEvent) -> void:
 			return
 		rotate_y(-event.relative.x * 0.002)
 		camera.rotation.x = clampf(camera.rotation.x-event.relative.y*0.002,-1.35,1.35)
-	if event is InputEventKey and event.keycode == KEY_ESCAPE and event.pressed:
-		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-		_cancel_mouse()
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 			mouse_edges.append(event.pressed)
@@ -104,6 +101,16 @@ func _cancel_mouse() -> void:
 	mouse_edges.clear()
 	_release_pointer(MOUSE_POINTER)
 	reticle.hide()
+
+func cancel_interaction() -> void:
+	mouse_down = false
+	mouse_edges.clear()
+	for i in pressed.size():
+		_release_pointer(i)
+	held = 0.0
+	progress.hide()
+	if reticle:
+		reticle.hide()
 
 func _release_pointer(index: int) -> void:
 	if drag_pointer == index:
@@ -219,14 +226,7 @@ func update_return(active: bool,delta: float) -> void:
 		return
 	held += delta
 	if held >= HOLD_TIME:
-		if drag_pointer >= 0:
-			_release_pointer(drag_pointer)
-		global_position = START
-		if xr_active:
-			rotate_y(-camera.global_rotation.y)
-		else:
-			rotation.y = 0
-			camera.rotation.x = 0
+		return_to_foyer()
 		progress.hide()
 		return
 	progress.show()
@@ -238,3 +238,15 @@ func update_return(active: bool,delta: float) -> void:
 		arc.surface_add_vertex(radial*0.025)
 		arc.surface_add_vertex(radial*0.020)
 	arc.surface_end()
+
+func return_to_foyer() -> void:
+	if drag_pointer >= 0:
+		_release_pointer(drag_pointer)
+	global_position = START
+	if xr_active:
+		rotate_y(-camera.global_rotation.y)
+		var offset := camera.global_position - global_position
+		origin.global_position -= Vector3(offset.x, 0, offset.z)
+	else:
+		rotation.y = 0
+		camera.rotation.x = 0

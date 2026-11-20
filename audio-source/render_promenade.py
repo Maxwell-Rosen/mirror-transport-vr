@@ -39,8 +39,8 @@ def main():
             "-metadata", "title=Promenade — Mirror Transport Museum",
             "-metadata", "composer=Modest Mussorgsky",
             "-metadata", f"bpm={score['tempo']['tempos'][0]['bpm']:g}",
-            "-metadata", "description=Promenade I for soft clarinet, bowed cellos and grand piano.",
-            "-metadata", "copyright=Clarinet and bowed cellos from Versilian Studios Chamber Orchestra "
+            "-metadata", "description=Promenade I for soft clarinet, bowed cellos, grand piano and concert harp.",
+            "-metadata", "copyright=Clarinet, bowed cellos and concert harp from Versilian Studios Chamber Orchestra "
                          "2 Community Edition (CC0). Grand piano sampled from "
                          "Salamander Grand Piano v3 by Alexander Holm "
                          "(https://github.com/sfzinstruments/SalamanderGrandPiano), "

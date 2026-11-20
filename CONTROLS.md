@@ -15,8 +15,12 @@ The broader exhibit plan also includes optional flight for viewing the taller di
 
 ## Use an exhibit
 
-Point a controller at a button and squeeze the trigger, or aim with the mouse and left-click. To move a slider or probe, hold the trigger or left mouse button, move along the slider or rail, then release. At the first mirror, the pedestal’s reset button sends the particles back to the midplane. [Mirror exhibit](INTRO_MIRROR_INTERACTIVE.md)
+Point a controller at a button and squeeze the trigger, or aim with the mouse and left-click. To move a slider or probe, hold the trigger or left mouse button, move along the slider or rail, then release. Select a numbered launch point to follow its particle. Dragging a slider changes that setting while the particles keep moving. The pedestal’s **Reset** restores all opening settings and restarts the staggered launches. [Mirror exhibit](INTRO_MIRROR_INTERACTIVE.md)
+
+## Title screen and pause menu
+
+Choose **Enter the museum**. The title and its music fade to black, then the foyer appears as the Promenade fades in. Press **Esc** on desktop or **A** on the right Quest controller to pause the visit and read all controls. The music continues quietly while paused and returns to its usual level as you resume. Drag **Volume** or select **Mute audio** to adjust all museum sound. On a keyboard, Tab to the slider and use the arrow keys. Unmuting restores the selected volume. **Resume visit** or the same pause button continues from the same spot. **Reset to title** ends the visit and restores the opening settings. Use the mouse or Tab and Enter on desktop, or point either controller and squeeze its trigger.
 
 ## Return to the foyer
 
-From anywhere in the museum, hold **Select** until the circular progress indicator fills. Release early to cancel. When the circle fills, you return to the starting spot in the foyer facing the atrium doorway. The proposed Select bindings are **X** on the left Quest controller and **Home** on the keyboard.
+From anywhere in the museum, hold **Select** until the circular progress indicator fills. Release early to cancel. When the circle fills, you return to the starting spot in the foyer facing the atrium doorway. The Select bindings are **X** on the left Quest controller and **Home** on the keyboard.

@@ -1,9 +1,11 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://museum/museum.gd" id="1"]
 [ext_resource type="Script" path="res://museum/visitor.gd" id="2"]
 [ext_resource type="AudioStream" path="res://museum/audio/promenade.ogg" id="3"]
 [ext_resource type="Script" path="res://museum/mirror/exhibit.gd" id="4"]
+[ext_resource type="Script" path="res://museum/visit_menu.gd" id="5"]
+[ext_resource type="AudioStream" path="res://museum/audio/threshold.ogg" id="6"]
 
 [node name="MirrorTransportMuseum" type="Node3D"]
 script = ExtResource("1")
@@ -21,6 +23,13 @@ rotation = Vector3(0, 1.5707963, 0)
 script = ExtResource("4")
 
 [node name="Promenade" type="AudioStreamPlayer" parent="."]
+process_mode = 3
 stream = ExtResource("3")
 volume_db = -10.0
-autoplay = true
+
+[node name="VisitMenu" type="Node3D" parent="."]
+script = ExtResource("5")
+
+[node name="TitleMusic" type="AudioStreamPlayer" parent="VisitMenu"]
+stream = ExtResource("6")
+volume_db = -18.0

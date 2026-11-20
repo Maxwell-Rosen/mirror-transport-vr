@@ -26,16 +26,17 @@ const CONTROL_SIZE := Vector2i(1500, 476)
 const PLOT_SIZE := Vector2i(800, 810)
 const GRAPH := Rect2(114, 145, 637, 300)
 const RESET_RECT := Rect2(1283, 14, 181, 58)
+const DEFAULT_FOLLOWED := 5
 enum Face { CONTROLS, LOSS, POTENTIAL }
-enum Widget { NONE = -1, RATIO, SPREAD, MOMENT, POTENTIAL, RESET, FIRST_ION }
+enum Widget { NONE = -1, RATIO, SPREAD, MOMENT, POTENTIAL, RESET, FIRST_PARTICLE }
 
 var kind: Face
 var field: Field
-var spread := 1050.0
-var moment := 0.25
+var spread := Field.DEFAULT_SPREAD
+var moment := Field.DEFAULT_MOMENT
 var hover := -1
 var dragging := -1
-var followed := 5
+var followed := DEFAULT_FOLLOWED
 var boundary := PackedVector2Array()  # (threshold in km/s, moment in keV/T)
 var top: Field.Barrier
 
@@ -47,9 +48,25 @@ func refresh() -> void:
 
 func update_boundary() -> void:
 	boundary.clear()
-	boundary.append(_boundary_point(0.0))
+	if _boundary_point(1.0).x == 0.0:
+		return  # All moving launches escape across the entire plot.
+	var start := _boundary_point(0.0)
+	if field.volts > 0.0:
+		# The midplane itself maximizes U below a critical μ. Locate the
+		# tip where a finite trapped region first opens. Below it v=0 is rest.
+		var low := 0.0
+		var high := 1.0
+		for i in 30:
+			var mu := (low + high) / 2
+			if field.barrier(mu * Field.KEV).joules > 0.0:
+				high = mu
+			else:
+				low = mu
+		start = Vector2(0.0, low)
+	boundary.append(start)
 	for i in range(1, 17):
-		_trace_boundary(boundary[-1], _boundary_point(i / 16.0), 0)
+		if i / 16.0 > start.y:
+			_trace_boundary(boundary[-1], _boundary_point(i / 16.0), 0)
 
 func _boundary_point(mu: float) -> Vector2:
 	return Vector2(sqrt(2.0 * field.barrier(mu * Field.KEV).joules / Field.MASS) / 1000.0, mu)
@@ -118,7 +135,7 @@ func launch_badge(line: int) -> Vector2:
 		spacing = 36.0
 	return Vector2(GRAPH.get_center().x + (line - 3.5) * spacing, row)
 
-func ion_at(pixel: Vector2) -> int:
+func particle_at(pixel: Vector2) -> int:
 	if spread > 0:
 		var nearest := -1
 		var distance := 27.0
@@ -126,7 +143,7 @@ func ion_at(pixel: Vector2) -> int:
 			var d := launch_badge(i).distance_to(pixel)
 			if d < distance:
 				distance = d
-				nearest = Widget.FIRST_ION + i
+				nearest = Widget.FIRST_PARTICLE + i
 		return nearest
 	return Widget.NONE
 
@@ -145,15 +162,15 @@ static func line_color(outcome: Field.Outcome) -> Color:
 
 func _controls() -> void:
 	words(Vector2(36, 56), "Launch controls", 41, PAPER, SERIF)
-	words(Vector2(397, 35), "Follow ion 6 with the other controls at their opening settings.", 23, BRASS)
-	words(Vector2(397, 65), "Try mirror ratio 15, then 20. Watch the right-hand ring.", 23)
+	words(Vector2(397, 35), "Follow particle 6 at the opening settings.", 23, BRASS)
+	words(Vector2(397, 65), "Try mirror ratio 1, then return to the thesis mark.", 23)
 	draw_rect(RESET_RECT, BRASS if hover == Widget.RESET else GRID, false, 3)
 	centered(Vector2(RESET_RECT.get_center().x, 55), "↺  Reset", 30)
 	draw_line(Vector2(35, 87), Vector2(1465, 87), GRID, 2)
 	draw_line(Vector2(750, 100), Vector2(750, 411), GRID, 2)
 	draw_line(Vector2(35, 261), Vector2(1465, 261), GRID, 2)
 	var values := [field.ratio, spread, moment, field.volts / 1000.0]
-	var readings := ["%.2f" % field.ratio, "%.0f km/s" % spread, "%.2f keV/T" % moment, "%+.1f kV" % values[3]]
+	var readings := ["%.2f" % field.ratio, "%.0f km/s" % spread, "%.2f keV/T" % moment, _potential_label()]
 	var endpoints := [["1", "50"], ["0", "1,400"], ["0", "1.00"], ["−5", "+5"]]
 	for i in 4:
 		var p := track_start(i)
@@ -184,7 +201,7 @@ func _controls() -> void:
 			"Potential is measured relative to the two throats."]
 		words(p + Vector2(-12, 72), notes[i], 23, MUTED)
 	draw_line(Vector2(35, 427), Vector2(1465, 427), GRID, 2)
-	centered(Vector2(750, 459), "Ions at the midplane  ·  Release to launch" if dragging >= 0 else "Hold and drag a slider, then release to launch.", 24, BRASS)
+	centered(Vector2(750, 459), "Drag a slider to change the moving particles. Reset restores the opening settings.", 24, BRASS)
 
 func _plot_frame(title: String) -> void:
 	words(Vector2(35, 64), title, 44, PAPER, SERIF)
@@ -210,7 +227,7 @@ func _tick_label(tick: float) -> String:
 	return str(int(tick)) if tick == floorf(tick) else String.num(tick, 2)
 
 func _loss_plot() -> void:
-	_plot_frame("Where will each ion go?")
+	_plot_frame("Where will each particle go?")
 	draw_rect(Rect2(39, 104, 27, 20), TURN)
 	words(Vector2(76, 123), "turns back", 23)
 	draw_rect(Rect2(258, 104, 27, 20), ESCAPE)
@@ -222,35 +239,30 @@ func _loss_plot() -> void:
 	var half := GRAPH.size.x * 0.5
 	var right := PackedVector2Array()
 	var left := PackedVector2Array()
-	var region := PackedVector2Array()
-	var first_positive := -1
-	for i in boundary.size():
-		var dx := half * boundary[i].x / 1400.0
-		var y := GRAPH.end.y - GRAPH.size.y * boundary[i].y
-		right.append(Vector2(centre + dx, y))
-		left.append(Vector2(centre - dx, y))
-		if dx > 0.0:
-			if first_positive == -1:
-				first_positive = i
-				if i > 0:
-					region.append(right[i - 1])
-			region.append(Vector2(minf(GRAPH.end.x, right[i].x), y))
-	if first_positive >= 0:
-		for i in range(left.size() - 1, first_positive - 1, -1):
-			region.append(Vector2(maxf(GRAPH.position.x, left[i].x), left[i].y))
+	for value in boundary:
+		var p := Vector2(centre + half * value.x / 1400.0, GRAPH.end.y - GRAPH.size.y * value.y)
+		if p.x > GRAPH.end.x:
+			var previous := right[-1]
+			p = previous.lerp(p, inverse_lerp(previous.x, p.x, GRAPH.end.x))
+			p.x = GRAPH.end.x
+		right.append(p)
+		left.append(Vector2(2 * centre - p.x, p.y))
+		if p.x >= GRAPH.end.x:
+			break
+	if right.size() >= 2:
+		var region := right.duplicate()
+		if right[-1].y > GRAPH.position.y:
+			region.append(Vector2(GRAPH.end.x, GRAPH.position.y))
+			region.append(GRAPH.position)
+		for i in range(left.size() - 1, -1, -1):
+			if left[i] != right[0]:
+				region.append(left[i])
 		draw_colored_polygon(region, TURN)
 	_axes([-1400, -700, 0, 700, 1400], 1400.0, [0, 0.25, 0.5, 0.75, 1], 0, 1,
 		"Launch parallel velocity  v∥₀  (km/s)", "Magnetic moment  μ  (keV/T)")
-	for branch: PackedVector2Array in [left, right]:
-		for i in range(1, branch.size()):
-			var a := branch[i - 1]
-			var b := branch[i]
-			if absf(a.x - centre) > half:
-				break
-			if absf(b.x - centre) > half:
-				var edge := clampf(b.x, GRAPH.position.x, GRAPH.end.x)
-				b = a.lerp(b, (edge - a.x) / (b.x - a.x))
-			draw_line(a, b, CURVE, 3, true)
+	if right.size() >= 2:
+		draw_polyline(left, CURVE, 3, true)
+		draw_polyline(right, CURVE, 3, true)
 	var row := GRAPH.end.y - GRAPH.size.y * moment
 	draw_dashed_line(Vector2(GRAPH.position.x, row), Vector2(GRAPH.end.x, row), BRASS, 1.5, 7)
 	if spread == 0:
@@ -264,16 +276,16 @@ func _loss_plot() -> void:
 			if spacing < 30:
 				draw_line(point, badge, COLORS[i], 1.5, true)
 				draw_circle(point, 3, COLORS[i])
-			if i == followed or hover == Widget.FIRST_ION + i:
+			if i == followed or hover == Widget.FIRST_PARTICLE + i:
 				draw_arc(badge, 18, 0, TAU, 28, PAPER, 2.5, true)
 			draw_circle(badge, 13, COLORS[i], true, -1, true)
 			centered(badge + Vector2(0, 7), str(i + 1), 19, FACE)
 	draw_line(Vector2(36, 545), Vector2(764, 545), GRID, 2)
 	var speed := spread * (2 * followed - 7) / 7.0
 	var status := ["at rest", "turns back", "escapes", "on the boundary"]
-	words(Vector2(37, 580), "Ion %d   %s   ·   %s" % [followed + 1, speed_label(speed), status[Field.outcome(speed * 1000, top)]], 31, COLORS[followed])
+	words(Vector2(37, 580), "Particle %d   %s   ·   %s" % [followed + 1, speed_label(speed), status[Field.outcome(speed * 1000, top)]], 31, COLORS[followed])
 	words(Vector2(37, 612), "Escape threshold at μ = %.2f keV/T    %.1f km/s" % [moment, sqrt(2.0 * top.joules / Field.MASS) / 1000], 24)
-	words(Vector2(37, 640), "Select a numbered point to follow its ion.", 21, MUTED)
+	words(Vector2(37, 640), "Select a numbered point to follow its particle.", 21, MUTED)
 	draw_line(Vector2(36, 652), Vector2(764, 652), GRID, 2)
 	words(Vector2(37, 686), "Field lines show the outcome of each launch.", 25, BRASS)
 	var legend := ["Turns back", "Escapes", "At rest / boundary"]
@@ -282,12 +294,15 @@ func _loss_plot() -> void:
 		var x := 37.0 + i * 225.0
 		draw_line(Vector2(x, 715), Vector2(x + 42, 715), swatches[i], 8)
 		words(Vector2(x + 53, 723), legend[i], 22)
-	words(Vector2(37, 757), "A confined ion reverses its motion along the field.", 23)
-	words(Vector2(37, 787), "An escaping ion crosses a throat and enters an expander.", 23)
+	words(Vector2(37, 757), "A confined particle reverses its motion along the field.", 23)
+	words(Vector2(37, 787), "An escaping particle crosses a throat into an expander.", 23)
+
+func _potential_label() -> String:
+	return "0.0 kV" if is_zero_approx(field.volts) else "%+.1f kV" % (field.volts / 1000.0)
 
 func _potential_plot() -> void:
-	_plot_frame("What accelerates the ion?")
-	words(Vector2(36, 123), "Model ambipolar potential", 25, BRASS)
+	_plot_frame("What accelerates the particle?")
+	words(Vector2(36, 123), "Model ambipolar potential     ·     U = μB + qφ,   q = +e", 25, BRASS)
 	_axes([-Field.LIMIT, -2, -1, 0, 1, 2, Field.LIMIT], Field.LIMIT, [-5, -2.5, 0, 2.5, 5], -5, 5,
 		"Axial position  Z  (m)", "Electric potential  φ  (kV)")
 	var curve := PackedVector2Array()
@@ -302,11 +317,16 @@ func _potential_plot() -> void:
 	curve.append(Vector2(GRAPH.end.x, GRAPH.get_center().y))
 	draw_polyline(curve, BRASS, 4, true)
 	draw_line(Vector2(36, 545), Vector2(764, 545), GRID, 2)
-	words(Vector2(37, 580), "Midplane  %+.1f kV     ·     Both throats  0 kV" % (field.volts / 1000), 28)
-	words(Vector2(37, 612), "Positive midplane potential helps ions escape." if field.volts >= 0 else "Negative midplane potential raises the escape energy.", 24, MUTED)
+	words(Vector2(37, 580), "Midplane  %s     ·     Both throats  0 kV" % _potential_label(), 28)
+	var effect := "At zero potential, only the magnetic field can turn a particle."
+	if field.volts > 0:
+		effect = "Positive midplane potential accelerates particles outward."
+	elif field.volts < 0:
+		effect = "Negative midplane potential raises the escape energy."
+	words(Vector2(37, 612), effect, 24, MUTED)
 	words(Vector2(37, 640), "Beyond the rings, φ stays at 0 kV to both expander tips.", 21, MUTED)
 	draw_line(Vector2(36, 652), Vector2(764, 652), GRID, 2)
-	words(Vector2(37, 697), "1 exhibit second = 2.315 µs of ion motion.", 27, BRASS)
-	words(Vector2(37, 739), "Gyro rotation shown at 1/64 speed relative to ion motion.", 23)
+	words(Vector2(37, 697), "1 exhibit second = 2.315 µs of particle motion.", 27, BRASS)
+	words(Vector2(37, 739), "Gyro rotation shown at 1/64 speed relative to particle motion.", 23)
 	var ref: Dictionary = REFERENCE.data
 	words(Vector2(37, 786), "Reference geometry  ·  %s  /  frame %d  /  %s s" % [ref.run, ref.frame, String.num(ref.saved_time_s, 3)], 21, MUTED)

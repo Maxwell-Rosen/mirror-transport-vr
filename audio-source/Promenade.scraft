@@ -389,7 +389,7 @@
       "hidden": false,
       "inactive": false,
       "frozen": false,
-      "comments": "Carry the entire melody on the soft sustained takes. Let the ends of phrases taper into the room.",
+      "comments": "Introduce the theme on the soft sustained takes. Rest for the full harp verse in bars 9–11 and re-enter on C at bar 12.",
       "folder": null,
       "folder_open": false,
       "instrument": null,
@@ -1047,22 +1047,6 @@
                   "sequence": {
                     "notes": [
                       {
-                        "pitch": 56,
-                        "velocity": 63,
-                        "release_velocity": 48,
-                        "channel": 0,
-                        "start": 44160,
-                        "length": 931
-                      },
-                      {
-                        "pitch": 56,
-                        "velocity": 59,
-                        "release_velocity": 48,
-                        "channel": 0,
-                        "start": 55680,
-                        "length": 931
-                      },
-                      {
                         "pitch": 60,
                         "velocity": 63,
                         "release_velocity": 48,
@@ -1354,94 +1338,6 @@
                         "channel": 0,
                         "start": 43200,
                         "length": 739
-                      },
-                      {
-                        "pitch": 58,
-                        "velocity": 66,
-                        "release_velocity": 48,
-                        "channel": 0,
-                        "start": 45120,
-                        "length": 931
-                      },
-                      {
-                        "pitch": 56,
-                        "velocity": 62,
-                        "release_velocity": 48,
-                        "channel": 0,
-                        "start": 46080,
-                        "length": 931
-                      },
-                      {
-                        "pitch": 58,
-                        "velocity": 61,
-                        "release_velocity": 48,
-                        "channel": 0,
-                        "start": 47040,
-                        "length": 451
-                      },
-                      {
-                        "pitch": 60,
-                        "velocity": 65,
-                        "release_velocity": 48,
-                        "channel": 0,
-                        "start": 47520,
-                        "length": 451
-                      },
-                      {
-                        "pitch": 58,
-                        "velocity": 65,
-                        "release_velocity": 48,
-                        "channel": 0,
-                        "start": 48480,
-                        "length": 451
-                      },
-                      {
-                        "pitch": 56,
-                        "velocity": 61,
-                        "release_velocity": 48,
-                        "channel": 0,
-                        "start": 48960,
-                        "length": 898
-                      },
-                      {
-                        "pitch": 58,
-                        "velocity": 63,
-                        "release_velocity": 48,
-                        "channel": 0,
-                        "start": 56640,
-                        "length": 931
-                      },
-                      {
-                        "pitch": 56,
-                        "velocity": 59,
-                        "release_velocity": 48,
-                        "channel": 0,
-                        "start": 57600,
-                        "length": 931
-                      },
-                      {
-                        "pitch": 58,
-                        "velocity": 59,
-                        "release_velocity": 48,
-                        "channel": 0,
-                        "start": 58560,
-                        "length": 451
-                      },
-                      {
-                        "pitch": 60,
-                        "velocity": 62,
-                        "release_velocity": 48,
-                        "channel": 0,
-                        "start": 59040,
-                        "length": 451
-                      },
-                      {
-                        "pitch": 58,
-                        "velocity": 58,
-                        "release_velocity": 48,
-                        "channel": 0,
-                        "start": 60000,
-                        "length": 259
                       },
                       {
                         "pitch": 60,
@@ -1831,62 +1727,6 @@
                         "release_velocity": 48,
                         "channel": 0,
                         "start": 42720,
-                        "length": 451
-                      },
-                      {
-                        "pitch": 63,
-                        "velocity": 68,
-                        "release_velocity": 48,
-                        "channel": 0,
-                        "start": 48000,
-                        "length": 451
-                      },
-                      {
-                        "pitch": 61,
-                        "velocity": 63,
-                        "release_velocity": 48,
-                        "channel": 0,
-                        "start": 49920,
-                        "length": 451
-                      },
-                      {
-                        "pitch": 63,
-                        "velocity": 65,
-                        "release_velocity": 48,
-                        "channel": 0,
-                        "start": 50400,
-                        "length": 451
-                      },
-                      {
-                        "pitch": 63,
-                        "velocity": 62,
-                        "release_velocity": 48,
-                        "channel": 0,
-                        "start": 52800,
-                        "length": 451
-                      },
-                      {
-                        "pitch": 61,
-                        "velocity": 63,
-                        "release_velocity": 48,
-                        "channel": 0,
-                        "start": 54240,
-                        "length": 451
-                      },
-                      {
-                        "pitch": 63,
-                        "velocity": 64,
-                        "release_velocity": 48,
-                        "channel": 0,
-                        "start": 54720,
-                        "length": 739
-                      },
-                      {
-                        "pitch": 63,
-                        "velocity": 65,
-                        "release_velocity": 48,
-                        "channel": 0,
-                        "start": 59520,
                         "length": 451
                       },
                       {
@@ -2363,46 +2203,6 @@
                         "channel": 0,
                         "start": 41280,
                         "length": 931
-                      },
-                      {
-                        "pitch": 65,
-                        "velocity": 67,
-                        "release_velocity": 48,
-                        "channel": 0,
-                        "start": 50880,
-                        "length": 451
-                      },
-                      {
-                        "pitch": 66,
-                        "velocity": 67,
-                        "release_velocity": 48,
-                        "channel": 0,
-                        "start": 51840,
-                        "length": 451
-                      },
-                      {
-                        "pitch": 65,
-                        "velocity": 66,
-                        "release_velocity": 48,
-                        "channel": 0,
-                        "start": 52320,
-                        "length": 451
-                      },
-                      {
-                        "pitch": 66,
-                        "velocity": 68,
-                        "release_velocity": 48,
-                        "channel": 0,
-                        "start": 53280,
-                        "length": 451
-                      },
-                      {
-                        "pitch": 65,
-                        "velocity": 67,
-                        "release_velocity": 48,
-                        "channel": 0,
-                        "start": 53760,
-                        "length": 451
                       },
                       {
                         "pitch": 65,
@@ -2886,14 +2686,6 @@
                         "channel": 0,
                         "start": 40320,
                         "length": 931
-                      },
-                      {
-                        "pitch": 68,
-                        "velocity": 70,
-                        "release_velocity": 48,
-                        "channel": 0,
-                        "start": 51360,
-                        "length": 451
                       },
                       {
                         "pitch": 69,
@@ -3995,14 +3787,6 @@
                         "length": 2784
                       },
                       {
-                        "pitch": 42,
-                        "velocity": 49,
-                        "release_velocity": 48,
-                        "channel": 0,
-                        "start": 44275,
-                        "length": 2995
-                      },
-                      {
                         "pitch": 41,
                         "velocity": 50,
                         "release_velocity": 48,
@@ -4772,14 +4556,6 @@
                         "length": 2577
                       },
                       {
-                        "pitch": 58,
-                        "velocity": 45,
-                        "release_velocity": 48,
-                        "channel": 0,
-                        "start": 44291,
-                        "length": 2979
-                      },
-                      {
                         "pitch": 57,
                         "velocity": 46,
                         "release_velocity": 48,
@@ -4899,6 +4675,897 @@
         "active": true,
         "preset": "<factory default>",
         "sample": 55
+      },
+      "ticks_timebase": true,
+      "elastic": null,
+      "pinned": false
+    },
+    {
+      "id": 66,
+      "name": "Concert harp",
+      "kind": "Folder",
+      "format": "Stereo",
+      "color": [
+        167,
+        142,
+        94
+      ],
+      "height": "Medium",
+      "playlists": [
+        {
+          "name": "Concert harp",
+          "clips": []
+        }
+      ],
+      "active_playlist": 0,
+      "mixer": {
+        "volume_db": -4.8,
+        "pan": [
+          -0.22,
+          0.56
+        ],
+        "mute": false,
+        "solo": false,
+        "solo_safe": false,
+        "phase_invert": false,
+        "input": {
+          "Bus": 67
+        },
+        "output": "Main",
+        "inserts": [
+          {
+            "plugin": "eq_1band",
+            "params": {
+              "type": 2.0,
+              "freq": 2100.0,
+              "gain": -3.2,
+              "q": 0.71
+            },
+            "bypass": false,
+            "active": true,
+            "preset": "<factory default>"
+          },
+          {
+            "plugin": "compressor",
+            "params": {
+              "threshold": -24.5,
+              "ratio": 1.75,
+              "attack": 6.0,
+              "release": 190.0,
+              "knee": 6.0,
+              "makeup": 1.8
+            },
+            "bypass": false,
+            "active": true,
+            "preset": "<factory default>"
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "sends": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "automation_mode": "Read",
+        "trim_db": 0.0,
+        "vca": null,
+        "surround": null
+      },
+      "automation": [
+        {
+          "param": "Volume",
+          "enabled": true,
+          "points": [
+            {
+              "at": 0,
+              "value": -4.8
+            },
+            {
+              "at": 3168000,
+              "value": -4.8
+            },
+            {
+              "at": 3312000,
+              "value": 3.8
+            },
+            {
+              "at": 3528000,
+              "value": 4.2
+            },
+            {
+              "at": 3816000,
+              "value": 4.4
+            },
+            {
+              "at": 3960000,
+              "value": 4.1
+            },
+            {
+              "at": 4176000,
+              "value": 3.6
+            },
+            {
+              "at": 4392000,
+              "value": 3.4
+            },
+            {
+              "at": 4503600,
+              "value": 2.8
+            },
+            {
+              "at": 4608000,
+              "value": -4.8
+            }
+          ]
+        }
+      ],
+      "view": "volume",
+      "hidden": false,
+      "inactive": false,
+      "frozen": false,
+      "comments": "Under the clarinet, let the chord tones ring from beats one and four. Sing the A-flat melody alone over the bowed bass in bars 9–11. All plucks fall on the quarter-note pulse.",
+      "folder": null,
+      "folder_open": false,
+      "instrument": null,
+      "ticks_timebase": false,
+      "elastic": null,
+      "pinned": false
+    },
+    {
+      "id": 68,
+      "name": "Harp G3",
+      "kind": "Instrument",
+      "format": "Stereo",
+      "color": [
+        167,
+        142,
+        94
+      ],
+      "height": "Medium",
+      "playlists": [
+        {
+          "name": "Harp G3",
+          "clips": [
+            {
+              "id": 70,
+              "name": "Harp G3",
+              "start": 0,
+              "length": 10368000,
+              "content": {
+                "Midi": {
+                  "sequence": {
+                    "notes": [
+                      {
+                        "pitch": 57,
+                        "velocity": 52,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 6720,
+                        "length": 2707
+                      },
+                      {
+                        "pitch": 53,
+                        "velocity": 50,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 9600,
+                        "length": 2707
+                      },
+                      {
+                        "pitch": 53,
+                        "velocity": 49,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 15360,
+                        "length": 1805
+                      },
+                      {
+                        "pitch": 57,
+                        "velocity": 52,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 17280,
+                        "length": 2707
+                      },
+                      {
+                        "pitch": 58,
+                        "velocity": 50,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 20160,
+                        "length": 2707
+                      },
+                      {
+                        "pitch": 50,
+                        "velocity": 51,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 23040,
+                        "length": 2707
+                      },
+                      {
+                        "pitch": 57,
+                        "velocity": 49,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 25920,
+                        "length": 1805
+                      },
+                      {
+                        "pitch": 57,
+                        "velocity": 50,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 27840,
+                        "length": 2707
+                      },
+                      {
+                        "pitch": 50,
+                        "velocity": 53,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 33600,
+                        "length": 2707
+                      },
+                      {
+                        "pitch": 55,
+                        "velocity": 49,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 36480,
+                        "length": 1805
+                      },
+                      {
+                        "pitch": 58,
+                        "velocity": 45,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 36480,
+                        "length": 1805
+                      },
+                      {
+                        "pitch": 56,
+                        "velocity": 64,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 44160,
+                        "length": 893
+                      },
+                      {
+                        "pitch": 58,
+                        "velocity": 62,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 45120,
+                        "length": 893
+                      },
+                      {
+                        "pitch": 56,
+                        "velocity": 65,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 46080,
+                        "length": 1853
+                      },
+                      {
+                        "pitch": 56,
+                        "velocity": 62,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 48960,
+                        "length": 893
+                      },
+                      {
+                        "pitch": 56,
+                        "velocity": 63,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 55680,
+                        "length": 893
+                      },
+                      {
+                        "pitch": 58,
+                        "velocity": 62,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 56640,
+                        "length": 893
+                      },
+                      {
+                        "pitch": 56,
+                        "velocity": 64,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 57600,
+                        "length": 1853
+                      },
+                      {
+                        "pitch": 58,
+                        "velocity": 62,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 59520,
+                        "length": 806
+                      },
+                      {
+                        "pitch": 57,
+                        "velocity": 48,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 63360,
+                        "length": 2707
+                      },
+                      {
+                        "pitch": 57,
+                        "velocity": 50,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 66240,
+                        "length": 2707
+                      },
+                      {
+                        "pitch": 57,
+                        "velocity": 52,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 72000,
+                        "length": 2707
+                      },
+                      {
+                        "pitch": 53,
+                        "velocity": 49,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 74880,
+                        "length": 2707
+                      },
+                      {
+                        "pitch": 58,
+                        "velocity": 50,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 80640,
+                        "length": 2707
+                      },
+                      {
+                        "pitch": 55,
+                        "velocity": 52,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 83520,
+                        "length": 2707
+                      },
+                      {
+                        "pitch": 57,
+                        "velocity": 50,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 86400,
+                        "length": 2707
+                      },
+                      {
+                        "pitch": 55,
+                        "velocity": 49,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 89280,
+                        "length": 2707
+                      },
+                      {
+                        "pitch": 53,
+                        "velocity": 50,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 95040,
+                        "length": 2707
+                      },
+                      {
+                        "pitch": 58,
+                        "velocity": 52,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 97920,
+                        "length": 2707
+                      },
+                      {
+                        "pitch": 58,
+                        "velocity": 52,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 106560,
+                        "length": 2707
+                      },
+                      {
+                        "pitch": 57,
+                        "velocity": 50,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 109440,
+                        "length": 2707
+                      },
+                      {
+                        "pitch": 57,
+                        "velocity": 48,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 115200,
+                        "length": 2707
+                      },
+                      {
+                        "pitch": 53,
+                        "velocity": 51,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 118080,
+                        "length": 2707
+                      },
+                      {
+                        "pitch": 55,
+                        "velocity": 52,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 123840,
+                        "length": 2707
+                      },
+                      {
+                        "pitch": 57,
+                        "velocity": 49,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 126720,
+                        "length": 2707
+                      },
+                      {
+                        "pitch": 57,
+                        "velocity": 49,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 129600,
+                        "length": 2707
+                      },
+                      {
+                        "pitch": 58,
+                        "velocity": 47,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 132480,
+                        "length": 2707
+                      }
+                    ],
+                    "ctrls": []
+                  }
+                }
+              },
+              "gain_db": 0.0,
+              "gain_env": [],
+              "fade_in": {
+                "len": 0,
+                "shape": "EqualPower",
+                "curvature": 0.0
+              },
+              "fade_out": {
+                "len": 0,
+                "shape": "EqualPower",
+                "curvature": 0.0
+              },
+              "muted": false,
+              "edit_locked": false,
+              "time_locked": false,
+              "rating": 0,
+              "sync_point": 0,
+              "color": null,
+              "auto_name": null,
+              "stretch": 1.0,
+              "group": null,
+              "loop_id": null
+            }
+          ]
+        }
+      ],
+      "active_playlist": 0,
+      "mixer": {
+        "volume_db": 4.3,
+        "pan": [
+          -1.0,
+          1.0
+        ],
+        "mute": false,
+        "solo": false,
+        "solo_safe": false,
+        "phase_invert": false,
+        "input": "None",
+        "output": {
+          "Bus": 67
+        },
+        "inserts": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "sends": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "automation_mode": "Read",
+        "trim_db": 0.0,
+        "vca": null,
+        "surround": null
+      },
+      "automation": [],
+      "view": "notes",
+      "hidden": false,
+      "inactive": false,
+      "frozen": false,
+      "comments": "KSHarp_G3_mf.wav at concert G3.",
+      "folder": 66,
+      "folder_open": true,
+      "instrument": {
+        "plugin": "sampler",
+        "params": {
+          "root_note": 55,
+          "attack": 34,
+          "release": 750,
+          "sustain": 100,
+          "velocity": 72,
+          "start": 0.9333
+        },
+        "bypass": false,
+        "active": true,
+        "preset": "<factory default>",
+        "sample": 69
+      },
+      "ticks_timebase": true,
+      "elastic": null,
+      "pinned": false
+    },
+    {
+      "id": 71,
+      "name": "Harp D4",
+      "kind": "Instrument",
+      "format": "Stereo",
+      "color": [
+        167,
+        142,
+        94
+      ],
+      "height": "Medium",
+      "playlists": [
+        {
+          "name": "Harp D4",
+          "clips": [
+            {
+              "id": 73,
+              "name": "Harp D4",
+              "start": 0,
+              "length": 10368000,
+              "content": {
+                "Midi": {
+                  "sequence": {
+                    "notes": [
+                      {
+                        "pitch": 60,
+                        "velocity": 51,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 38400,
+                        "length": 2707
+                      },
+                      {
+                        "pitch": 63,
+                        "velocity": 68,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 48000,
+                        "length": 893
+                      },
+                      {
+                        "pitch": 61,
+                        "velocity": 64,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 49920,
+                        "length": 893
+                      },
+                      {
+                        "pitch": 65,
+                        "velocity": 66,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 50880,
+                        "length": 893
+                      },
+                      {
+                        "pitch": 65,
+                        "velocity": 65,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 53760,
+                        "length": 893
+                      },
+                      {
+                        "pitch": 63,
+                        "velocity": 63,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 54720,
+                        "length": 893
+                      },
+                      {
+                        "pitch": 62,
+                        "velocity": 46,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 95040,
+                        "length": 2707
+                      },
+                      {
+                        "pitch": 62,
+                        "velocity": 49,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 103680,
+                        "length": 2707
+                      }
+                    ],
+                    "ctrls": []
+                  }
+                }
+              },
+              "gain_db": 0.0,
+              "gain_env": [],
+              "fade_in": {
+                "len": 0,
+                "shape": "EqualPower",
+                "curvature": 0.0
+              },
+              "fade_out": {
+                "len": 0,
+                "shape": "EqualPower",
+                "curvature": 0.0
+              },
+              "muted": false,
+              "edit_locked": false,
+              "time_locked": false,
+              "rating": 0,
+              "sync_point": 0,
+              "color": null,
+              "auto_name": null,
+              "stretch": 1.0,
+              "group": null,
+              "loop_id": null
+            }
+          ]
+        }
+      ],
+      "active_playlist": 0,
+      "mixer": {
+        "volume_db": 5.2,
+        "pan": [
+          -1.0,
+          1.0
+        ],
+        "mute": false,
+        "solo": false,
+        "solo_safe": false,
+        "phase_invert": false,
+        "input": "None",
+        "output": {
+          "Bus": 67
+        },
+        "inserts": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "sends": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "automation_mode": "Read",
+        "trim_db": 0.0,
+        "vca": null,
+        "surround": null
+      },
+      "automation": [],
+      "view": "notes",
+      "hidden": false,
+      "inactive": false,
+      "frozen": false,
+      "comments": "KSHarp_D4_mf.wav at concert D4.",
+      "folder": 66,
+      "folder_open": true,
+      "instrument": {
+        "plugin": "sampler",
+        "params": {
+          "root_note": 62,
+          "attack": 34,
+          "release": 750,
+          "sustain": 100,
+          "velocity": 72,
+          "start": 0.2842
+        },
+        "bypass": false,
+        "active": true,
+        "preset": "<factory default>",
+        "sample": 72
+      },
+      "ticks_timebase": true,
+      "elastic": null,
+      "pinned": false
+    },
+    {
+      "id": 74,
+      "name": "Harp A4",
+      "kind": "Instrument",
+      "format": "Stereo",
+      "color": [
+        167,
+        142,
+        94
+      ],
+      "height": "Medium",
+      "playlists": [
+        {
+          "name": "Harp A4",
+          "clips": [
+            {
+              "id": 76,
+              "name": "Harp A4",
+              "start": 0,
+              "length": 10368000,
+              "content": {
+                "Midi": {
+                  "sequence": {
+                    "notes": [
+                      {
+                        "pitch": 66,
+                        "velocity": 69,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 51840,
+                        "length": 1853
+                      }
+                    ],
+                    "ctrls": []
+                  }
+                }
+              },
+              "gain_db": 0.0,
+              "gain_env": [],
+              "fade_in": {
+                "len": 0,
+                "shape": "EqualPower",
+                "curvature": 0.0
+              },
+              "fade_out": {
+                "len": 0,
+                "shape": "EqualPower",
+                "curvature": 0.0
+              },
+              "muted": false,
+              "edit_locked": false,
+              "time_locked": false,
+              "rating": 0,
+              "sync_point": 0,
+              "color": null,
+              "auto_name": null,
+              "stretch": 1.0,
+              "group": null,
+              "loop_id": null
+            }
+          ]
+        }
+      ],
+      "active_playlist": 0,
+      "mixer": {
+        "volume_db": 4.4,
+        "pan": [
+          -1.0,
+          1.0
+        ],
+        "mute": false,
+        "solo": false,
+        "solo_safe": false,
+        "phase_invert": false,
+        "input": "None",
+        "output": {
+          "Bus": 67
+        },
+        "inserts": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "sends": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "automation_mode": "Read",
+        "trim_db": 0.0,
+        "vca": null,
+        "surround": null
+      },
+      "automation": [],
+      "view": "notes",
+      "hidden": false,
+      "inactive": false,
+      "frozen": false,
+      "comments": "KSHarp_A4_mf.wav at concert A4.",
+      "folder": 66,
+      "folder_open": true,
+      "instrument": {
+        "plugin": "sampler",
+        "params": {
+          "root_note": 69,
+          "attack": 34,
+          "release": 750,
+          "sustain": 100,
+          "velocity": 72,
+          "start": 0.2333
+        },
+        "bypass": false,
+        "active": true,
+        "preset": "<factory default>",
+        "sample": 75
       },
       "ticks_timebase": true,
       "elastic": null,
@@ -5146,6 +5813,39 @@
       "format": "Flac",
       "time_reference": 0,
       "unsaved": false
+    },
+    {
+      "id": 69,
+      "name": "Harp G3",
+      "path": "Audio Files/Harp G3.flac",
+      "channels": 2,
+      "frames": 288000,
+      "sample_rate": 48000,
+      "format": "Flac",
+      "time_reference": 0,
+      "unsaved": false
+    },
+    {
+      "id": 72,
+      "name": "Harp D4",
+      "path": "Audio Files/Harp D4.flac",
+      "channels": 2,
+      "frames": 320956,
+      "sample_rate": 48000,
+      "format": "Flac",
+      "time_reference": 0,
+      "unsaved": false
+    },
+    {
+      "id": 75,
+      "name": "Harp A4",
+      "path": "Audio Files/Harp A4.flac",
+      "channels": 2,
+      "frames": 288000,
+      "sample_rate": 48000,
+      "format": "Flac",
+      "time_reference": 0,
+      "unsaved": false
     }
   ],
   "videos": [],
@@ -5163,6 +5863,11 @@
     {
       "id": 38,
       "name": "Soft grand piano Bus",
+      "format": "Stereo"
+    },
+    {
+      "id": 67,
+      "name": "Concert harp Bus",
       "format": "Stereo"
     }
   ],
@@ -5223,20 +5928,32 @@
       "track": null
     },
     {
-      "id": 62,
+      "id": 77,
       "number": 5,
-      "name": "Middle variation",
+      "name": "Harp melody",
+      "kind": "Marker",
+      "start": 3312000,
+      "end": 3312000,
+      "comments": "Three bars on the 40 bpm pulse, with only sustained cello underneath.",
+      "color": null,
+      "ruler": 1,
+      "track": null
+    },
+    {
+      "id": 62,
+      "number": 6,
+      "name": "Clarinet returns",
       "kind": "Marker",
       "start": 4536000,
       "end": 4536000,
-      "comments": "",
+      "comments": "The middle variation begins on C as the harp returns to the harmony.",
       "color": null,
       "ruler": 1,
       "track": null
     },
     {
       "id": 63,
-      "number": 6,
+      "number": 7,
       "name": "Theme returns",
       "kind": "Marker",
       "start": 8856000,
@@ -5248,7 +5965,7 @@
     },
     {
       "id": 64,
-      "number": 7,
+      "number": 8,
       "name": "Cadence",
       "kind": "Marker",
       "start": 9720000,
@@ -5260,7 +5977,7 @@
     },
     {
       "id": 65,
-      "number": 8,
+      "number": 9,
       "name": "Loop end",
       "kind": "Marker",
       "start": 10368000,
@@ -5359,7 +6076,7 @@
     ],
     "values": {}
   },
-  "next_id": 66,
-  "comments": "Mirror Transport Museum. Modest Mussorgsky, Pictures at an Exhibition, Promenade I. Quarter note = 40 throughout. Two beats of low bowed B-flat introduce the clarinet. The same player sings all 24 bars in a lower register. Soft sustained bows and occasional piano chords support the line. Legato tracks share the corresponding soft clarinet recordings. Expand a folder to edit the notes and phrase expression. Bounce the Loop end marker with render_promenade.py.\nPiano score from Mutopia-2004/07/20-475 (public domain). Clarinet and bowed cellos from Versilian Studios Chamber Orchestra 2 Community Edition (CC0), https://github.com/sgossner/VSCO-2-CE/tree/440300901dfe9275fd84e0b7763af1f8443ae62e . Grand piano from Salamander Grand Piano v3 by Alexander Holm, soft v4 recordings, https://github.com/sfzinstruments/SalamanderGrandPiano/tree/3382bf9496bba2486f5ab0de55a264d1dfc38404 , CC BY 3.0 https://creativecommons.org/licenses/by/3.0/ .",
+  "next_id": 78,
+  "comments": "Mirror Transport Museum. Modest Mussorgsky, Pictures at an Exhibition, Promenade I. Quarter note = 40 throughout. Two beats of low bowed B-flat introduce the clarinet. The low clarinet sings the opening. The harp plays a quiet, measured harmony on beats one and four, and carries the A-flat verse from bar 9 through bar 11 on its own over the cellos. The clarinet and piano return at bar 12. Legato tracks share the corresponding soft clarinet recordings. Expand a folder to edit the notes and phrase expression. Bounce the Loop end marker with render_promenade.py.\nPiano score from Mutopia-2004/07/20-475 (public domain). Clarinet, bowed cellos and concert harp from Versilian Studios Chamber Orchestra 2 Community Edition (CC0), https://github.com/sgossner/VSCO-2-CE/tree/440300901dfe9275fd84e0b7763af1f8443ae62e . Grand piano from Salamander Grand Piano v3 by Alexander Holm, soft v4 recordings, https://github.com/sfzinstruments/SalamanderGrandPiano/tree/3382bf9496bba2486f5ab0de55a264d1dfc38404 , CC BY 3.0 https://creativecommons.org/licenses/by/3.0/ .",
   "midi_originals": {}
 }

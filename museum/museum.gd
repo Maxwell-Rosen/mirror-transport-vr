@@ -15,7 +15,7 @@ const SANS := preload("res://museum/fonts/DejaVuSans.ttf")
 const FOUNTAIN_RADIUS := 2.15
 const WATER_LEVEL_DB := -24.0
 var cascade := AudioStreamPlayer3D.new()
-var ink := Color("#242f2c")
+var visit_time := 0.0
 
 func _ready() -> void:
 	add_child(structure)
@@ -36,7 +36,7 @@ func _ready() -> void:
 	finish("leaf", "506e52")
 	finish("leaf2", "748261")
 	finish("pot", "a66249")
-	finish("board", "101112")
+	finish_board()
 	finish("slate", "62696a")
 	var water := ShaderMaterial.new()
 	water.shader = preload("res://museum/water.gdshader")
@@ -45,6 +45,13 @@ func _ready() -> void:
 	foyer()
 	hall()
 	assemble()
+	RenderingServer.global_shader_parameter_set(&"visit_time", visit_time)
+	$VisitMenu.visit_started.connect(_start_visit_audio)
+	$VisitMenu.open_title()
+
+func _start_visit_audio() -> void:
+	$Promenade.play()
+	cascade.play()
 
 func lighting() -> void:
 	var world := WorldEnvironment.new()
@@ -76,14 +83,14 @@ func wall_lamp(x: float) -> void:
 	light.light_color = Color("#ffe2af")
 	add_child(light)
 
-func lettering(words: String, at: Vector3, height: float, color: Color, yaw := 0.0, display := false, left := false) -> Label3D:
+func lettering(words: String, at: Vector3, height: float, yaw := 0.0, display := false, left := false) -> Label3D:
 	var label := Label3D.new()
 	label.text = words
 	label.font = SERIF if display else SANS
 	label.font_size = 72
 	label.pixel_size = height / 72
 	label.outline_size = 0
-	label.modulate = color
+	label.modulate = Board.TEXT
 	label.double_sided = false
 	label.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC
 	if left:
@@ -123,8 +130,9 @@ func foyer() -> void:
 			box(Vector3(s*(2.9+i*0.24),4.44,0.27),Vector3(0.05,1.53,0.045),"stone")
 	box(Vector3(0,4.72,0),Vector3(4.7,2.56,0.5),"plaster",true)
 	box(Vector3(0,3.51,0.12),Vector3(5.05,0.16,0.62),"stone")
-	lettering("Mirror Transport",Vector3(0,4.25,0.28),0.49,ink,0,true)
-	lettering("M U S E U M    O F    P L A S M A    P H Y S I C S",Vector3(0,3.80,0.28),0.125,ink)
+	box(Vector3(0,4.12,0.26),Vector3(4.68,1.02,0.025),"board")
+	lettering("Mirror Transport",Vector3(0,4.25,0.28),0.49,0,true)
+	lettering("M U S E U M    O F    P L A S M A    P H Y S I C S",Vector3(0,3.80,0.28),0.125)
 	for s in [-1.0,1.0]:
 		box(Vector3(s*1.52,5.01,0.27),Vector3(2.1,0.024,0.03),"bronze")
 	# Interlocking elliptical brass loops form the museum's entrance mark.
@@ -146,9 +154,9 @@ func foyer() -> void:
 	var return_button := "left controller’s X button" if xr else "Home key"
 	var controls := "Return to the foyer\nHold the %s for %.1f s.\n\n" % [return_button, $Visitor.HOLD_TIME]
 	if xr:
-		controls += "Left stick to walk · Right stick to turn\nAim at the floor and trigger to teleport.\nHold the trigger to drag a slider."
+		controls += "Left stick to walk · Right stick to turn\nAim at the floor and trigger to teleport.\nHold trigger to drag · Right A to pause"
 	else:
-		controls += "WASD to walk · Mouse to aim\nLeft-click and drag to move a slider.\nEsc to release mouse · Click to resume"
+		controls += "WASD to walk · Mouse to aim\nLeft-click and drag to move a slider.\nEsc to pause and view controls"
 	panel(4.0, "VR CONTROLS" if xr else "KEYBOARD & MOUSE", controls)
 	for z in [2,6,10]:
 		box(Vector3(0,5.78,z),Vector3(14,0.18,0.22),"stone")
@@ -157,9 +165,9 @@ func foyer() -> void:
 func panel(x: float, title: String, body: String) -> void:
 	box(Vector3(x,1.53,0.31),Vector3(2.84,1.66,0.10),"bronze")
 	box(Vector3(x,1.53,0.38),Vector3(2.78,1.60,0.05),"board")
-	lettering(title,Vector3(x-1.19,2.06,0.42),0.112,Color.WHITE,0,false,true)
+	lettering(title,Vector3(x-1.19,2.06,0.42),0.112,0,false,true)
 	box(Vector3(x,1.88,0.42),Vector3(2.38,0.015,0.012),"bronze")
-	lettering(body,Vector3(x-1.19,1.40,0.42),0.113,Color.WHITE,0,false,true)
+	lettering(body,Vector3(x-1.19,1.40,0.42),0.113,0,false,true)
 
 func hall() -> void:
 	zone = "Atrium"
@@ -240,9 +248,9 @@ func gallery(s: float, z: float, number: int) -> void:
 	var sign_z := z + SIGN_OFFSET
 	box(Vector3(s*7.75,1.74,sign_z),Vector3(0.09,1.40,1.60),"board")
 	if is_open:
-		lettering("1", Vector3(s*7.69, 1.76, sign_z + 0.55), 0.45, Color.WHITE, yaw, true)
-		lettering("·", Vector3(s*7.69, 1.76, sign_z + 0.30), 0.21, Color("#edcf94"), yaw)
-		lettering("The Magnetic\nMirror", Vector3(s*7.69, 1.76, sign_z + 0.16), 0.125, Color.WHITE, yaw, false, true)
+		lettering("1", Vector3(s*7.69, 1.76, sign_z + 0.55), 0.45, yaw, true)
+		lettering("·", Vector3(s*7.69, 1.76, sign_z + 0.30), 0.21, yaw)
+		lettering("The Magnetic\nMirror", Vector3(s*7.69, 1.76, sign_z + 0.16), 0.125, yaw, false, true)
 		var mirror = $MagneticMirror
 		var inner_edge := 7.94 + JAMB_DEPTH / 2
 		mirror.set_gallery(to_global(Vector3(s * inner_edge, 0, z)), OPENING, BAY - 0.24, HALL_WIDTH / 2 + DEPTH - 0.10 - inner_edge)
@@ -256,9 +264,9 @@ func gallery(s: float, z: float, number: int) -> void:
 		box(Vector3(s * (8 + DEPTH - 0.16), 0.14, z), Vector3(0.13, 0.26, BAY), "stone")
 		box(Vector3(s * (8 + DEPTH - 0.17), 0.29, z), Vector3(0.15, 0.05, BAY), "trim")
 	else:
-		lettering("%02d" % number,Vector3(s*7.69,2.00,sign_z),0.51,Color.WHITE,yaw,true)
-		lettering("Gallery",Vector3(s*7.69,1.58,sign_z),0.123,Color.WHITE,yaw)
-		lettering("Under construction",Vector3(s*7.69,1.32,sign_z),0.108,Color.WHITE,yaw)
+		lettering("%02d" % number,Vector3(s*7.69,2.00,sign_z),0.51,yaw,true)
+		lettering("Gallery",Vector3(s*7.69,1.58,sign_z),0.123,yaw)
+		lettering("Under construction",Vector3(s*7.69,1.32,sign_z),0.108,yaw)
 	viewpoint(s*4.40,z)
 	zone = "Atrium"
 
@@ -333,7 +341,6 @@ func fountain() -> void:
 	cascade.volume_db = WATER_LEVEL_DB
 	cascade.max_db = WATER_LEVEL_DB
 	spring.add_child(cascade)
-	cascade.play()
 	var shape := CylinderShape3D.new()
 	shape.radius = FOUNTAIN_RADIUS
 	shape.height = 0.47
@@ -342,7 +349,9 @@ func fountain() -> void:
 	structure.add_child(collider)
 	collider.position = Vector3(0,shape.height/2,z)
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
+	visit_time += delta
+	RenderingServer.global_shader_parameter_set(&"visit_time", visit_time)
 	var listener := get_viewport().get_camera_3d()
 	if listener:
 		# An open doorway carries the sound of the hall; it recedes as the
