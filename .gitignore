@@ -1,0 +1,18 @@
+# Godot editor and import cache
+.godot/
+
+# Desktop and Quest exports
+/build/
+/exports/
+*.apk
+*.aab
+*.pck
+
+# Local credentials and Android signing keys
+.aws/
+.godot_credentials
+*.keystore
+*.jks
+
+# Raw Gkeyll simulation output
+*.gkyl
