@@ -13,9 +13,7 @@ var viewpoints: Array[Vector3] = []
 const SERIF := preload("res://museum/fonts/DejaVuSerif.ttf")
 const SANS := preload("res://museum/fonts/DejaVuSans.ttf")
 const FOUNTAIN_RADIUS := 2.15
-const WATER_LEVEL_DB := -24.0
-var cascade := AudioStreamPlayer3D.new()
-var visit_time := 0.0
+var spring := preload("res://museum/spring.gd").new()
 
 func _ready() -> void:
 	add_child(structure)
@@ -45,13 +43,7 @@ func _ready() -> void:
 	foyer()
 	hall()
 	assemble()
-	RenderingServer.global_shader_parameter_set(&"visit_time", visit_time)
-	$VisitMenu.visit_started.connect(_start_visit_audio)
-	$VisitMenu.open_title()
-
-func _start_visit_audio() -> void:
-	$Promenade.play()
-	cascade.play()
+	$VisitMenu.open_title(spring)
 
 func lighting() -> void:
 	var world := WorldEnvironment.new()
@@ -328,19 +320,9 @@ func fountain() -> void:
 	drum(Vector3(0,0.27,z),4.24,0.14,"stone",48)
 	drum(Vector3(0,0.38,z),4.29,0.12,"trim",48)
 	drum(Vector3(0,0.442,z),4.05,0.025,"water",64)
-	var spring := preload("res://museum/spring.gd").new()
 	spring.position.z = z
 	add_child(spring)
 	spring.build(finishes)
-	cascade.name = "FountainWater"
-	cascade.stream = preload("res://museum/audio/spring.ogg")
-	cascade.position = Vector3(0, 0.75, 0)
-	# max_distance supplies a linear fade from the basin to the edge of earshot.
-	cascade.attenuation_model = AudioStreamPlayer3D.ATTENUATION_DISABLED
-	cascade.max_distance = 16.5
-	cascade.volume_db = WATER_LEVEL_DB
-	cascade.max_db = WATER_LEVEL_DB
-	spring.add_child(cascade)
 	var shape := CylinderShape3D.new()
 	shape.radius = FOUNTAIN_RADIUS
 	shape.height = 0.47
@@ -349,15 +331,13 @@ func fountain() -> void:
 	structure.add_child(collider)
 	collider.position = Vector3(0,shape.height/2,z)
 
-func _process(delta: float) -> void:
-	visit_time += delta
-	RenderingServer.global_shader_parameter_set(&"visit_time", visit_time)
+func _process(_delta: float) -> void:
 	var listener := get_viewport().get_camera_3d()
 	if listener:
 		# An open doorway carries the sound of the hall; it recedes as the
 		# listener walks farther into a side room. Tracked head motion counts too.
 		var room_depth := absf(to_local(listener.global_position).x) - HALL_WIDTH / 2
-		cascade.volume_db = WATER_LEVEL_DB - 8.0 * smoothstep(0.0, 4.0, room_depth)
+		spring.sound.volume_db = spring.BASIN_VOLUME_DB - 8.0 * smoothstep(0.0, 4.0, room_depth)
 
 func viewpoint(x: float,z: float) -> void:
 	viewpoints.append(Vector3(x,0,z))

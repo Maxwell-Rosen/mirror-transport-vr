@@ -1,8 +1,7 @@
 extends Node3D
 
-signal visit_started
-
 const Face := preload("res://museum/menu_face.gd")
+const Spring := preload("res://museum/spring.gd")
 const Visitor := preload("res://museum/visitor.gd")
 # World-space placement and controller hits use logical menu pixels.
 const METRES_PER_PIXEL := 0.00136
@@ -11,6 +10,8 @@ const FADE_OUT := 0.9
 const FADE_IN := 1.5
 const DUCK_DB := -6.0
 const DUCK_SECONDS := 0.85
+const TITLE_VIEWPOINT := Vector3(-3.8, 0.0, -15.5)
+const TITLE_WATER_DB := -27.0
 enum Screen { TITLE, ENTERING, VISIT, PAUSE }
 
 @onready var visitor: Visitor = $"../Visitor"
@@ -21,6 +22,7 @@ var screen := Screen.TITLE
 var face := Face.new()
 var scrim: ColorRect
 var title_camera: Camera3D
+var spring: Spring
 var panel: MeshInstance3D
 var surface: SubViewport
 var pause_down := false
@@ -52,7 +54,7 @@ func _ready() -> void:
 		get_viewport().size_changed.connect(_layout_window)
 		title_camera = Camera3D.new()
 		add_child(title_camera)
-		title_camera.position = Vector3(-3.8, 1.92, -15.5)
+		title_camera.position = TITLE_VIEWPOINT + Vector3.UP * 1.92
 		title_camera.look_at(Vector3(-3.5, 1.52, -25.0))
 	face.continue_visit.connect(enter_or_resume)
 	face.restart_visit.connect(reset_to_title)
@@ -106,8 +108,12 @@ func _blackout(opacity: float) -> void:
 		curtain.color = black
 		curtain.visible = opacity > 0.0
 
-func open_title() -> void:
+func open_title(fountain: Spring) -> void:
+	spring = fountain
+	spring.process_mode = Node.PROCESS_MODE_ALWAYS
 	_open(Screen.TITLE)
+	spring.sound.volume_db = TITLE_WATER_DB
+	spring.sound.play()
 	music.play()
 
 func pause_visit() -> void:
@@ -141,7 +147,7 @@ func _open(next: Screen) -> void:
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 		if screen == Screen.TITLE:
 			title_camera.make_current()
-		scrim.color = Color(0.04, 0.07, 0.06, 0.20 if screen == Screen.TITLE else 0.54)
+		scrim.color = Color(Color.BLACK, 0.20 if screen == Screen.TITLE else 0.54)
 		scrim.show()
 		_layout_window()
 		face.primary.grab_focus()
@@ -158,6 +164,8 @@ func _layout_window() -> void:
 	face.position = offset.round()
 
 func _place_xr_panel() -> void:
+	if screen == Screen.TITLE:
+		visitor.face_atrium(TITLE_VIEWPOINT)
 	var forward := -visitor.camera.global_basis.z
 	forward.y = 0.0
 	if forward.length_squared() < 0.001:
@@ -172,6 +180,7 @@ func enter_or_resume() -> void:
 		var fade := create_tween().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 		fade.tween_method(_blackout, 0.0, 1.0, FADE_OUT)
 		fade.parallel().tween_property(music, "volume_linear", 0.0, FADE_OUT)
+		fade.parallel().tween_property(spring.sound, "volume_linear", 0.0, FADE_OUT)
 		fade.tween_callback(_enter_foyer)
 		fade.tween_method(_blackout, 1.0, 0.0, FADE_IN)
 		fade.parallel().tween_property(promenade, "volume_linear", visit_gain, FADE_IN).from(0.0)
@@ -188,7 +197,7 @@ func _enter_foyer() -> void:
 	_hide_menu()
 	visitor.return_to_foyer()
 	promenade.volume_linear = 0.0
-	visit_started.emit()
+	promenade.play()
 
 func _continue_visit() -> void:
 	screen = Screen.VISIT
@@ -196,6 +205,7 @@ func _continue_visit() -> void:
 		for i in triggers.size():
 			visitor.pressed[i] = visitor.hands[i].get_float("trigger") > 0.65
 	get_tree().paused = false
+	spring.process_mode = Node.PROCESS_MODE_INHERIT
 
 func _hide_menu() -> void:
 	if visitor.xr_active:

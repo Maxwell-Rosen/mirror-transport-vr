@@ -3,6 +3,7 @@ extends "res://museum/architecture.gd"
 const Field := preload("res://museum/mirror/field.gd")
 const Apparatus := preload("res://museum/mirror/apparatus.gd")
 const InstrumentPanel := preload("res://museum/mirror/panel.gd")
+const EnergyPanel := preload("res://museum/mirror/energy_panel.gd")
 const STRIPE_DEPTH := 0.56
 const DESK_SIZE := Vector2(2.39, 2.39 * 476 / 1500)
 const CHART_WIDTH := 1.78
@@ -17,6 +18,7 @@ var moment := Field.DEFAULT_MOMENT
 var top: Field.Barrier
 var apparatus := Apparatus.new()
 var panels: Array[InstrumentPanel] = []
+var energy_panel := EnergyPanel.new()
 var desk: MeshInstance3D
 var touch_surface := StaticBody3D.new()
 var loss_surface := StaticBody3D.new()
@@ -28,8 +30,7 @@ func _ready() -> void:
 	finish("oak", "785b42")
 	finish("base", "404c47")
 	finish("lip", "af8b59", 0.38, 0.39)
-	finish("face", "21383a")
-	finish("back", "203437")
+	finish_board()
 	finish("copper", "ce8251", 0.52, 0.32)
 	finish("winding", "b66c44", 0.40, 0.42)
 	_gallery_light()
@@ -39,9 +40,9 @@ func _ready() -> void:
 		var x: float = side * Field.A * Apparatus.SCALE.x
 		box(Vector3(x, 0.075, 0), Vector3(1.13, 0.15, 0.87), "base", true)
 		box(Vector3(x, 0.35, 0), Vector3(0.78, 0.50, 0.65), "oak", true)
-	box(Vector3(0, 0.595, 0), Vector3(span + 0.16, 0.12, 0.94), "base", true)
+	box(Vector3(0, 0.595, 0), Vector3(span + 0.16, 0.12, 0.94), "board", true)
 	box(Vector3(0, 0.652, 0), Vector3(span + 0.20, 0.024, 0.98), "lip")
-	box(Vector3(0, 0.672, 0), Vector3(span + 0.18, 0.024, 0.96), "face")
+	box(Vector3(0, 0.672, 0), Vector3(span + 0.18, 0.024, 0.96), "board")
 	_signage()
 	apparatus.name = "MirrorApparatus"
 	apparatus.position = Vector3(0, 1.84, 0)
@@ -52,8 +53,8 @@ func _ready() -> void:
 		var length_m := 0.085 if i % 5 == 0 else 0.04
 		box(Vector3(i * 0.1 * Apparatus.SCALE.x, 0.686, 0.47 - length_m / 2), Vector3(0.007, 0.003, length_m), "lip")
 	for side in [-1, 1]:
-		_label("Expander    Z = %+.1f m" % (side * Field.LIMIT), Vector3(side * (span / 2 - 0.40), 0.60, 0.478), 0.064, InstrumentPanel.PAPER)
-	var zero := _label("Midplane   Z = 0 m", Vector3(0, 0.690, 0.29), 0.048, InstrumentPanel.PAPER)
+		_label("Expander    Z = %+.1f m" % (side * Field.LIMIT), Vector3(side * (span / 2 - 0.40), 0.60, 0.478), 0.064)
+	var zero := _label("Midplane   Z = 0 m", Vector3(0, 0.690, 0.29), 0.048)
 	zero.rotation.x = -PI / 2
 	box(Vector3(0, 0.10, 0.74), Vector3(1.57, 0.20, 0.63), "base", true)
 	box(Vector3(0, 0.50, 0.74), Vector3(1.43, 0.72, 0.43), "oak", true)
@@ -73,6 +74,14 @@ func _ready() -> void:
 		var face := _make_face(InstrumentPanel.Face.LOSS if side < 0 else InstrumentPanel.Face.POTENTIAL, centre, angles, face_size)
 		if side < 0:
 			_touch_face(face, loss_surface, face_size)
+	# The energy lectern faces the controls and sits below the expander sightline.
+	var energy_at := Vector3(2.34, 1.13, 0.99)
+	var energy_angles := Vector3(deg_to_rad(-38), deg_to_rad(-12), 0)
+	box(Vector3(energy_at.x, 0.085, energy_at.z), Vector3(1.10, 0.17, 0.62), "base", true)
+	box(Vector3(energy_at.x, 0.55, energy_at.z - 0.12), Vector3(0.46, 0.86, 0.22), "oak", true)
+	box(energy_at - Basis.from_euler(energy_angles).z * 0.11, Vector3(0.70, 0.48, 0.13), "oak", false, energy_angles)
+	_make_face(InstrumentPanel.Face.ENERGY, energy_at, energy_angles,
+		Vector2(1.78, 1.78 * EnergyPanel.PIXELS.y / EnergyPanel.PIXELS.x))
 	assemble()
 	reset_defaults()
 
@@ -81,21 +90,22 @@ func _signage() -> void:
 	for side in [-1, 1]:
 		box(Vector3(side * 1.75, 0.59, -1.44), Vector3(0.18, 1.18, 0.22), "oak", true)
 	box(Vector3(0, 2.73, -1.44), Vector3(5.0, 3.38, 0.10), "lip", true)
-	box(Vector3(0, 2.73, -1.38), Vector3(4.96, 3.34, 0.035), "back")
+	box(Vector3(0, 2.73, -1.38), Vector3(4.96, 3.34, 0.035), "board")
 	var face_z := -1.35
-	_label("The Magnetic Mirror", Vector3(0, 4.19, face_z), 0.25, InstrumentPanel.PAPER, true)
+	_label("The Magnetic Mirror", Vector3(0, 4.19, face_z), 0.25, Board.TEXT, true)
 	box(Vector3(0, 3.98, face_z), Vector3(4.48, 0.012, 0.01), "lip")
-	_label("Which particles turn back,\nand which escape through the ends?", Vector3(0, 3.70, face_z), 0.185, InstrumentPanel.PAPER)
+	_label("Which particles turn back,\nand which escape through the ends?", Vector3(0, 3.70, face_z), 0.185)
 	_label("━━", Vector3(-1.44, 3.36, face_z), 0.16, InstrumentPanel.TURN_LINE)
-	_label("Confined particles", Vector3(-0.77, 3.36, face_z), 0.114, InstrumentPanel.PAPER)
+	_label("Confined particles", Vector3(-0.77, 3.36, face_z), 0.114)
 	_label("━━", Vector3(0.23, 3.36, face_z), 0.16, InstrumentPanel.ESCAPE_LINE)
-	_label("Escaping particles", Vector3(0.96, 3.36, face_z), 0.114, InstrumentPanel.PAPER)
-	_label("Idealized particle trajectories   ·   One positive elementary charge (q = +e)   ·   Deuterium mass", Vector3(0, 3.16, face_z), 0.097, InstrumentPanel.PAPER)
+	_label("Escaping particles", Vector3(0.96, 3.36, face_z), 0.114)
+	_label("Idealized particle trajectories   ·   One positive elementary charge (q = +e)   ·   Deuterium mass", Vector3(0, 3.16, face_z), 0.097)
 	var scale_text := "Axial scale %.2f×    ·    Radial scale %.1f×    ·    %.2f× relative radial enlargement"
 	_label(scale_text % [Apparatus.SCALE.x, Apparatus.SCALE.y, Apparatus.SCALE.y / Apparatus.SCALE.x],
-		Vector3(0, 3.00, face_z), 0.080, InstrumentPanel.BRASS)
+		Vector3(0, 3.00, face_z), 0.080)
+	_label(InstrumentPanel.clock_label(), Vector3(0, 2.83, face_z), 0.115).name = "ApparatusClock"
 
-func _label(value: String, at: Vector3, height: float, tint: Color, serif := false) -> Label3D:
+func _label(value: String, at: Vector3, height: float, tint := Board.TEXT, serif := false) -> Label3D:
 	var label := Label3D.new()
 	label.text = value
 	label.font = InstrumentPanel.SERIF if serif else InstrumentPanel.SANS
@@ -145,12 +155,15 @@ func _make_face(kind: InstrumentPanel.Face, at: Vector3, angles: Vector3, metres
 	# Recess the solid back so the touch surface is the first hit from the front.
 	barrier(at - basis.z * 0.05, Vector3(backing.x, backing.y, 0.05), angles)
 	var viewport := SubViewport.new()
-	viewport.size = InstrumentPanel.CONTROL_SIZE if kind == InstrumentPanel.Face.CONTROLS else InstrumentPanel.PLOT_SIZE
+	match kind:
+		InstrumentPanel.Face.CONTROLS: viewport.size = InstrumentPanel.CONTROL_SIZE
+		InstrumentPanel.Face.ENERGY: viewport.size = EnergyPanel.PIXELS
+		_: viewport.size = InstrumentPanel.PLOT_SIZE
 	viewport.disable_3d = true
 	viewport.gui_disable_input = true
 	viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
 	add_child(viewport)
-	var panel := InstrumentPanel.new()
+	var panel := energy_panel if kind == InstrumentPanel.Face.ENERGY else InstrumentPanel.new()
 	panel.size = viewport.size
 	panel.field = field
 	panel.kind = kind
@@ -201,9 +214,9 @@ func set_gallery(doorway: Vector3, opening: float, width: float, depth: float) -
 	band.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(band)
 	var inscription := edge + Vector3(0, 0.017, STRIPE_DEPTH + 0.27)
-	box(inscription, Vector3(opening - 0.08, 0.006, 0.46), "back")
+	box(inscription, Vector3(opening - 0.08, 0.006, 0.46), "board")
 	assemble()
-	var instruction := _label("Cross the stripe to set the particles in motion.", inscription + Vector3.UP * 0.007, 0.15, InstrumentPanel.PAPER)
+	var instruction := _label("Cross the stripe to set the particles in motion.", inscription + Vector3.UP * 0.007, 0.15)
 	instruction.name = "DoorwayInstruction"
 	instruction.rotation.x = -PI / 2
 
@@ -215,6 +228,14 @@ func _process(delta: float) -> void:
 	var camera := get_viewport().get_camera_3d()
 	if camera and contains_visitor(camera.global_position):
 		apparatus.advance(delta)
+		_observe_energy()
+	elif energy_panel.age < apparatus.clock:
+		_observe_energy(true)
+
+func _observe_energy(force := false) -> void:
+	var line := panels[InstrumentPanel.Face.LOSS].followed
+	var track := apparatus.tracks[line]
+	energy_panel.observe(line, track.orbit, track.direction, apparatus.clock, force)
 
 func _pixel(world_point: Vector3) -> Vector2:
 	var point := desk.to_local(world_point)
@@ -238,9 +259,9 @@ func highlight(widget: int) -> void:
 func press(widget: int, world_point: Vector3) -> void:
 	if widget >= InstrumentPanel.Widget.FIRST_PARTICLE:
 		var line := widget - InstrumentPanel.Widget.FIRST_PARTICLE
-		apparatus.follow(line, spread)
 		panels[InstrumentPanel.Face.LOSS].followed = line
 		panels[InstrumentPanel.Face.LOSS].refresh()
+		_observe_energy(true)
 	elif widget == InstrumentPanel.Widget.RESET:
 		reset_defaults()
 	elif widget >= 0:
@@ -272,8 +293,7 @@ func reset_defaults() -> void:
 	spread = Field.DEFAULT_SPREAD
 	moment = Field.DEFAULT_MOMENT
 	panels[InstrumentPanel.Face.LOSS].update_boundary()
-	apparatus.followed = InstrumentPanel.DEFAULT_FOLLOWED
-	panels[InstrumentPanel.Face.LOSS].followed = apparatus.followed
+	panels[InstrumentPanel.Face.LOSS].followed = InstrumentPanel.DEFAULT_FOLLOWED
 	top = field.barrier(moment * Field.KEV)
 	apparatus.set_launches(spread, moment, top, true)
 	_refresh()
@@ -305,6 +325,7 @@ func _set_from_pixel(px: float) -> void:
 	_refresh()
 
 func _refresh() -> void:
+	_observe_energy(true)
 	for panel in panels:
 		panel.spread = spread
 		panel.moment = moment

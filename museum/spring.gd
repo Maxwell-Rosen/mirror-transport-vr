@@ -1,8 +1,20 @@
 extends Node3D
 ## A spring emerges through a cleft in the stone and cascades into the pool.
+const BASIN_VOLUME_DB := -24.0
+var sound := AudioStreamPlayer3D.new()
+var water_time := 0.0
 var rng := RandomNumberGenerator.new()
 
 func build(finishes: Dictionary) -> void:
+	sound.name = "FountainWater"
+	sound.stream = preload("res://museum/audio/spring.ogg")
+	sound.position = Vector3.UP * 0.75
+	# max_distance supplies a linear fade from the basin to the edge of earshot.
+	sound.attenuation_model = AudioStreamPlayer3D.ATTENUATION_DISABLED
+	sound.max_distance = 16.5
+	sound.volume_db = BASIN_VOLUME_DB
+	sound.max_db = BASIN_VOLUME_DB
+	add_child(sound)
 	rng.seed = 718
 	var rocks := SurfaceTool.new()
 	rocks.begin(Mesh.PRIMITIVE_TRIANGLES)
@@ -57,6 +69,10 @@ func build(finishes: Dictionary) -> void:
 	reeds(Vector3(0.83,0.46,-0.94),finishes)
 	reeds(Vector3(-0.95,0.46,0.65),finishes)
 	lilies()
+
+func _process(delta: float) -> void:
+	water_time += delta
+	RenderingServer.global_shader_parameter_set(&"visit_time", water_time)
 
 func boulder(mesh: SurfaceTool, center: Vector3, size: Vector3) -> void:
 	var sides := 9

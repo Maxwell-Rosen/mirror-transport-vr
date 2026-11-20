@@ -5,13 +5,13 @@ extends Node3D
 const Field := preload("res://museum/mirror/field.gd")
 const Orbit := preload("res://museum/mirror/orbit.gd")
 const InstrumentPanel := preload("res://museum/mirror/panel.gd")
+const Board := preload("res://museum/board_style.gd")
 const SCALE := Vector3(1.44, 5.4, 5.4)
 const LINES := 8
 const COPIES := 5
-const HZ := 60
-const MAX_RELEASE_TICKS := 90  # Keep slow launches within 1.5 exhibit seconds of one another.
-const TAIL := 12  # 0.20 exhibit seconds
-const HISTORY := (COPIES - 1) * MAX_RELEASE_TICKS + TAIL + 3
+const HZ := 60  # Launch intervals are rounded to 1/60 exhibit second.
+const MAX_RELEASE_TICKS := 90  # 1.5 exhibit seconds.
+const TAIL_TICKS := 12  # 0.20 exhibit seconds.
 const RIBBON := 0.014
 
 class Track:
@@ -22,7 +22,6 @@ class Track:
 	var release_ticks := MAX_RELEASE_TICKS
 	var positions := PackedVector3Array()
 	var edges := PackedVector3Array()
-	var opacity := PackedFloat32Array()
 	var generations := PackedInt32Array()
 	var sampled_ticks := PackedInt64Array()
 
@@ -31,11 +30,12 @@ class Track:
 		radial = Vector3(0, cos(angle), sin(angle))
 		azimuth = Vector3.RIGHT.cross(radial)
 		direction = signf(i - 3.5)
-		positions.resize(HISTORY)
-		edges.resize(HISTORY)
-		opacity.resize(HISTORY)
-		generations.resize(HISTORY)
-		sampled_ticks.resize(HISTORY)
+
+	func resize_history(count: int) -> void:
+		positions.resize(count)
+		edges.resize(count)
+		generations.resize(count)
+		sampled_ticks.resize(count)
 
 var field: Field
 var moment_si: float
@@ -45,10 +45,11 @@ var exit_labels: Array[Label3D] = []
 var lines := MultiMesh.new()
 var heads := MultiMesh.new()
 var tails := ArrayMesh.new()
-var tag := Label3D.new()
-var followed := InstrumentPanel.DEFAULT_FOLLOWED
 var clock := 0.0
 var last_tick := -1
+var trail_segments := 0
+var _samples_per_tick := 0
+var _history_size := 0
 var _tail_mesh := MeshInstance3D.new()
 var _indices := PackedInt32Array()
 var _vertices := PackedVector3Array()
@@ -89,7 +90,7 @@ func build(model: Field, copper: Material, brass: Material, bed_top: float) -> v
 		label.font_size = 56
 		label.pixel_size = 0.00095
 		label.outline_size = 6
-		label.modulate = InstrumentPanel.PAPER
+		label.modulate = Board.TEXT
 		label.position = Vector3(0, foot_bottom - 0.084, 0.478)
 		ring.add_child(label)
 		exit_labels.append(label)
@@ -133,22 +134,28 @@ func build(model: Field, copper: Material, brass: Material, bed_top: float) -> v
 	_tail_mesh.material_override = particles
 	_tail_mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(_tail_mesh)
-	_vertices.resize(LINES * COPIES * (TAIL + 1) * 2)
-	_colors.resize(_vertices.size())
-	for marker in LINES * COPIES:
-		for j in TAIL:
-			var a := (marker * (TAIL + 1) + j) * 2
-			_indices.append_array(PackedInt32Array([a, a + 1, a + 2, a + 2, a + 1, a + 3]))
-	tag.font = InstrumentPanel.SANS
-	tag.font_size = 54
-	tag.pixel_size = 0.0011
-	tag.outline_size = 11
-	tag.outline_modulate = Color("#142726")
-	tag.modulate = InstrumentPanel.COLORS[5]
-	tag.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	tag.fixed_size = false
-	add_child(tag)
 	rebuild_lines()
+
+func _set_trail_sampling() -> void:
+	# The fastest launch reaches the strongest field sampled by any of the tracks.
+	var peak_z := minf(tracks[LINES - 1].orbit.end_z, field.throat)
+	var omega := Orbit.CHARGE_TO_MASS * field.magnitude(peak_z)
+	var turns_per_tick := omega * Orbit.CLOCK / (TAU * HZ)
+	var samples := maxi(1, ceili(6.0 * turns_per_tick)) if moment_si > 0.0 else 1
+	if samples == _samples_per_tick:
+		return
+	_samples_per_tick = samples
+	trail_segments = TAIL_TICKS * samples
+	_history_size = (COPIES - 1) * MAX_RELEASE_TICKS * samples + trail_segments + 3
+	for track in tracks:
+		track.resize_history(_history_size)
+	_vertices.resize(LINES * COPIES * (trail_segments + 1) * 2)
+	_colors.resize(_vertices.size())
+	_indices.clear()
+	for marker in LINES * COPIES:
+		for j in trail_segments:
+			var a := (marker * (trail_segments + 1) + j) * 2
+			_indices.append_array(PackedInt32Array([a, a + 1, a + 2, a + 2, a + 1, a + 3]))
 
 func rebuild_lines() -> void:
 	for i in 2:
@@ -184,11 +191,13 @@ func set_launches(spread: float, moment: float, top: Field.Barrier, restart := f
 		for index: int in [3 - i, 4 + i]:
 			lines.set_instance_color(index, InstrumentPanel.line_color(orbit.outcome))
 			tracks[index].orbit = orbit
-			tracks[index].sampled_ticks.fill(-1)
 			if clock == 0.0:
 				tracks[index].release_ticks = _release_spacing(orbit)
+	_set_trail_sampling()
+	for track in tracks:
+		track.sampled_ticks.fill(-1)
+	last_tick = -1
 	if clock == 0.0:
-		last_tick = 0
 		tails.clear_surfaces()
 		for i in LINES:
 			var track := tracks[i]
@@ -197,25 +206,17 @@ func set_launches(spread: float, moment: float, top: Field.Barrier, restart := f
 				_marker(i, copy, track.positions[0], 1.0 if copy == 0 else 0.0)
 	else:
 		# Compare the new launch conditions at each particle's existing age.
-		last_tick = -1
 		advance(0.0)
-	follow(followed, spread)
 
 func _release_spacing(orbit: Orbit) -> int:
 	var cycle := 4.0 * orbit.leg_time / Orbit.CLOCK
 	if orbit.outcome == Field.Outcome.ESCAPE:
 		cycle = orbit.leg_time / Orbit.CLOCK + Orbit.TIP_FADE_SECONDS
 	elif orbit.outcome == Field.Outcome.REST:
-		cycle = TAU * Field.MASS * Orbit.GYRO_DIVISOR / (Field.CHARGE * Field.B0 * Orbit.CLOCK)
+		cycle = TAU / (Orbit.CHARGE_TO_MASS * Field.B0 * Orbit.CLOCK)
 	return clampi(roundi(HZ * cycle / COPIES), 1, MAX_RELEASE_TICKS)
 
-func follow(line: int, spread: float) -> void:
-	followed = line
-	tag.text = "%d  ·  %s" % [line + 1, InstrumentPanel.speed_label((2 * line - 7) * spread / 7.0)]
-	tag.modulate = Color(InstrumentPanel.COLORS[line], heads.get_instance_color(line * COPIES).a)
-	tag.position = heads.get_instance_transform(line * COPIES).origin + Vector3(0, 0.094, 0.040)
-
-func _store(track: Track, tick: int, state: Vector4) -> void:
+func _particle_position(track: Track, state: Vector4) -> Vector3:
 	var z := state.x * track.direction
 	var f := field.axial(z)
 	var slope := field.slope(z, f)
@@ -226,9 +227,12 @@ func _store(track: Track, tick: int, state: Vector4) -> void:
 	var centre := Vector3.RIGHT * z + track.radial * Field.R0 * sqrt(Field.B0 / f)
 	# Viewed along +B, q>0 rotates in the negative right-hand sense.
 	var gyro := rho * (normal * cos(state.y) - track.azimuth * sin(state.y))
-	var index := tick % HISTORY
-	var p := (centre + gyro) * SCALE
-	var previous := (tick + HISTORY - 1) % HISTORY
+	return (centre + gyro) * SCALE
+
+func _store(track: Track, tick: int, state: Vector4) -> void:
+	var p := _particle_position(track, state)
+	var index := tick % _history_size
+	var previous := (tick + _history_size - 1) % _history_size
 	var edge := track.radial
 	if tick > 0 and track.sampled_ticks[previous] == tick - 1 and track.generations[previous] == int(state.w):
 		var tangent := p - track.positions[previous]
@@ -240,37 +244,34 @@ func _store(track: Track, tick: int, state: Vector4) -> void:
 			edge = -edge
 	track.positions[index] = p
 	track.edges[index] = edge
-	track.opacity[index] = state.z
 	track.generations[index] = int(state.w)
 	track.sampled_ticks[index] = tick
 
 func advance(delta: float) -> void:
 	clock += delta
-	var tick := floori(clock * HZ)
-	var fraction := clock * HZ - tick
-	var needs_trails := tick + 1 > last_tick
+	var sample_hz := HZ * _samples_per_tick
+	var tick := floori(clock * sample_hz)
+	var needs_trails := tick > last_tick
 	for i in LINES:
 		var track := tracks[i]
 		for copy in COPIES:
-			var delay := copy * track.release_ticks
+			var delay := copy * track.release_ticks * _samples_per_tick
 			var age := tick - delay
 			if needs_trails:
 				# Staggered copies share cached samples. After an edit or a long
 				# frame, refill each visible trail directly at its own age.
-				var first := maxi(0, maxi(age - TAIL - 1, last_tick + 1 - delay))
-				for n in range(first, maxi(0, age) + 2):
-					if track.sampled_ticks[n % HISTORY] != n:
-						_store(track, n, track.orbit.sample(float(n) / HZ))
-			var a := maxi(age, 0) % HISTORY
-			var b := (a + 1) % HISTORY
-			var u := fraction if age >= 0 and track.generations[a] == track.generations[b] else 0.0
-			var head := track.positions[a].lerp(track.positions[b], u)
-			var opacity := lerpf(track.opacity[a], track.opacity[b], u) if age >= 0 else 0.0
+				var first := maxi(0, maxi(age - trail_segments - 1, last_tick + 1 - delay))
+				for n in range(first, age + 1):
+					if track.sampled_ticks[n % _history_size] != n:
+						_store(track, n, track.orbit.sample(float(n) / sample_hz))
+			var state := track.orbit.sample(clock - float(delay) / sample_hz)
+			var head := _particle_position(track, state)
+			var opacity := state.z if age >= 0 else 0.0
 			_marker(i, copy, head, opacity)
 			if needs_trails:
-				_trail(i, copy, age, head, opacity)
+				_trail(i, copy, age, head, opacity, int(state.w))
 	if needs_trails:
-		last_tick = tick + 1
+		last_tick = tick
 		var arrays := []
 		arrays.resize(Mesh.ARRAY_MAX)
 		arrays[Mesh.ARRAY_VERTEX] = _vertices
@@ -283,19 +284,15 @@ func _marker(line: int, copy: int, p: Vector3, opacity: float) -> void:
 	var id := line * COPIES + copy
 	heads.set_instance_transform(id, Transform3D(Basis.IDENTITY, p))
 	heads.set_instance_color(id, Color(InstrumentPanel.COLORS[line], opacity))
-	if line == followed and copy == 0:
-		tag.position = p + Vector3(0, 0.094, 0.040)
-		tag.modulate.a = opacity
 
-func _trail(line: int, copy: int, age: int, head: Vector3, opacity: float) -> void:
+func _trail(line: int, copy: int, age: int, head: Vector3, opacity: float, generation: int) -> void:
 	var track := tracks[line]
-	var latest := maxi(age, 0) % HISTORY
-	var base := (line * COPIES + copy) * (TAIL + 1) * 2
+	var base := (line * COPIES + copy) * (trail_segments + 1) * 2
 	var point := head
-	for j in TAIL + 1:
-		var index := maxi(0, age - j) % HISTORY
-		var weight := 1.0 - float(j) / TAIL
-		var valid := age >= j and track.generations[index] == track.generations[latest]
+	for j in trail_segments + 1:
+		var index := maxi(0, age - j) % _history_size
+		var weight := 1.0 - float(j) / trail_segments
+		var valid := age >= j and track.generations[index] == generation
 		if j > 0 and valid:
 			point = track.positions[index]
 		var edge := track.edges[index] * RIBBON * weight if valid else Vector3.ZERO

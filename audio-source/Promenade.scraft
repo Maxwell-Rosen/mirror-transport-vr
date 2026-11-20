@@ -59,17 +59,27 @@
         "denominator": 4
       },
       {
-        "tick": 55680,
+        "tick": 44160,
         "numerator": 5,
         "denominator": 4
       },
       {
-        "tick": 60480,
+        "tick": 48960,
         "numerator": 6,
         "denominator": 4
       },
       {
-        "tick": 135360,
+        "tick": 66240,
+        "numerator": 5,
+        "denominator": 4
+      },
+      {
+        "tick": 71040,
+        "numerator": 6,
+        "denominator": 4
+      },
+      {
+        "tick": 145920,
         "numerator": 3,
         "denominator": 4
       }
@@ -227,159 +237,203 @@
               "value": -2.6
             },
             {
-              "at": 3640320,
-              "value": -0.5
+              "at": 3443040,
+              "value": -12.6
             },
             {
-              "at": 3890880,
-              "value": -0.88
+              "at": 3556800,
+              "value": -10.6
             },
             {
-              "at": 4160160,
+              "at": 3650400,
+              "value": -9.9
+            },
+            {
+              "at": 3783600,
+              "value": -13.0
+            },
+            {
+              "at": 3888000,
+              "value": -12.4
+            },
+            {
+              "at": 3970800,
+              "value": -10.4
+            },
+            {
+              "at": 4044960,
+              "value": -13.2
+            },
+            {
+              "at": 4248000,
+              "value": -12.2
+            },
+            {
+              "at": 4377600,
+              "value": -10.5
+            },
+            {
+              "at": 4492800,
+              "value": -12.9
+            },
+            {
+              "at": 4608000,
+              "value": -12.1
+            },
+            {
+              "at": 4723200,
+              "value": -9.5
+            },
+            {
+              "at": 4795200,
+              "value": -12.7
+            },
+            {
+              "at": 4932000,
+              "value": -13.0
+            },
+            {
+              "at": 5040000,
+              "value": -12.8
+            },
+            {
+              "at": 5148000,
+              "value": -11.0
+            },
+            {
+              "at": 5252400,
+              "value": -14.0
+            },
+            {
+              "at": 5312160,
               "value": -3.8
             },
             {
-              "at": 4176000,
+              "at": 5328000,
               "value": -2.6
             },
             {
-              "at": 4312800,
-              "value": -1.05
-            },
-            {
-              "at": 4417200,
-              "value": -1.43
-            },
-            {
-              "at": 4520160,
-              "value": -3.8
-            },
-            {
-              "at": 4536000,
-              "value": -2.6
-            },
-            {
-              "at": 4864320,
+              "at": 5656320,
               "value": -0.6
             },
             {
-              "at": 5114880,
+              "at": 5906880,
               "value": -0.98
             },
             {
-              "at": 5384160,
+              "at": 6176160,
               "value": -3.8
             },
             {
-              "at": 5400000,
+              "at": 6192000,
               "value": -2.6
             },
             {
-              "at": 5564160,
+              "at": 6356160,
               "value": -0.85
             },
             {
-              "at": 5689440,
+              "at": 6481440,
               "value": -1.23
             },
             {
-              "at": 5816160,
+              "at": 6608160,
               "value": -3.8
             },
             {
-              "at": 5832000,
+              "at": 6624000,
               "value": -2.6
             },
             {
-              "at": 6160320,
+              "at": 6952320,
               "value": -0.7
             },
             {
-              "at": 6410880,
+              "at": 7202880,
               "value": -1.08
             },
             {
-              "at": 6680160,
+              "at": 7472160,
               "value": -3.8
             },
             {
-              "at": 6696000,
+              "at": 7488000,
               "value": -2.6
             },
             {
-              "at": 7024320,
+              "at": 7816320,
               "value": -0.4
             },
             {
-              "at": 7274880,
+              "at": 8066880,
               "value": -0.78
             },
             {
-              "at": 7544160,
+              "at": 8336160,
               "value": -3.8
             },
             {
-              "at": 7560000,
+              "at": 8352000,
               "value": -2.6
             },
             {
-              "at": 7888320,
+              "at": 8680320,
               "value": -0.8
             },
             {
-              "at": 8138880,
+              "at": 8930880,
               "value": -1.18
             },
             {
-              "at": 8408160,
+              "at": 9200160,
               "value": -3.8
             },
             {
-              "at": 8424000,
+              "at": 9216000,
               "value": -2.6
             },
             {
-              "at": 8588160,
+              "at": 9380160,
               "value": -1.6
             },
             {
-              "at": 8713440,
+              "at": 9505440,
               "value": -1.98
             },
             {
-              "at": 8840160,
+              "at": 9632160,
               "value": -3.8
             },
             {
-              "at": 8856000,
+              "at": 9648000,
               "value": -2.6
             },
             {
-              "at": 9184320,
+              "at": 9976320,
               "value": -0.7
             },
             {
-              "at": 9434880,
+              "at": 10226880,
               "value": -1.08
             },
             {
-              "at": 9704160,
+              "at": 10496160,
               "value": -3.8
             },
             {
-              "at": 9720000,
+              "at": 10512000,
               "value": -2.6
             },
             {
-              "at": 9911520,
+              "at": 10703520,
               "value": -0.9
             },
             {
-              "at": 10057680,
+              "at": 10849680,
               "value": -1.28
             },
             {
-              "at": 10208160,
+              "at": 11000160,
               "value": -7.6
             }
           ]
@@ -389,7 +443,7 @@
       "hidden": false,
       "inactive": false,
       "frozen": false,
-      "comments": "Introduce the theme on the soft sustained takes. Rest for the full harp verse in bars 9–11 and re-enter on C at bar 12.",
+      "comments": "Introduce the theme on the soft sustained takes. Leave room for the harp's entrance, then support it with low, quiet held notes. Breathe before taking the lead on C in bar 14.",
       "folder": null,
       "folder_open": false,
       "instrument": null,
@@ -416,7 +470,7 @@
               "id": 5,
               "name": "Clarinet D3 legato",
               "start": 0,
-              "length": 10368000,
+              "length": 11160000,
               "content": {
                 "Midi": {
                   "sequence": {
@@ -574,7 +628,7 @@
               "id": 8,
               "name": "Clarinet F3",
               "start": 0,
-              "length": 10368000,
+              "length": 11160000,
               "content": {
                 "Midi": {
                   "sequence": {
@@ -610,6 +664,46 @@
                         "channel": 0,
                         "start": 33600,
                         "length": 931
+                      },
+                      {
+                        "pitch": 54,
+                        "velocity": 49,
+                        "release_velocity": 48,
+                        "channel": 0,
+                        "start": 46195,
+                        "length": 1747
+                      },
+                      {
+                        "pitch": 51,
+                        "velocity": 47,
+                        "release_velocity": 48,
+                        "channel": 0,
+                        "start": 51917,
+                        "length": 1968
+                      },
+                      {
+                        "pitch": 54,
+                        "velocity": 49,
+                        "release_velocity": 48,
+                        "channel": 0,
+                        "start": 56736,
+                        "length": 989
+                      },
+                      {
+                        "pitch": 51,
+                        "velocity": 46,
+                        "release_velocity": 48,
+                        "channel": 0,
+                        "start": 64358,
+                        "length": 1363
+                      },
+                      {
+                        "pitch": 49,
+                        "velocity": 47,
+                        "release_velocity": 48,
+                        "channel": 0,
+                        "start": 67267,
+                        "length": 1488
                       }
                     ],
                     "ctrls": []
@@ -731,7 +825,7 @@
               "id": 10,
               "name": "Clarinet F3 legato",
               "start": 0,
-              "length": 10368000,
+              "length": 11160000,
               "content": {
                 "Midi": {
                   "sequence": {
@@ -857,11 +951,35 @@
                         "length": 451
                       },
                       {
+                        "pitch": 53,
+                        "velocity": 48,
+                        "release_velocity": 48,
+                        "channel": 0,
+                        "start": 47962,
+                        "length": 2390
+                      },
+                      {
+                        "pitch": 53,
+                        "velocity": 48,
+                        "release_velocity": 48,
+                        "channel": 0,
+                        "start": 57734,
+                        "length": 2112
+                      },
+                      {
+                        "pitch": 53,
+                        "velocity": 46,
+                        "release_velocity": 48,
+                        "channel": 0,
+                        "start": 68813,
+                        "length": 1075
+                      },
+                      {
                         "pitch": 55,
                         "velocity": 61,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 110400,
+                        "start": 120960,
                         "length": 931
                       },
                       {
@@ -869,44 +987,12 @@
                         "velocity": 57,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 111360,
+                        "start": 121920,
                         "length": 739
                       },
                       {
                         "pitch": 55,
                         "velocity": 58,
-                        "release_velocity": 48,
-                        "channel": 0,
-                        "start": 116160,
-                        "length": 931
-                      },
-                      {
-                        "pitch": 53,
-                        "velocity": 55,
-                        "release_velocity": 48,
-                        "channel": 0,
-                        "start": 117120,
-                        "length": 739
-                      },
-                      {
-                        "pitch": 55,
-                        "velocity": 59,
-                        "release_velocity": 48,
-                        "channel": 0,
-                        "start": 124800,
-                        "length": 931
-                      },
-                      {
-                        "pitch": 53,
-                        "velocity": 57,
-                        "release_velocity": 48,
-                        "channel": 0,
-                        "start": 125760,
-                        "length": 931
-                      },
-                      {
-                        "pitch": 55,
-                        "velocity": 60,
                         "release_velocity": 48,
                         "channel": 0,
                         "start": 126720,
@@ -914,10 +1000,42 @@
                       },
                       {
                         "pitch": 53,
-                        "velocity": 58,
+                        "velocity": 55,
                         "release_velocity": 48,
                         "channel": 0,
                         "start": 127680,
+                        "length": 739
+                      },
+                      {
+                        "pitch": 55,
+                        "velocity": 59,
+                        "release_velocity": 48,
+                        "channel": 0,
+                        "start": 135360,
+                        "length": 931
+                      },
+                      {
+                        "pitch": 53,
+                        "velocity": 57,
+                        "release_velocity": 48,
+                        "channel": 0,
+                        "start": 136320,
+                        "length": 931
+                      },
+                      {
+                        "pitch": 55,
+                        "velocity": 60,
+                        "release_velocity": 48,
+                        "channel": 0,
+                        "start": 137280,
+                        "length": 931
+                      },
+                      {
+                        "pitch": 53,
+                        "velocity": 58,
+                        "release_velocity": 48,
+                        "channel": 0,
+                        "start": 138240,
                         "length": 931
                       }
                     ],
@@ -1041,17 +1159,25 @@
               "id": 13,
               "name": "Clarinet Bb3",
               "start": 0,
-              "length": 10368000,
+              "length": 11160000,
               "content": {
                 "Midi": {
                   "sequence": {
                     "notes": [
                       {
+                        "pitch": 56,
+                        "velocity": 48,
+                        "release_velocity": 48,
+                        "channel": 0,
+                        "start": 61536,
+                        "length": 2371
+                      },
+                      {
                         "pitch": 60,
                         "velocity": 63,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 60480,
+                        "start": 71040,
                         "length": 931
                       },
                       {
@@ -1059,7 +1185,7 @@
                         "velocity": 66,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 89280,
+                        "start": 99840,
                         "length": 931
                       },
                       {
@@ -1067,7 +1193,7 @@
                         "velocity": 63,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 118080,
+                        "start": 128640,
                         "length": 931
                       },
                       {
@@ -1075,7 +1201,7 @@
                         "velocity": 58,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 129600,
+                        "start": 140160,
                         "length": 451
                       }
                     ],
@@ -1198,7 +1324,7 @@
               "id": 15,
               "name": "Clarinet Bb3 legato",
               "start": 0,
-              "length": 10368000,
+              "length": 11160000,
               "content": {
                 "Midi": {
                   "sequence": {
@@ -1344,7 +1470,7 @@
                         "velocity": 62,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 62400,
+                        "start": 72960,
                         "length": 931
                       },
                       {
@@ -1352,7 +1478,7 @@
                         "velocity": 62,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 65280,
+                        "start": 75840,
                         "length": 898
                       },
                       {
@@ -1360,7 +1486,7 @@
                         "velocity": 60,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 78240,
+                        "start": 88800,
                         "length": 451
                       },
                       {
@@ -1368,7 +1494,7 @@
                         "velocity": 58,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 82080,
+                        "start": 92640,
                         "length": 451
                       },
                       {
@@ -1376,7 +1502,7 @@
                         "velocity": 62,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 83520,
+                        "start": 94080,
                         "length": 931
                       },
                       {
@@ -1384,7 +1510,7 @@
                         "velocity": 58,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 84480,
+                        "start": 95040,
                         "length": 931
                       },
                       {
@@ -1392,7 +1518,7 @@
                         "velocity": 61,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 85440,
+                        "start": 96000,
                         "length": 931
                       },
                       {
@@ -1400,7 +1526,7 @@
                         "velocity": 64,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 86400,
+                        "start": 96960,
                         "length": 931
                       },
                       {
@@ -1408,7 +1534,7 @@
                         "velocity": 59,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 87360,
+                        "start": 97920,
                         "length": 931
                       },
                       {
@@ -1416,7 +1542,7 @@
                         "velocity": 62,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 88320,
+                        "start": 98880,
                         "length": 451
                       },
                       {
@@ -1424,7 +1550,7 @@
                         "velocity": 60,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 90240,
+                        "start": 100800,
                         "length": 931
                       },
                       {
@@ -1432,7 +1558,7 @@
                         "velocity": 65,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 91200,
+                        "start": 101760,
                         "length": 931
                       },
                       {
@@ -1440,7 +1566,7 @@
                         "velocity": 63,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 94080,
+                        "start": 104640,
                         "length": 451
                       },
                       {
@@ -1448,7 +1574,7 @@
                         "velocity": 61,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 94560,
+                        "start": 105120,
                         "length": 418
                       },
                       {
@@ -1456,7 +1582,7 @@
                         "velocity": 64,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 95040,
+                        "start": 105600,
                         "length": 931
                       },
                       {
@@ -1464,7 +1590,7 @@
                         "velocity": 61,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 102720,
+                        "start": 113280,
                         "length": 451
                       },
                       {
@@ -1472,7 +1598,7 @@
                         "velocity": 60,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 103200,
+                        "start": 113760,
                         "length": 451
                       },
                       {
@@ -1480,7 +1606,7 @@
                         "velocity": 63,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 103680,
+                        "start": 114240,
                         "length": 931
                       },
                       {
@@ -1488,7 +1614,7 @@
                         "velocity": 61,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 119040,
+                        "start": 129600,
                         "length": 451
                       },
                       {
@@ -1496,7 +1622,7 @@
                         "velocity": 61,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 120960,
+                        "start": 131520,
                         "length": 451
                       },
                       {
@@ -1504,7 +1630,7 @@
                         "velocity": 60,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 122880,
+                        "start": 133440,
                         "length": 898
                       },
                       {
@@ -1512,7 +1638,7 @@
                         "velocity": 62,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 123840,
+                        "start": 134400,
                         "length": 931
                       },
                       {
@@ -1520,7 +1646,7 @@
                         "velocity": 62,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 128640,
+                        "start": 139200,
                         "length": 739
                       },
                       {
@@ -1528,7 +1654,7 @@
                         "velocity": 57,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 131520,
+                        "start": 142080,
                         "length": 931
                       },
                       {
@@ -1536,7 +1662,7 @@
                         "velocity": 58,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 133440,
+                        "start": 144000,
                         "length": 931
                       },
                       {
@@ -1544,7 +1670,7 @@
                         "velocity": 56,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 134400,
+                        "start": 144960,
                         "length": 1824
                       }
                     ],
@@ -1668,7 +1794,7 @@
               "id": 18,
               "name": "Clarinet D4 legato",
               "start": 0,
-              "length": 10368000,
+              "length": 11160000,
               "content": {
                 "Midi": {
                   "sequence": {
@@ -1734,7 +1860,7 @@
                         "velocity": 67,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 61440,
+                        "start": 72000,
                         "length": 931
                       },
                       {
@@ -1742,7 +1868,7 @@
                         "velocity": 63,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 63360,
+                        "start": 73920,
                         "length": 451
                       },
                       {
@@ -1750,7 +1876,7 @@
                         "velocity": 65,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 64800,
+                        "start": 75360,
                         "length": 451
                       },
                       {
@@ -1758,7 +1884,7 @@
                         "velocity": 61,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 74880,
+                        "start": 85440,
                         "length": 931
                       },
                       {
@@ -1766,7 +1892,7 @@
                         "velocity": 60,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 76800,
+                        "start": 87360,
                         "length": 739
                       },
                       {
@@ -1774,7 +1900,7 @@
                         "velocity": 63,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 78720,
+                        "start": 89280,
                         "length": 931
                       },
                       {
@@ -1782,7 +1908,7 @@
                         "velocity": 60,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 80640,
+                        "start": 91200,
                         "length": 931
                       },
                       {
@@ -1790,7 +1916,7 @@
                         "velocity": 61,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 82560,
+                        "start": 93120,
                         "length": 898
                       },
                       {
@@ -1798,7 +1924,7 @@
                         "velocity": 65,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 88800,
+                        "start": 99360,
                         "length": 259
                       },
                       {
@@ -1806,7 +1932,7 @@
                         "velocity": 67,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 93120,
+                        "start": 103680,
                         "length": 451
                       },
                       {
@@ -1814,7 +1940,7 @@
                         "velocity": 66,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 93600,
+                        "start": 104160,
                         "length": 451
                       },
                       {
@@ -1822,7 +1948,7 @@
                         "velocity": 66,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 96000,
+                        "start": 106560,
                         "length": 931
                       },
                       {
@@ -1830,7 +1956,7 @@
                         "velocity": 65,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 101760,
+                        "start": 112320,
                         "length": 451
                       },
                       {
@@ -1838,7 +1964,7 @@
                         "velocity": 63,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 102240,
+                        "start": 112800,
                         "length": 451
                       },
                       {
@@ -1846,7 +1972,7 @@
                         "velocity": 66,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 104640,
+                        "start": 115200,
                         "length": 931
                       },
                       {
@@ -1854,7 +1980,7 @@
                         "velocity": 65,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 120000,
+                        "start": 130560,
                         "length": 931
                       },
                       {
@@ -1862,7 +1988,7 @@
                         "velocity": 63,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 121920,
+                        "start": 132480,
                         "length": 931
                       },
                       {
@@ -1870,7 +1996,7 @@
                         "velocity": 60,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 130560,
+                        "start": 141120,
                         "length": 931
                       },
                       {
@@ -1878,7 +2004,7 @@
                         "velocity": 62,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 132480,
+                        "start": 143040,
                         "length": 931
                       }
                     ],
@@ -2002,7 +2128,7 @@
               "id": 21,
               "name": "Clarinet F4",
               "start": 0,
-              "length": 10368000,
+              "length": 11160000,
               "content": {
                 "Midi": {
                   "sequence": {
@@ -2012,7 +2138,7 @@
                         "velocity": 66,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 77760,
+                        "start": 88320,
                         "length": 451
                       },
                       {
@@ -2020,7 +2146,7 @@
                         "velocity": 67,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 100800,
+                        "start": 111360,
                         "length": 931
                       },
                       {
@@ -2028,7 +2154,7 @@
                         "velocity": 60,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 112320,
+                        "start": 122880,
                         "length": 451
                       }
                     ],
@@ -2151,7 +2277,7 @@
               "id": 23,
               "name": "Clarinet F4 legato",
               "start": 0,
-              "length": 10368000,
+              "length": 11160000,
               "content": {
                 "Midi": {
                   "sequence": {
@@ -2209,7 +2335,7 @@
                         "velocity": 67,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 63840,
+                        "start": 74400,
                         "length": 451
                       },
                       {
@@ -2217,7 +2343,7 @@
                         "velocity": 69,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 64320,
+                        "start": 74880,
                         "length": 451
                       },
                       {
@@ -2225,7 +2351,7 @@
                         "velocity": 65,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 66240,
+                        "start": 76800,
                         "length": 451
                       },
                       {
@@ -2233,7 +2359,7 @@
                         "velocity": 66,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 66720,
+                        "start": 77280,
                         "length": 451
                       },
                       {
@@ -2241,7 +2367,7 @@
                         "velocity": 66,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 69120,
+                        "start": 79680,
                         "length": 451
                       },
                       {
@@ -2249,7 +2375,7 @@
                         "velocity": 66,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 70560,
+                        "start": 81120,
                         "length": 451
                       },
                       {
@@ -2257,7 +2383,7 @@
                         "velocity": 67,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 71040,
+                        "start": 81600,
                         "length": 739
                       },
                       {
@@ -2265,7 +2391,7 @@
                         "velocity": 62,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 72480,
+                        "start": 83040,
                         "length": 451
                       },
                       {
@@ -2273,7 +2399,7 @@
                         "velocity": 66,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 72960,
+                        "start": 83520,
                         "length": 931
                       },
                       {
@@ -2281,76 +2407,28 @@
                         "velocity": 66,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 79680,
+                        "start": 90240,
                         "length": 931
                       },
                       {
                         "pitch": 65,
                         "velocity": 64,
-                        "release_velocity": 48,
-                        "channel": 0,
-                        "start": 81600,
-                        "length": 451
-                      },
-                      {
-                        "pitch": 65,
-                        "velocity": 69,
                         "release_velocity": 48,
                         "channel": 0,
                         "start": 92160,
-                        "length": 931
+                        "length": 451
                       },
                       {
                         "pitch": 65,
                         "velocity": 69,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 96960,
+                        "start": 102720,
                         "length": 931
                       },
                       {
-                        "pitch": 67,
-                        "velocity": 68,
-                        "release_velocity": 48,
-                        "channel": 0,
-                        "start": 97920,
-                        "length": 451
-                      },
-                      {
                         "pitch": 65,
-                        "velocity": 65,
-                        "release_velocity": 48,
-                        "channel": 0,
-                        "start": 98880,
-                        "length": 931
-                      },
-                      {
-                        "pitch": 67,
-                        "velocity": 68,
-                        "release_velocity": 48,
-                        "channel": 0,
-                        "start": 99840,
-                        "length": 739
-                      },
-                      {
-                        "pitch": 65,
-                        "velocity": 68,
-                        "release_velocity": 48,
-                        "channel": 0,
-                        "start": 105600,
-                        "length": 898
-                      },
-                      {
-                        "pitch": 67,
-                        "velocity": 66,
-                        "release_velocity": 48,
-                        "channel": 0,
-                        "start": 106560,
-                        "length": 451
-                      },
-                      {
-                        "pitch": 65,
-                        "velocity": 64,
+                        "velocity": 69,
                         "release_velocity": 48,
                         "channel": 0,
                         "start": 107520,
@@ -2358,50 +2436,10 @@
                       },
                       {
                         "pitch": 67,
-                        "velocity": 66,
+                        "velocity": 68,
                         "release_velocity": 48,
                         "channel": 0,
                         "start": 108480,
-                        "length": 931
-                      },
-                      {
-                        "pitch": 65,
-                        "velocity": 62,
-                        "release_velocity": 48,
-                        "channel": 0,
-                        "start": 109440,
-                        "length": 931
-                      },
-                      {
-                        "pitch": 65,
-                        "velocity": 58,
-                        "release_velocity": 48,
-                        "channel": 0,
-                        "start": 113280,
-                        "length": 931
-                      },
-                      {
-                        "pitch": 67,
-                        "velocity": 60,
-                        "release_velocity": 48,
-                        "channel": 0,
-                        "start": 114240,
-                        "length": 931
-                      },
-                      {
-                        "pitch": 65,
-                        "velocity": 57,
-                        "release_velocity": 48,
-                        "channel": 0,
-                        "start": 115200,
-                        "length": 931
-                      },
-                      {
-                        "pitch": 65,
-                        "velocity": 67,
-                        "release_velocity": 48,
-                        "channel": 0,
-                        "start": 119520,
                         "length": 451
                       },
                       {
@@ -2409,7 +2447,95 @@
                         "velocity": 65,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 121440,
+                        "start": 109440,
+                        "length": 931
+                      },
+                      {
+                        "pitch": 67,
+                        "velocity": 68,
+                        "release_velocity": 48,
+                        "channel": 0,
+                        "start": 110400,
+                        "length": 739
+                      },
+                      {
+                        "pitch": 65,
+                        "velocity": 68,
+                        "release_velocity": 48,
+                        "channel": 0,
+                        "start": 116160,
+                        "length": 898
+                      },
+                      {
+                        "pitch": 67,
+                        "velocity": 66,
+                        "release_velocity": 48,
+                        "channel": 0,
+                        "start": 117120,
+                        "length": 451
+                      },
+                      {
+                        "pitch": 65,
+                        "velocity": 64,
+                        "release_velocity": 48,
+                        "channel": 0,
+                        "start": 118080,
+                        "length": 931
+                      },
+                      {
+                        "pitch": 67,
+                        "velocity": 66,
+                        "release_velocity": 48,
+                        "channel": 0,
+                        "start": 119040,
+                        "length": 931
+                      },
+                      {
+                        "pitch": 65,
+                        "velocity": 62,
+                        "release_velocity": 48,
+                        "channel": 0,
+                        "start": 120000,
+                        "length": 931
+                      },
+                      {
+                        "pitch": 65,
+                        "velocity": 58,
+                        "release_velocity": 48,
+                        "channel": 0,
+                        "start": 123840,
+                        "length": 931
+                      },
+                      {
+                        "pitch": 67,
+                        "velocity": 60,
+                        "release_velocity": 48,
+                        "channel": 0,
+                        "start": 124800,
+                        "length": 931
+                      },
+                      {
+                        "pitch": 65,
+                        "velocity": 57,
+                        "release_velocity": 48,
+                        "channel": 0,
+                        "start": 125760,
+                        "length": 931
+                      },
+                      {
+                        "pitch": 65,
+                        "velocity": 67,
+                        "release_velocity": 48,
+                        "channel": 0,
+                        "start": 130080,
+                        "length": 451
+                      },
+                      {
+                        "pitch": 65,
+                        "velocity": 65,
+                        "release_velocity": 48,
+                        "channel": 0,
+                        "start": 132000,
                         "length": 451
                       },
                       {
@@ -2417,7 +2543,7 @@
                         "velocity": 63,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 130080,
+                        "start": 140640,
                         "length": 451
                       }
                     ],
@@ -2541,7 +2667,7 @@
               "id": 26,
               "name": "Clarinet Bb4",
               "start": 0,
-              "length": 10368000,
+              "length": 11160000,
               "content": {
                 "Midi": {
                   "sequence": {
@@ -2551,7 +2677,7 @@
                         "velocity": 69,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 72000,
+                        "start": 82560,
                         "length": 451
                       }
                     ],
@@ -2674,7 +2800,7 @@
               "id": 28,
               "name": "Clarinet Bb4 legato",
               "start": 0,
-              "length": 10368000,
+              "length": 11160000,
               "content": {
                 "Midi": {
                   "sequence": {
@@ -2692,7 +2818,7 @@
                         "velocity": 69,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 67200,
+                        "start": 77760,
                         "length": 451
                       },
                       {
@@ -2700,7 +2826,7 @@
                         "velocity": 72,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 67680,
+                        "start": 78240,
                         "length": 451
                       },
                       {
@@ -2708,7 +2834,7 @@
                         "velocity": 69,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 68160,
+                        "start": 78720,
                         "length": 451
                       },
                       {
@@ -2716,7 +2842,7 @@
                         "velocity": 67,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 68640,
+                        "start": 79200,
                         "length": 451
                       },
                       {
@@ -2724,7 +2850,7 @@
                         "velocity": 70,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 69600,
+                        "start": 80160,
                         "length": 451
                       },
                       {
@@ -2732,7 +2858,7 @@
                         "velocity": 68,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 70080,
+                        "start": 80640,
                         "length": 451
                       },
                       {
@@ -2740,7 +2866,7 @@
                         "velocity": 68,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 73920,
+                        "start": 84480,
                         "length": 931
                       },
                       {
@@ -2748,7 +2874,7 @@
                         "velocity": 66,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 75840,
+                        "start": 86400,
                         "length": 931
                       },
                       {
@@ -2756,7 +2882,7 @@
                         "velocity": 70,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 98400,
+                        "start": 108960,
                         "length": 451
                       },
                       {
@@ -2764,7 +2890,7 @@
                         "velocity": 68,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 107040,
+                        "start": 117600,
                         "length": 451
                       },
                       {
@@ -2772,7 +2898,7 @@
                         "velocity": 62,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 112800,
+                        "start": 123360,
                         "length": 451
                       }
                     ],
@@ -2988,39 +3114,51 @@
               "value": -10.6
             },
             {
-              "at": 4176000,
-              "value": -12.1
+              "at": 3312000,
+              "value": -11.1
+            },
+            {
+              "at": 3672000,
+              "value": -11.35
+            },
+            {
+              "at": 4104000,
+              "value": -11.1
             },
             {
               "at": 4968000,
-              "value": -11.0
-            },
-            {
-              "at": 5832000,
               "value": -12.1
             },
             {
-              "at": 6696000,
+              "at": 5760000,
+              "value": -11.0
+            },
+            {
+              "at": 6624000,
+              "value": -12.1
+            },
+            {
+              "at": 7488000,
               "value": -10.7
             },
             {
-              "at": 7992000,
+              "at": 8784000,
               "value": -11.6
             },
             {
-              "at": 8856000,
+              "at": 9648000,
               "value": -10.8
             },
             {
-              "at": 9720000,
+              "at": 10512000,
               "value": -11.6
             },
             {
-              "at": 10080000,
+              "at": 10872000,
               "value": -10.8
             },
             {
-              "at": 10202400,
+              "at": 10994400,
               "value": -16
             }
           ]
@@ -3057,7 +3195,7 @@
               "id": 33,
               "name": "Cellos G2",
               "start": 0,
-              "length": 10368000,
+              "length": 11160000,
               "content": {
                 "Midi": {
                   "sequence": {
@@ -3160,10 +3298,26 @@
                       },
                       {
                         "pitch": 44,
+                        "velocity": 50,
+                        "release_velocity": 48,
+                        "channel": 0,
+                        "start": 51792,
+                        "length": 3091
+                      },
+                      {
+                        "pitch": 42,
                         "velocity": 51,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 52915,
+                        "start": 54576,
+                        "length": 3370
+                      },
+                      {
+                        "pitch": 44,
+                        "velocity": 51,
+                        "release_velocity": 48,
+                        "channel": 0,
+                        "start": 63475,
                         "length": 2938
                       },
                       {
@@ -3171,7 +3325,7 @@
                         "velocity": 53,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 55536,
+                        "start": 66096,
                         "length": 3014
                       },
                       {
@@ -3179,7 +3333,7 @@
                         "velocity": 51,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 60336,
+                        "start": 70896,
                         "length": 3456
                       },
                       {
@@ -3187,7 +3341,7 @@
                         "velocity": 50,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 63475,
+                        "start": 74035,
                         "length": 2587
                       },
                       {
@@ -3195,7 +3349,7 @@
                         "velocity": 52,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 66096,
+                        "start": 76656,
                         "length": 3360
                       },
                       {
@@ -3203,7 +3357,7 @@
                         "velocity": 53,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 71856,
+                        "start": 82416,
                         "length": 3331
                       },
                       {
@@ -3211,7 +3365,7 @@
                         "velocity": 52,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 74870,
+                        "start": 85430,
                         "length": 3063
                       },
                       {
@@ -3219,7 +3373,7 @@
                         "velocity": 50,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 80640,
+                        "start": 91200,
                         "length": 3053
                       },
                       {
@@ -3227,7 +3381,7 @@
                         "velocity": 51,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 86448,
+                        "start": 97008,
                         "length": 3005
                       },
                       {
@@ -3235,7 +3389,7 @@
                         "velocity": 52,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 92237,
+                        "start": 102797,
                         "length": 2976
                       },
                       {
@@ -3243,7 +3397,7 @@
                         "velocity": 51,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 94896,
+                        "start": 105456,
                         "length": 3264
                       },
                       {
@@ -3251,7 +3405,7 @@
                         "velocity": 50,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 97843,
+                        "start": 108403,
                         "length": 3130
                       },
                       {
@@ -3259,7 +3413,7 @@
                         "velocity": 52,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 100656,
+                        "start": 111216,
                         "length": 3418
                       },
                       {
@@ -3267,7 +3421,7 @@
                         "velocity": 51,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 103757,
+                        "start": 114317,
                         "length": 2976
                       },
                       {
@@ -3275,7 +3429,7 @@
                         "velocity": 53,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 106416,
+                        "start": 116976,
                         "length": 3264
                       },
                       {
@@ -3283,7 +3437,7 @@
                         "velocity": 50,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 115238,
+                        "start": 125798,
                         "length": 3015
                       },
                       {
@@ -3291,7 +3445,7 @@
                         "velocity": 52,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 117936,
+                        "start": 128496,
                         "length": 3398
                       },
                       {
@@ -3299,7 +3453,7 @@
                         "velocity": 51,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 121018,
+                        "start": 131578,
                         "length": 2995
                       },
                       {
@@ -3307,7 +3461,7 @@
                         "velocity": 52,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 126739,
+                        "start": 137299,
                         "length": 2683
                       },
                       {
@@ -3315,7 +3469,7 @@
                         "velocity": 49,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 129456,
+                        "start": 140016,
                         "length": 3014
                       },
                       {
@@ -3323,7 +3477,7 @@
                         "velocity": 49,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 134179,
+                        "start": 144739,
                         "length": 1767
                       }
                     ],
@@ -3446,7 +3600,7 @@
               "id": 36,
               "name": "Cellos D3",
               "start": 0,
-              "length": 10368000,
+              "length": 11160000,
               "content": {
                 "Midi": {
                   "sequence": {
@@ -3497,6 +3651,22 @@
                         "release_velocity": 48,
                         "channel": 0,
                         "start": 47069,
+                        "length": 3552
+                      },
+                      {
+                        "pitch": 46,
+                        "velocity": 49,
+                        "release_velocity": 48,
+                        "channel": 0,
+                        "start": 50448,
+                        "length": 1632
+                      },
+                      {
+                        "pitch": 49,
+                        "velocity": 50,
+                        "release_velocity": 48,
+                        "channel": 0,
+                        "start": 57629,
                         "length": 2673
                       },
                       {
@@ -3504,7 +3674,7 @@
                         "velocity": 52,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 49776,
+                        "start": 60336,
                         "length": 3456
                       },
                       {
@@ -3512,7 +3682,7 @@
                         "velocity": 52,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 58234,
+                        "start": 68794,
                         "length": 2419
                       },
                       {
@@ -3520,7 +3690,7 @@
                         "velocity": 51,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 69139,
+                        "start": 79699,
                         "length": 3034
                       },
                       {
@@ -3528,7 +3698,7 @@
                         "velocity": 51,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 77616,
+                        "start": 88176,
                         "length": 3341
                       },
                       {
@@ -3536,7 +3706,7 @@
                         "velocity": 52,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 83376,
+                        "start": 93936,
                         "length": 3389
                       },
                       {
@@ -3544,7 +3714,7 @@
                         "velocity": 53,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 89136,
+                        "start": 99696,
                         "length": 3418
                       },
                       {
@@ -3552,7 +3722,7 @@
                         "velocity": 52,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 109363,
+                        "start": 119923,
                         "length": 3130
                       },
                       {
@@ -3560,7 +3730,7 @@
                         "velocity": 51,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 112176,
+                        "start": 122736,
                         "length": 3379
                       },
                       {
@@ -3568,7 +3738,7 @@
                         "velocity": 53,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 123696,
+                        "start": 134256,
                         "length": 3360
                       },
                       {
@@ -3576,7 +3746,7 @@
                         "velocity": 47,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 132154,
+                        "start": 142714,
                         "length": 2342
                       }
                     ],
@@ -3773,7 +3943,7 @@
               "id": 41,
               "name": "Grand Gb2 v4",
               "start": 0,
-              "length": 10368000,
+              "length": 11160000,
               "content": {
                 "Midi": {
                   "sequence": {
@@ -3791,7 +3961,7 @@
                         "velocity": 50,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 68266,
+                        "start": 78826,
                         "length": 2764
                       },
                       {
@@ -3799,7 +3969,7 @@
                         "velocity": 50,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 100954,
+                        "start": 111514,
                         "length": 2880
                       }
                     ],
@@ -3922,7 +4092,7 @@
               "id": 44,
               "name": "Grand A2 v4",
               "start": 0,
-              "length": 10368000,
+              "length": 11160000,
               "content": {
                 "Midi": {
                   "sequence": {
@@ -3940,7 +4110,7 @@
                         "velocity": 50,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 60662,
+                        "start": 71222,
                         "length": 2976
                       },
                       {
@@ -3948,7 +4118,7 @@
                         "velocity": 49,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 120077,
+                        "start": 130637,
                         "length": 2640
                       }
                     ],
@@ -4071,7 +4241,7 @@
               "id": 47,
               "name": "Grand C3 v4",
               "start": 0,
-              "length": 10368000,
+              "length": 11160000,
               "content": {
                 "Midi": {
                   "sequence": {
@@ -4089,7 +4259,7 @@
                         "velocity": 49,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 91162,
+                        "start": 101722,
                         "length": 2640
                       },
                       {
@@ -4097,7 +4267,7 @@
                         "velocity": 46,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 112502,
+                        "start": 123062,
                         "length": 2976
                       }
                     ],
@@ -4220,7 +4390,7 @@
               "id": 50,
               "name": "Grand Eb3 v4",
               "start": 0,
-              "length": 10368000,
+              "length": 11160000,
               "content": {
                 "Midi": {
                   "sequence": {
@@ -4238,7 +4408,7 @@
                         "velocity": 49,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 77904,
+                        "start": 88464,
                         "length": 2736
                       },
                       {
@@ -4246,7 +4416,7 @@
                         "velocity": 42,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 112518,
+                        "start": 123078,
                         "length": 2960
                       },
                       {
@@ -4254,7 +4424,7 @@
                         "velocity": 47,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 134429,
+                        "start": 144989,
                         "length": 1833
                       }
                     ],
@@ -4377,7 +4547,7 @@
               "id": 53,
               "name": "Grand Gb3 v4",
               "start": 0,
-              "length": 10368000,
+              "length": 11160000,
               "content": {
                 "Midi": {
                   "sequence": {
@@ -4387,7 +4557,7 @@
                         "velocity": 46,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 60678,
+                        "start": 71238,
                         "length": 2960
                       },
                       {
@@ -4395,7 +4565,7 @@
                         "velocity": 45,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 91177,
+                        "start": 101737,
                         "length": 2625
                       },
                       {
@@ -4403,7 +4573,7 @@
                         "velocity": 45,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 120092,
+                        "start": 130652,
                         "length": 2625
                       },
                       {
@@ -4411,7 +4581,7 @@
                         "velocity": 43,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 134444,
+                        "start": 145004,
                         "length": 1818
                       }
                     ],
@@ -4534,7 +4704,7 @@
               "id": 56,
               "name": "Grand A3 v4",
               "start": 0,
-              "length": 10368000,
+              "length": 11160000,
               "content": {
                 "Midi": {
                   "sequence": {
@@ -4560,7 +4730,7 @@
                         "velocity": 46,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 68281,
+                        "start": 78841,
                         "length": 2749
                       },
                       {
@@ -4568,7 +4738,7 @@
                         "velocity": 45,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 77919,
+                        "start": 88479,
                         "length": 2721
                       },
                       {
@@ -4576,7 +4746,7 @@
                         "velocity": 46,
                         "release_velocity": 48,
                         "channel": 0,
-                        "start": 100969,
+                        "start": 111529,
                         "length": 2865
                       }
                     ],
@@ -4783,31 +4953,59 @@
               "value": 3.8
             },
             {
-              "at": 3528000,
-              "value": 4.2
+              "at": 3456000,
+              "value": 4.35
             },
             {
-              "at": 3816000,
-              "value": 4.4
+              "at": 3567600,
+              "value": 4.65
             },
             {
-              "at": 3960000,
+              "at": 3664800,
               "value": 4.1
             },
             {
-              "at": 4176000,
-              "value": 3.6
+              "at": 3744000,
+              "value": 4.4
             },
             {
-              "at": 4392000,
-              "value": 3.4
+              "at": 3888000,
+              "value": 4.05
             },
             {
-              "at": 4503600,
-              "value": 2.8
+              "at": 4071600,
+              "value": 3.2
+            },
+            {
+              "at": 4104000,
+              "value": 3.8
+            },
+            {
+              "at": 4320000,
+              "value": 4.2
             },
             {
               "at": 4608000,
+              "value": 4.4
+            },
+            {
+              "at": 4752000,
+              "value": 4.1
+            },
+            {
+              "at": 4968000,
+              "value": 3.6
+            },
+            {
+              "at": 5184000,
+              "value": 3.4
+            },
+            {
+              "at": 5295600,
+              "value": 2.8
+            },
+            {
+              "at": 5400000,
               "value": -4.8
             }
           ]
@@ -4817,7 +5015,7 @@
       "hidden": false,
       "inactive": false,
       "frozen": false,
-      "comments": "Under the clarinet, let the chord tones ring from beats one and four. Sing the A-flat melody alone over the bowed bass in bars 9–11. All plucks fall on the quarter-note pulse.",
+      "comments": "Under the clarinet, let the chord tones ring from beats one and four. In bars 9–10 sing the opening theme in D-flat, then carry the A-flat melody through bar 13. Lean into the upper notes and let the last B-flat settle.",
       "folder": null,
       "folder_open": false,
       "instrument": null,
@@ -4844,7 +5042,7 @@
               "id": 70,
               "name": "Harp G3",
               "start": 0,
-              "length": 10368000,
+              "length": 11160000,
               "content": {
                 "Midi": {
                   "sequence": {
@@ -4938,11 +5136,43 @@
                         "length": 1805
                       },
                       {
+                        "pitch": 58,
+                        "velocity": 67,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 44160,
+                        "length": 998
+                      },
+                      {
+                        "pitch": 56,
+                        "velocity": 63,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 45120,
+                        "length": 931
+                      },
+                      {
+                        "pitch": 58,
+                        "velocity": 64,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 52800,
+                        "length": 941
+                      },
+                      {
+                        "pitch": 56,
+                        "velocity": 61,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 53760,
+                        "length": 739
+                      },
+                      {
                         "pitch": 56,
                         "velocity": 64,
                         "release_velocity": 45,
                         "channel": 0,
-                        "start": 44160,
+                        "start": 54720,
                         "length": 893
                       },
                       {
@@ -4950,7 +5180,7 @@
                         "velocity": 62,
                         "release_velocity": 45,
                         "channel": 0,
-                        "start": 45120,
+                        "start": 55680,
                         "length": 893
                       },
                       {
@@ -4958,15 +5188,23 @@
                         "velocity": 65,
                         "release_velocity": 45,
                         "channel": 0,
-                        "start": 46080,
-                        "length": 1853
+                        "start": 56640,
+                        "length": 1469
+                      },
+                      {
+                        "pitch": 58,
+                        "velocity": 62,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 59040,
+                        "length": 518
                       },
                       {
                         "pitch": 56,
                         "velocity": 62,
                         "release_velocity": 45,
                         "channel": 0,
-                        "start": 48960,
+                        "start": 59520,
                         "length": 893
                       },
                       {
@@ -4974,7 +5212,7 @@
                         "velocity": 63,
                         "release_velocity": 45,
                         "channel": 0,
-                        "start": 55680,
+                        "start": 66240,
                         "length": 893
                       },
                       {
@@ -4982,7 +5220,7 @@
                         "velocity": 62,
                         "release_velocity": 45,
                         "channel": 0,
-                        "start": 56640,
+                        "start": 67200,
                         "length": 893
                       },
                       {
@@ -4990,15 +5228,23 @@
                         "velocity": 64,
                         "release_velocity": 45,
                         "channel": 0,
-                        "start": 57600,
-                        "length": 1853
+                        "start": 68160,
+                        "length": 1008
+                      },
+                      {
+                        "pitch": 58,
+                        "velocity": 60,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 69120,
+                        "length": 509
                       },
                       {
                         "pitch": 58,
                         "velocity": 62,
                         "release_velocity": 45,
                         "channel": 0,
-                        "start": 59520,
+                        "start": 70080,
                         "length": 806
                       },
                       {
@@ -5006,7 +5252,7 @@
                         "velocity": 48,
                         "release_velocity": 45,
                         "channel": 0,
-                        "start": 63360,
+                        "start": 73920,
                         "length": 2707
                       },
                       {
@@ -5014,7 +5260,7 @@
                         "velocity": 50,
                         "release_velocity": 45,
                         "channel": 0,
-                        "start": 66240,
+                        "start": 76800,
                         "length": 2707
                       },
                       {
@@ -5022,7 +5268,7 @@
                         "velocity": 52,
                         "release_velocity": 45,
                         "channel": 0,
-                        "start": 72000,
+                        "start": 82560,
                         "length": 2707
                       },
                       {
@@ -5030,7 +5276,7 @@
                         "velocity": 49,
                         "release_velocity": 45,
                         "channel": 0,
-                        "start": 74880,
+                        "start": 85440,
                         "length": 2707
                       },
                       {
@@ -5038,7 +5284,7 @@
                         "velocity": 50,
                         "release_velocity": 45,
                         "channel": 0,
-                        "start": 80640,
+                        "start": 91200,
                         "length": 2707
                       },
                       {
@@ -5046,7 +5292,7 @@
                         "velocity": 52,
                         "release_velocity": 45,
                         "channel": 0,
-                        "start": 83520,
+                        "start": 94080,
                         "length": 2707
                       },
                       {
@@ -5054,7 +5300,7 @@
                         "velocity": 50,
                         "release_velocity": 45,
                         "channel": 0,
-                        "start": 86400,
+                        "start": 96960,
                         "length": 2707
                       },
                       {
@@ -5062,7 +5308,7 @@
                         "velocity": 49,
                         "release_velocity": 45,
                         "channel": 0,
-                        "start": 89280,
+                        "start": 99840,
                         "length": 2707
                       },
                       {
@@ -5070,7 +5316,7 @@
                         "velocity": 50,
                         "release_velocity": 45,
                         "channel": 0,
-                        "start": 95040,
+                        "start": 105600,
                         "length": 2707
                       },
                       {
@@ -5078,7 +5324,7 @@
                         "velocity": 52,
                         "release_velocity": 45,
                         "channel": 0,
-                        "start": 97920,
+                        "start": 108480,
                         "length": 2707
                       },
                       {
@@ -5086,7 +5332,7 @@
                         "velocity": 52,
                         "release_velocity": 45,
                         "channel": 0,
-                        "start": 106560,
+                        "start": 117120,
                         "length": 2707
                       },
                       {
@@ -5094,7 +5340,7 @@
                         "velocity": 50,
                         "release_velocity": 45,
                         "channel": 0,
-                        "start": 109440,
+                        "start": 120000,
                         "length": 2707
                       },
                       {
@@ -5102,7 +5348,7 @@
                         "velocity": 48,
                         "release_velocity": 45,
                         "channel": 0,
-                        "start": 115200,
+                        "start": 125760,
                         "length": 2707
                       },
                       {
@@ -5110,7 +5356,7 @@
                         "velocity": 51,
                         "release_velocity": 45,
                         "channel": 0,
-                        "start": 118080,
+                        "start": 128640,
                         "length": 2707
                       },
                       {
@@ -5118,7 +5364,7 @@
                         "velocity": 52,
                         "release_velocity": 45,
                         "channel": 0,
-                        "start": 123840,
+                        "start": 134400,
                         "length": 2707
                       },
                       {
@@ -5126,7 +5372,7 @@
                         "velocity": 49,
                         "release_velocity": 45,
                         "channel": 0,
-                        "start": 126720,
+                        "start": 137280,
                         "length": 2707
                       },
                       {
@@ -5134,7 +5380,7 @@
                         "velocity": 49,
                         "release_velocity": 45,
                         "channel": 0,
-                        "start": 129600,
+                        "start": 140160,
                         "length": 2707
                       },
                       {
@@ -5142,7 +5388,7 @@
                         "velocity": 47,
                         "release_velocity": 45,
                         "channel": 0,
-                        "start": 132480,
+                        "start": 143040,
                         "length": 2707
                       }
                     ],
@@ -5266,7 +5512,7 @@
               "id": 73,
               "name": "Harp D4",
               "start": 0,
-              "length": 10368000,
+              "length": 11160000,
               "content": {
                 "Midi": {
                   "sequence": {
@@ -5280,35 +5526,107 @@
                         "length": 2707
                       },
                       {
+                        "pitch": 61,
+                        "velocity": 69,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 46080,
+                        "length": 1037
+                      },
+                      {
+                        "pitch": 63,
+                        "velocity": 65,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 47040,
+                        "length": 499
+                      },
+                      {
+                        "pitch": 65,
+                        "velocity": 69,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 48000,
+                        "length": 1037
+                      },
+                      {
+                        "pitch": 63,
+                        "velocity": 64,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 48960,
+                        "length": 509
+                      },
+                      {
+                        "pitch": 65,
+                        "velocity": 68,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 49920,
+                        "length": 1027
+                      },
+                      {
+                        "pitch": 61,
+                        "velocity": 65,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 50880,
+                        "length": 998
+                      },
+                      {
+                        "pitch": 63,
+                        "velocity": 67,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 51840,
+                        "length": 1008
+                      },
+                      {
+                        "pitch": 60,
+                        "velocity": 59,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 58080,
+                        "length": 518
+                      },
+                      {
                         "pitch": 63,
                         "velocity": 68,
                         "release_velocity": 45,
                         "channel": 0,
-                        "start": 48000,
-                        "length": 893
+                        "start": 58560,
+                        "length": 518
                       },
                       {
                         "pitch": 61,
                         "velocity": 64,
                         "release_velocity": 45,
                         "channel": 0,
-                        "start": 49920,
-                        "length": 893
+                        "start": 60480,
+                        "length": 518
+                      },
+                      {
+                        "pitch": 63,
+                        "velocity": 62,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 60960,
+                        "length": 518
                       },
                       {
                         "pitch": 65,
                         "velocity": 66,
                         "release_velocity": 45,
                         "channel": 0,
-                        "start": 50880,
-                        "length": 893
+                        "start": 61440,
+                        "length": 518
                       },
                       {
                         "pitch": 65,
                         "velocity": 65,
                         "release_velocity": 45,
                         "channel": 0,
-                        "start": 53760,
+                        "start": 64320,
                         "length": 893
                       },
                       {
@@ -5316,15 +5634,23 @@
                         "velocity": 63,
                         "release_velocity": 45,
                         "channel": 0,
-                        "start": 54720,
+                        "start": 65280,
                         "length": 893
+                      },
+                      {
+                        "pitch": 60,
+                        "velocity": 63,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 69600,
+                        "length": 499
                       },
                       {
                         "pitch": 62,
                         "velocity": 46,
                         "release_velocity": 45,
                         "channel": 0,
-                        "start": 95040,
+                        "start": 105600,
                         "length": 2707
                       },
                       {
@@ -5332,7 +5658,7 @@
                         "velocity": 49,
                         "release_velocity": 45,
                         "channel": 0,
-                        "start": 103680,
+                        "start": 114240,
                         "length": 2707
                       }
                     ],
@@ -5456,17 +5782,41 @@
               "id": 76,
               "name": "Harp A4",
               "start": 0,
-              "length": 10368000,
+              "length": 11160000,
               "content": {
                 "Midi": {
                   "sequence": {
                     "notes": [
                       {
+                        "pitch": 68,
+                        "velocity": 71,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 47520,
+                        "length": 518
+                      },
+                      {
+                        "pitch": 68,
+                        "velocity": 69,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 49440,
+                        "length": 528
+                      },
+                      {
+                        "pitch": 68,
+                        "velocity": 68,
+                        "release_velocity": 45,
+                        "channel": 0,
+                        "start": 61920,
+                        "length": 509
+                      },
+                      {
                         "pitch": 66,
                         "velocity": 69,
                         "release_velocity": 45,
                         "channel": 0,
-                        "start": 51840,
+                        "start": 62400,
                         "length": 1853
                       }
                     ],
@@ -5934,30 +6284,42 @@
       "kind": "Marker",
       "start": 3312000,
       "end": 3312000,
-      "comments": "Three bars on the 40 bpm pulse, with only sustained cello underneath.",
+      "comments": "The harp sings the opening theme in D-flat, beginning B-flat–A-flat. The low clarinet enters under the third pluck.",
+      "color": null,
+      "ruler": 1,
+      "track": null
+    },
+    {
+      "id": 78,
+      "number": 6,
+      "name": "A-flat answer",
+      "kind": "Marker",
+      "start": 4104000,
+      "end": 4104000,
+      "comments": "The harp carries the A-flat verse through bar 13. Let its high G-flat ring before the last turn.",
       "color": null,
       "ruler": 1,
       "track": null
     },
     {
       "id": 62,
-      "number": 6,
+      "number": 7,
       "name": "Clarinet returns",
       "kind": "Marker",
-      "start": 4536000,
-      "end": 4536000,
-      "comments": "The middle variation begins on C as the harp returns to the harmony.",
+      "start": 5328000,
+      "end": 5328000,
+      "comments": "The clarinet takes the lead on C in bar 14 as the harp resumes its chord tones.",
       "color": null,
       "ruler": 1,
       "track": null
     },
     {
       "id": 63,
-      "number": 7,
+      "number": 8,
       "name": "Theme returns",
       "kind": "Marker",
-      "start": 8856000,
-      "end": 8856000,
+      "start": 9648000,
+      "end": 9648000,
       "comments": "",
       "color": null,
       "ruler": 1,
@@ -5965,11 +6327,11 @@
     },
     {
       "id": 64,
-      "number": 8,
+      "number": 9,
       "name": "Cadence",
       "kind": "Marker",
-      "start": 9720000,
-      "end": 9720000,
+      "start": 10512000,
+      "end": 10512000,
       "comments": "",
       "color": null,
       "ruler": 1,
@@ -5977,11 +6339,11 @@
     },
     {
       "id": 65,
-      "number": 9,
+      "number": 10,
       "name": "Loop end",
       "kind": "Marker",
-      "start": 10368000,
-      "end": 10368000,
+      "start": 11160000,
+      "end": 11160000,
       "comments": "",
       "color": null,
       "ruler": 1,
@@ -6076,7 +6438,7 @@
     ],
     "values": {}
   },
-  "next_id": 78,
-  "comments": "Mirror Transport Museum. Modest Mussorgsky, Pictures at an Exhibition, Promenade I. Quarter note = 40 throughout. Two beats of low bowed B-flat introduce the clarinet. The low clarinet sings the opening. The harp plays a quiet, measured harmony on beats one and four, and carries the A-flat verse from bar 9 through bar 11 on its own over the cellos. The clarinet and piano return at bar 12. Legato tracks share the corresponding soft clarinet recordings. Expand a folder to edit the notes and phrase expression. Bounce the Loop end marker with render_promenade.py.\nPiano score from Mutopia-2004/07/20-475 (public domain). Clarinet, bowed cellos and concert harp from Versilian Studios Chamber Orchestra 2 Community Edition (CC0), https://github.com/sgossner/VSCO-2-CE/tree/440300901dfe9275fd84e0b7763af1f8443ae62e . Grand piano from Salamander Grand Piano v3 by Alexander Holm, soft v4 recordings, https://github.com/sfzinstruments/SalamanderGrandPiano/tree/3382bf9496bba2486f5ab0de55a264d1dfc38404 , CC BY 3.0 https://creativecommons.org/licenses/by/3.0/ .",
+  "next_id": 79,
+  "comments": "Mirror Transport Museum. Modest Mussorgsky, Pictures at an Exhibition, Promenade I. Quarter note = 40 throughout. Two beats of low bowed B-flat introduce the clarinet. The low clarinet sings the opening. The harp plays quiet chord tones on beats one and four. In bars 9–13 it takes the opening theme in D-flat and sings the A-flat verse over bowed bass and low clarinet. The clarinet takes the melody back on C and the piano re-enters in bar 14. Legato tracks share the corresponding soft clarinet recordings. Expand a folder to edit the notes and phrase expression. Bounce the Loop end marker with render_promenade.py.\nPiano score from Mutopia-2004/07/20-475 (public domain). Clarinet, bowed cellos and concert harp from Versilian Studios Chamber Orchestra 2 Community Edition (CC0), https://github.com/sgossner/VSCO-2-CE/tree/440300901dfe9275fd84e0b7763af1f8443ae62e . Grand piano from Salamander Grand Piano v3 by Alexander Holm, soft v4 recordings, https://github.com/sfzinstruments/SalamanderGrandPiano/tree/3382bf9496bba2486f5ab0de55a264d1dfc38404 , CC BY 3.0 https://creativecommons.org/licenses/by/3.0/ .",
   "midi_originals": {}
 }

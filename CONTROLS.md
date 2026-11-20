@@ -15,7 +15,7 @@ The broader exhibit plan also includes optional flight for viewing the taller di
 
 ## Use an exhibit
 
-Point a controller at a button and squeeze the trigger, or aim with the mouse and left-click. To move a slider or probe, hold the trigger or left mouse button, move along the slider or rail, then release. Select a numbered launch point to follow its particle. Dragging a slider changes that setting while the particles keep moving. The pedestal’s **Reset** restores all opening settings and restarts the staggered launches. [Mirror exhibit](INTRO_MIRROR_INTERACTIVE.md)
+Point a controller at a button and squeeze the trigger, or aim with the mouse and left-click. To move a slider or probe, hold the trigger or left mouse button, move along the slider or rail, then release. Select a numbered launch point on the left plot to trace its particle’s kinetic energies on the lectern beside the controls. Dragging a slider changes that setting while the particles keep moving. The pedestal’s **Reset** restores all opening settings and restarts the staggered launches. [Mirror exhibit](INTRO_MIRROR_INTERACTIVE.md)
 
 ## Title screen and pause menu
 

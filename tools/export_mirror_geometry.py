@@ -98,9 +98,10 @@ def export(source, destination):
             "potential": "Phi=delta_phi*(1-(Z/Zt)^2) inside the rings and zero throughout the expanders. The escape threshold satisfies m*v_parallel0^2/2 = max over [0,Zt] of mu*(B(Z)-B0) + q*(phi(Z)-phi(0)), with q=+e. Draw the branches where a finite turning region exists.",
             "orbit": "Invert time of flight and integrated gyro phase on the first reachable energy-conserving leg. Reflect trapped legs by symmetry. A passing particle crosses the throat with phi held at zero through the expander, fades at the displayed tip over 0.16 exhibit s, and relaunches at the midplane with a fresh trail.",
             "field_line_colour": "Bright blue for returning launches, dark blue-grey for escaping launches, pale grey for rest or boundary. Colour encodes the particle outcome at the current controls.",
+            "energy_trace": "First marker on the selected line. K_parallel = K_parallel0 - (U(Z)-U(0)) and K_perp = mu B(Z). Show up to 10 physical microseconds since selection, control change or relaunch, ending at the expander tip. Energies in eV or keV use the same guiding-centre orbit as the marker.",
             "axial_range_m": [-Z_LIMIT, Z_LIMIT], "axial_scale": 1.44, "radial_scale": 5.4,
-            "relative_radial_enlargement": 3.75, "physical_seconds_per_exhibit_second": 2.315e-6,
-            "visible_gyro_frequency_fraction": 1 / 64,
+            "relative_radial_enlargement": 3.75, "physical_seconds_per_exhibit_second": 2e-6,
+            "visible_gyro_frequency_fraction": 1.0,
         },
     }
     (destination / "manifest.json").write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n")

@@ -93,7 +93,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _draw_reticle() -> void:
 	var tint := InstrumentPanel.BRASS if hover_widgets[MOUSE_POINTER] >= 0 else Color.WHITE
-	reticle.draw_circle(Vector2.ZERO, 3.5, Color("#253635"), true, -1, true)
+	reticle.draw_circle(Vector2.ZERO, 3.5, Color.BLACK, true, -1, true)
 	reticle.draw_circle(Vector2.ZERO, 2.0, tint, true, -1, true)
 
 func _cancel_mouse() -> void:
@@ -242,7 +242,10 @@ func update_return(active: bool,delta: float) -> void:
 func return_to_foyer() -> void:
 	if drag_pointer >= 0:
 		_release_pointer(drag_pointer)
-	global_position = START
+	face_atrium(START)
+
+func face_atrium(floor_position: Vector3) -> void:
+	global_position = floor_position
 	if xr_active:
 		rotate_y(-camera.global_rotation.y)
 		var offset := camera.global_position - global_position

@@ -3,8 +3,8 @@ extends RefCounted
 ## and all four quarters of a bounce without accumulating integration drift.
 
 const Field := preload("res://museum/mirror/field.gd")
-const CLOCK := 2.315e-6
-const GYRO_DIVISOR := 64.0
+const CLOCK := 2.0e-6  # Physical seconds per exhibit second, for all motion.
+const CHARGE_TO_MASS := Field.CHARGE / Field.MASS
 const TIP_FADE_SECONDS := 0.16
 const STEPS := 320
 
@@ -43,7 +43,7 @@ func _init(model: Field, speed: float, moment: float, top: Field.Barrier) -> voi
 	_build_leg(top)
 
 func _build_leg(top: Field.Barrier) -> void:
-	# Integrate dt = (ds/dZ)dZ / |v_parallel| and d(phase) = Ω dt / 64.
+	# Integrate dt = (ds/dZ)dZ / |v_parallel| and d(phase) = (qB/m) dt.
 	# A cosine change of variable regularizes the square-root turning point.
 	var extent := end_z * (1.0 - 2e-6) if _asymptotic else end_z
 	# A barely passing particle can also spend most of its transit very near an
@@ -69,7 +69,6 @@ func _axial_speed(z: float) -> float:
 	return parallel * field.axial(z) / field.magnitude(z)
 
 func _integrate_interval(start: float, end: float, count: int) -> void:
-	var gyro_factor := Field.CHARGE / (Field.MASS * GYRO_DIVISOR)
 	var width := end - start
 	for i in count:
 		var z := start + width * 0.5 * (1.0 - cos(PI * i / count))
@@ -86,14 +85,19 @@ func _integrate_interval(start: float, end: float, count: int) -> void:
 			var speed := sqrt(2.0 * available / Field.MASS)
 			var dt := width * 0.25 * PI / count * sin(angle) * (b / field.axial(sample_z)) / speed
 			leg_time += dt
-			_end_phase += gyro_factor * b * dt
+			_end_phase += CHARGE_TO_MASS * b * dt
+
+# Ion kinetic energies at the guiding-centre position, in keV.
+func kinetic_energies_kev(z: float) -> Vector2:
+	var parallel := maxf(0.0, kinetic - field.rise(z, mu)) / Field.KEV
+	return Vector2(parallel, mu * field.magnitude(z) / Field.KEV)
 
 # Returns physical Z, gyro phase, marker opacity and the relaunch number.
 # Positive Z is the initial direction; the display supplies each line's sign.
 func sample(age: float) -> Vector4:
 	var t := maxf(0.0, age) * CLOCK
 	if outcome == Field.Outcome.REST:
-		return Vector4(0.0, fmod(t * Field.CHARGE * Field.B0 / (Field.MASS * GYRO_DIVISOR), TAU), 1.0, 0.0)
+		return Vector4(0.0, fmod(t * CHARGE_TO_MASS * Field.B0, TAU), 1.0, 0.0)
 	var quarter := 0
 	var generation := 0
 	var opacity := 1.0
@@ -103,10 +107,11 @@ func sample(age: float) -> Vector4:
 		t = fmod(t, period)
 		if t >= leg_time:
 			opacity = 1.0 - (t - leg_time) / (TIP_FADE_SECONDS * CLOCK)
-			return Vector4(end_z, fmod(_end_phase, TAU), opacity, generation)
+			var phase := _end_phase + (t - leg_time) * CHARGE_TO_MASS * field.magnitude(end_z)
+			return Vector4(end_z, fmod(phase, TAU), opacity, generation)
 	elif _asymptotic:
 		if t >= leg_time:
-			var phase := _end_phase + (t - leg_time) * Field.CHARGE * field.magnitude(end_z) / (Field.MASS * GYRO_DIVISOR)
+			var phase := _end_phase + (t - leg_time) * CHARGE_TO_MASS * field.magnitude(end_z)
 			return Vector4(_z[STEPS], fmod(phase, TAU), 1.0, 0.0)
 	else:
 		quarter = floori(t / leg_time)

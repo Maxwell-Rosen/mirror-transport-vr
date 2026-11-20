@@ -49,17 +49,21 @@ func _menu_checks() -> void:
 	var mirror: Exhibit = current_scene.get_node("MagneticMirror")
 	var player: Visitor = current_scene.get_node("Visitor")
 	var promenade: AudioStreamPlayer = current_scene.get_node("Promenade")
-	check(paused and menu.screen == Menu.Screen.TITLE and menu.music.playing and not promenade.playing and not current_scene.cascade.playing, "Title owns the opening audio")
+	check(paused and menu.screen == Menu.Screen.TITLE and menu.music.playing and not promenade.playing, "The title opens with the quartet")
 	check(is_equal_approx(menu.music.stream.get_length(), 30.0) and menu.music.stream.loop, "Title quartet loops at 30 seconds")
+	await _check_title_fountain(menu)
 	if "--pictures" in OS.get_cmdline_user_args():
 		await _menu_picture("title")
+	var title_water_gain := menu.spring.sound.volume_linear
 	_key(KEY_ENTER)
 	check(menu.screen == Menu.Screen.ENTERING and paused, "Enter starts the title transition")
+	await create_timer(Menu.FADE_OUT * 0.5).timeout
+	check(menu.spring.sound.volume_linear < title_water_gain and menu.spring.sound.volume_linear > 0.0, "Water fades with the title quartet")
 	await _finish_entry(menu)
 	check(not paused and menu.screen == Menu.Screen.VISIT and not menu.music.playing and promenade.playing, "Keyboard enters the foyer and switches music")
-	# Positional audio begins mixing on the first unpaused physics tick.
 	await physics_frame
 	await physics_frame
+	check(menu.spring.sound.playing and is_equal_approx(menu.spring.sound.volume_db, menu.spring.BASIN_VOLUME_DB), "The fountain returns to its visit level")
 	player.position = mirror.to_global(Vector3(0, 0.01, 2.1))
 	mirror._process(0.6)
 	var track_point := mirror.desk.to_global(Vector3(0.35, 0, 0))
@@ -67,14 +71,14 @@ func _menu_checks() -> void:
 	player.drag_pointer = Visitor.MOUSE_POINTER
 	var spread := mirror.spread
 	var elapsed := mirror.apparatus.clock
-	var water_time: float = current_scene.visit_time
+	var water_time := menu.spring.water_time
 	var location := player.position
 	_key(KEY_ESCAPE)
 	check(paused and menu.screen == Menu.Screen.PAUSE and mirror.grabbed == -1 and player.drag_pointer == -1, "Escape pauses and releases the current drag")
 	if "--pictures" in OS.get_cmdline_user_args():
 		await _menu_picture("pause")
 	await create_timer(Menu.DUCK_SECONDS + 0.15).timeout
-	check(mirror.apparatus.clock == elapsed and player.position == location and current_scene.visit_time == water_time and current_scene.cascade.stream_paused, "Pause freezes the visitor, particles and fountain")
+	check(mirror.apparatus.clock == elapsed and player.position == location and menu.spring.water_time == water_time and menu.spring.sound.stream_paused, "Pause freezes the visitor, particles and fountain")
 	check(promenade.playing and is_equal_approx(promenade.volume_linear, menu.visit_gain * db_to_linear(Menu.DUCK_DB)), "The promenade continues at its pause level")
 	_click_menu(menu.face.primary)
 	check(not paused and menu.screen == Menu.Screen.VISIT and mirror.spread == spread and mirror.apparatus.clock == elapsed, "Click resumes the same trial")
@@ -90,7 +94,8 @@ func _menu_checks() -> void:
 	mirror = current_scene.get_node("MagneticMirror")
 	player = current_scene.get_node("Visitor")
 	promenade = current_scene.get_node("Promenade")
-	check(paused and menu.screen == Menu.Screen.TITLE and menu.music.playing and not promenade.playing and not current_scene.cascade.playing, "Reset to title switches back to the quartet")
+	check(paused and menu.screen == Menu.Screen.TITLE and menu.music.playing and not promenade.playing, "Reset to title switches back to the quartet")
+	await _check_title_fountain(menu)
 	check(player.position == Visitor.START and _at_opening_settings(mirror) and mirror.apparatus.clock == 0, "Fresh visit restores the foyer and opening controls")
 	_click_menu(menu.face.primary)
 	await _finish_entry(menu)
@@ -98,6 +103,21 @@ func _menu_checks() -> void:
 	_key(KEY_ESCAPE)
 	_key(KEY_ESCAPE)
 	check(menu.screen == Menu.Screen.VISIT and not paused, "Escape resumes a paused visit")
+
+func _check_title_fountain(menu: Menu) -> void:
+	var spring := menu.spring
+	var before := spring.water_time
+	await create_timer(0.12).timeout
+	check(spring.water_time > before, "Title animates the streams and pool ripples")
+	var sprays := spring.find_children("*", "CPUParticles3D", false, false)
+	check(not sprays.is_empty(), "The title fountain has spray")
+	for drops: CPUParticles3D in sprays:
+		check(drops.emitting and drops.can_process(), "Fountain spray runs on the title")
+	var water := spring.sound
+	var eye := root.get_camera_3d().global_position
+	check(water.playing and not water.stream_paused and water.stream.loop and water.get_playback_position() > 0.0
+		and water.volume_db < menu.music.volume_db and eye.distance_to(water.global_position) < water.max_distance,
+		"The title fountain is within earshot and loops quietly under the quartet")
 
 func _at_opening_settings(mirror: Exhibit) -> bool:
 	return (mirror.field.ratio == Field.REF_RATIO and mirror.spread == 400.0
@@ -176,9 +196,14 @@ func _physics_checks() -> void:
 	var boundary := Orbit.new(model, threshold, mu, top)
 	check(boundary.outcome == Field.Outcome.BOUNDARY and absf(boundary.sample(200).x - model.throat) < 1e-5, "Nonzero separatrix")
 	var rest := Orbit.new(model, 0.0, mu, top)
-	check(rest.sample(4).x == 0 and rest.sample(4).y != 0, "Zero parallel launch with finite gyration")
+	var gyroperiod := TAU * Field.MASS / (Field.CHARGE * Field.B0)
+	check(Orbit.CLOCK == 2e-6 and display.physical_seconds_per_exhibit_second == Orbit.CLOCK, "One exhibit second advances two physical microseconds")
+	var state := rest.sample(0.25 * gyroperiod / Orbit.CLOCK)
+	check(state.x == 0 and is_equal_approx(state.y, TAU / 4.0) and
+		display.visible_gyro_frequency_fraction == 1.0, "Midplane gyration follows the physical cyclotron phase")
 	var reference := Orbit.new(model, 450000.0, mu, top)
 	var period := 4 * reference.leg_time / Orbit.CLOCK
+	var expected_period := 9.261e-6 / Orbit.CLOCK
 	var worst := 0.0
 	var max_z := 0.0
 	var crossings := 0
@@ -186,7 +211,7 @@ func _physics_checks() -> void:
 	var previous_z := 0.0
 	const STEP := 0.007
 	const H := 0.001
-	for n in range(1, ceili(40.15 / STEP)):
+	for n in range(1, ceili((10 * expected_period + 0.15) / STEP)):
 		var age := n * STEP
 		var z := reference.sample(age).x
 		var dz_dt := (reference.sample(age + H).x - reference.sample(age - H).x) / (2.0 * H * Orbit.CLOCK)
@@ -196,7 +221,7 @@ func _physics_checks() -> void:
 		max_z = maxf(max_z, absf(z))
 		if previous_z < 0 and z >= 0:
 			var crossing := age - STEP * z / (z - previous_z)
-			check(absf(crossing - last_crossing - 4.0) < 0.04, "Full-bounce timing")
+			check(absf(crossing - last_crossing - expected_period) < 0.01 * expected_period, "Full-bounce timing")
 			last_crossing = crossing
 			crossings += 1
 		previous_z = z
@@ -216,6 +241,8 @@ func _physics_checks() -> void:
 		check(absf(model.radius(model.throat) - Field.R0 / sqrt(ratio)) < 1e-8, "Throat flux radius")
 		if ratio == 1.0:
 			check(model.slope(0.45, Field.B0) == 0.0 and Field.outcome(1.0, model.barrier(mu)) == Field.Outcome.ESCAPE, "Uniform field")
+			var passing := Orbit.new(model, 450000.0, mu, model.barrier(mu))
+			check(is_equal_approx(passing.sample(0.25 * gyroperiod / Orbit.CLOCK).y, TAU / 4.0), "Moving launch follows the physical cyclotron phase")
 		if ratio == 15.0 or ratio == 20.0:
 			var trial := Orbit.new(model, 450000.0, mu, model.barrier(mu))
 			check(trial.outcome == (Field.Outcome.ESCAPE if ratio == 15.0 else Field.Outcome.TURN), "Guided experiment")
@@ -339,11 +366,11 @@ func _visit_checks() -> void:
 		_set_slider(2, 0.5, visitor.camera.global_position)
 		_set_slider(3, -2, visitor.camera.global_position)
 		_select_launch(3, pointer, origin)
-		check(exhibit.field.ratio == 20 and exhibit.spread == 490 and exhibit.moment == 0.5 and exhibit.field.volts == -2000 and exhibit.apparatus.followed == 3, "Each slider retains the other three settings")
+		check(exhibit.field.ratio == 20 and exhibit.spread == 490 and exhibit.moment == 0.5 and exhibit.field.volts == -2000 and exhibit.energy_panel.followed == 3, "Each slider retains the other three settings")
 		var reset_at := _world_pixel(Face.RESET_RECT.get_center())
 		_aim(pointer, origin, reset_at, true)
 		_aim(pointer, origin, reset_at, false)
-		check(exhibit.apparatus.clock == 0.0 and exhibit.apparatus.tails.get_surface_count() == 0 and _at_opening_settings(exhibit) and exhibit.apparatus.followed == Face.DEFAULT_FOLLOWED, "Pedestal reset restores the complete opening trial")
+		check(exhibit.apparatus.clock == 0.0 and exhibit.apparatus.tails.get_surface_count() == 0 and _at_opening_settings(exhibit) and exhibit.energy_panel.followed == Face.DEFAULT_FOLLOWED, "Pedestal reset restores the complete opening trial")
 	var eye := visitor.camera.global_position
 	_set_slider(0, Field.REF_RATIO, eye)
 	_set_slider(1, 490, eye)
@@ -354,7 +381,7 @@ func _visit_checks() -> void:
 	for pointer: int in [0, 1, Visitor.MOUSE_POINTER]:
 		var aim_origin := eye if pointer == Visitor.MOUSE_POINTER else visitor.global_position + Vector3.UP * 1.08
 		_select_launch(4, pointer, aim_origin)
-		check(exhibit.apparatus.followed == 4 and exhibit.apparatus.tag.text.contains("+70 km/s"), "Select the +70 km/s launch")
+		check(exhibit.energy_panel.followed == 4 and exhibit.energy_panel.orbit == exhibit.apparatus.tracks[4].orbit, "Select the +70 km/s launch on the energy panel")
 		check(is_equal_approx(exhibit.apparatus.clock, 0.1), "Following a launch preserves the trial")
 		_select_launch(5, pointer, aim_origin)
 	_set_slider(1, 0, eye)
@@ -363,6 +390,7 @@ func _visit_checks() -> void:
 	_set_slider(1, 1050, eye)
 	_set_slider(3, 0, eye)
 	_check_displayed_relaunch(eye)
+	_check_energy_trace(eye)
 	visitor.update_return(true, Visitor.HOLD_TIME + 0.1)
 	check(visitor.global_position == Visitor.START, "Return to foyer")
 	visitor.update_return(false, 0.01)
@@ -383,6 +411,35 @@ func _check_line_colour(index: int, expected: Color) -> void:
 	var delta := Vector3(actual.r - expected.r, actual.g - expected.g, actual.b - expected.b)
 	check(delta.length() < 0.01, "Field line follows launch %d outcome (actual %s, expected %s)" % [index + 1, actual, expected])
 
+func _check_energy_trace(eye: Vector3) -> void:
+	exhibit.reset_defaults()
+	var chart := exhibit.energy_panel
+	check(exhibit.get_node("ApparatusClock").text.contains("2 µs"), "Particle clock is on the apparatus")
+	var launch := chart.samples[-1]
+	check(chart.samples.size() == 1 and absf(launch.y - 0.30894647) < 1e-6 and absf(launch.z - 0.53061796) < 1e-6,
+		"Particle 6 starts with 309 eV parallel and 531 eV perpendicular")
+	exhibit._process(chart.orbit.leg_time / Orbit.CLOCK)
+	var turn := chart.samples[-1]
+	check(chart.samples.size() > 1 and turn.x == 0 and turn.y < 1e-6 and absf(turn.z - 0.83956443) < 1e-6,
+		"The magnetic turn transfers the launch parallel energy to perpendicular motion")
+	check(absf(chart.samples[0].x + chart.orbit.leg_time * 1e6) < 1e-5, "Energy trace uses physical microseconds")
+	_set_slider(0, 1, eye)
+	_set_slider(3, 4, eye)
+	check(chart.samples.size() == 1 and chart.age == exhibit.apparatus.clock, "Control edits start a new trace at the marker’s current age")
+	var transit := chart.orbit.leg_time / Orbit.CLOCK
+	var cycle := transit + Orbit.TIP_FADE_SECONDS
+	exhibit._process(fposmod(transit + 0.08 - chart.age, cycle))
+	var tip := chart.samples[-1]
+	check(absf(tip.x + 0.16) < 1e-4 and absf(tip.y - (launch.y + 4.0)) < 1e-5 and absf(tip.z - launch.z) < 1e-6,
+		"The ion gains 4 keV at the grounded tip and the trace ends at the physical boundary")
+	exhibit._process(0.105)
+	check(absf(chart.samples[0].x + 0.05) < 1e-4 and absf(chart.samples[0].y - launch.y) < 1e-5,
+		"Relaunch starts a fresh trace at the midplane")
+	_set_slider(1, 0, eye)
+	_set_slider(2, 0, eye)
+	check(chart.samples[-1] == Vector3.ZERO and chart._axis_top > 0, "Zero-energy launch has a finite plot scale")
+	exhibit.reset_defaults()
+
 func _check_displayed_relaunch(eye: Vector3) -> void:
 	# With a straight field and zero moment/potential the displayed heads must
 	# agree with Z = v*t for all five staggered copies in both directions.
@@ -397,17 +454,20 @@ func _check_displayed_relaunch(eye: Vector3) -> void:
 	for track: int in [0, 7]:
 		var direction := -1 if track == 0 else 1
 		for copy in display.COPIES:
-			var p: int = (track * display.COPIES + copy) * (display.TAIL + 1) * 2
+			var p: int = (track * display.COPIES + copy) * (display.trail_segments + 1) * 2
 			var head_x: float = (display._vertices[p].x + display._vertices[p + 1].x) / 2
 			var elapsed := fmod(age - copy * spacing, cycle)
 			var expected_z := minf(elapsed * Orbit.CLOCK * 1050000.0, Field.LIMIT) * direction
 			check(absf(head_x - expected_z * display.SCALE.x) < 0.001, "Displayed expander position of copy %d" % copy)
 	display.advance(cycle - fmod(age, cycle) + 0.025)
-	var start := 7 * display.COPIES * (display.TAIL + 1) * 2
-	for j in 2 * (display.TAIL + 1):
+	var start := 7 * display.COPIES * (display.trail_segments + 1) * 2
+	for j in 2 * (display.trail_segments + 1):
 		check(absf(display._vertices[start + j].x) < 0.20, "No trail joins the expander tip to the next midplane launch")
 	_set_slider(0, Field.REF_RATIO, eye)
 	_set_slider(2, 0.25, eye)
+	var throat_omega := Field.CHARGE * exhibit.field.magnitude(exhibit.field.throat) / Field.MASS
+	var trail_step := 0.20 / display.trail_segments
+	check(throat_omega * Orbit.CLOCK * trail_step < PI, "Trail samples resolve the gyro rotation through the throat")
 
 func _set_slider(widget: int, value: float, origin: Vector3) -> void:
 	var point := _track_point(widget, value)
@@ -461,7 +521,7 @@ func _desktop_pictures() -> void:
 	var reset_at := _world_pixel(Face.RESET_RECT.get_center())
 	_aim(Visitor.MOUSE_POINTER, visitor.camera.global_position, reset_at, true)
 	_aim(Visitor.MOUSE_POINTER, visitor.camera.global_position, reset_at, false)
-	exhibit.apparatus.advance(4.45)
+	exhibit._process(4.45)
 	var folder := "res://.godot/review"
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(folder))
 	await _picture(folder + "/mirror-pedestal.png", Vector3(0, 1.71, 4.75), Vector3(0, 2.20, -0.35))
@@ -471,6 +531,8 @@ func _desktop_pictures() -> void:
 	await _picture(folder + "/mirror-atrium.png", Vector3(-2.9, 1.71, 9.4), Vector3(-5.3, 1.7, 5.5))
 	await _picture(folder + "/gallery-three-approach.png", Vector3(5.9, 1.18, 10.3), Vector3(6.9, 1.55, 5.5))
 	await _picture(folder + "/mirror-console.png", Vector3(0.0, 1.65, 2.10), Vector3(0, 1.01, 0.88))
+	await _picture(folder + "/mirror-energy.png", Vector3(2.14, 1.53, 2.15), Vector3(2.34, 1.13, 0.99))
+	exhibit.energy_panel.get_viewport().get_texture().get_image().save_png(folder + "/mirror-energy-plot.png")
 	_set_slider(1, 490, visitor.camera.global_position)
 	_set_slider(2, 0.25, visitor.camera.global_position)
 	_set_slider(3, 4, visitor.camera.global_position)

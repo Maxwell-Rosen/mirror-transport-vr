@@ -10,6 +10,10 @@ Build a museum where visitors can explore magnetic mirror equilibrium and plasma
 - Use [INTRO_MIRROR_INTERACTIVE.md](INTRO_MIRROR_INTERACTIVE.md) for the first exhibit’s particle orbits, sliders and loss-cone plot.
 - Use [PLAN.md](PLAN.md) for the broader exhibit plan, simulation exports and first playable build.
 
+## Blackboards and lettering
+
+Use matte black faces (`#000000`) with white lettering (`#ffffff`) for all museum boards on desktop and in VR. Apply the shared palette to the title and pause menus, foyer and gallery signs, floor instructions, exhibit controls, plot labels and readouts. Show particle groups and field-line outcomes with coloured markers, curves and legend swatches. [Shared board palette](museum/board_style.gd)
+
 ## Simulation fidelity and exhibit labels
 
 Every plot, mesh, animation and probe readout that presents simulation data must faithfully represent the original output. Use the saved run as the reference for numerical values and the thesis at `~/Documents/PhD-thesis-latex` for their physical interpretation.
