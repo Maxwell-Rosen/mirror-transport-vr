@@ -61,16 +61,17 @@ func _set_energy_axis() -> void:
 func _draw() -> void:
 	draw_rect(Rect2(Vector2.ZERO, size), Board.FACE)
 	words(Vector2(32, 52), "How is the ion’s energy divided?", 40, SERIF)
+	draw_texture_rect(ION_HALO, Rect2(735, 10, 58, 58), false)
 	draw_circle(Vector2(764, 39), 8, COLORS[followed], true, -1, true)
 	words(Vector2(784, 49), "Particle %d" % (followed + 1), 28)
 	draw_line(Vector2(32, 68), Vector2(928, 68), GRID, 2)
 	if samples.is_empty():
 		return
 	var current := samples[-1]
-	draw_line(Vector2(36, 101), Vector2(77, 101), PARALLEL, 5)
-	words(Vector2(89, 111), "Parallel   K∥   %s" % _reading(current.y), 26)
-	draw_line(Vector2(445, 101), Vector2(486, 101), PERPENDICULAR, 3)
-	words(Vector2(498, 111), "Perpendicular   K⊥   %s" % _reading(current.z), 26)
+	draw_line(Vector2(36, 101), Vector2(72, 101), PARALLEL, 6)
+	words(Vector2(82, 112), "Parallel K∥  %s" % _reading(current.y), 31)
+	draw_line(Vector2(420, 101), Vector2(456, 101), PERPENDICULAR, 4)
+	words(Vector2(466, 112), "Perpendicular K⊥  %s" % _reading(current.z), 31)
 	_axes([-WINDOW_US, -7.5, -5, -2.5, 0], Vector2(-WINDOW_US, 0), [0, _axis_top / 2, _axis_top],
 		Vector2(0, _axis_top), "Particle time relative to now   Δt (µs)", "Kinetic energy   K (%s)" % _unit, PLOT)
 	var parallel := PackedVector2Array()
@@ -81,8 +82,8 @@ func _draw() -> void:
 		parallel.append(Vector2(x, PLOT.end.y - sample.y * scale_y))
 		perpendicular.append(Vector2(x, PLOT.end.y - sample.z * scale_y))
 	if parallel.size() > 1:
-		draw_polyline(parallel, PARALLEL, 5, true)
-		draw_polyline(perpendicular, PERPENDICULAR, 2.5, true)
+		draw_polyline(parallel, PARALLEL, 6, true)
+		draw_polyline(perpendicular, PERPENDICULAR, 4, true)
 	draw_circle(parallel[-1], 5, PARALLEL, true, -1, true)
 	draw_rect(Rect2(perpendicular[-1] - Vector2(4, 4), Vector2(8, 8)), PERPENDICULAR)
 	draw_line(Vector2(32, 494), Vector2(928, 494), GRID, 2)

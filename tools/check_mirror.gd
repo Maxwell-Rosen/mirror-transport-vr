@@ -52,6 +52,11 @@ func _menu_checks() -> void:
 	check(paused and menu.screen == Menu.Screen.TITLE and menu.music.playing and not promenade.playing, "The title opens with the quartet")
 	check(is_equal_approx(menu.music.stream.get_length(), 30.0) and menu.music.stream.loop, "Title quartet loops at 30 seconds")
 	await _check_title_fountain(menu)
+	var rendered := DisplayServer.get_name() != "headless"
+	var title_floor: Color
+	if rendered:
+		await RenderingServer.frame_post_draw
+		title_floor = _title_floor_color()
 	if "--pictures" in OS.get_cmdline_user_args():
 		await _menu_picture("title")
 	var title_water_gain := menu.spring.sound.volume_linear
@@ -83,13 +88,18 @@ func _menu_checks() -> void:
 	_click_menu(menu.face.primary)
 	check(not paused and menu.screen == Menu.Screen.VISIT and mirror.spread == spread and mirror.apparatus.clock == elapsed, "Click resumes the same trial")
 	_key(KEY_ESCAPE)
-	_click_menu(menu.face.restart)
 	var previous_scene := current_scene
+	_click_menu(menu.face.restart)
 	for i in 8:
-		await process_frame
+		if rendered:
+			await RenderingServer.frame_post_draw
+		else:
+			await process_frame
 		if current_scene and current_scene != previous_scene:
 			break
 	check(current_scene != previous_scene, "Reset to title replaces the visit")
+	if rendered:
+		check(_title_floor_color().is_equal_approx(title_floor), "The first frame after reset draws the original stone floor")
 	menu = current_scene.get_node("VisitMenu")
 	mirror = current_scene.get_node("MagneticMirror")
 	player = current_scene.get_node("Visitor")
@@ -103,6 +113,11 @@ func _menu_checks() -> void:
 	_key(KEY_ESCAPE)
 	_key(KEY_ESCAPE)
 	check(menu.screen == Menu.Screen.VISIT and not paused, "Escape resumes a paused visit")
+
+func _title_floor_color() -> Color:
+	# The lower-right corner of the title shot looks at the stationary atrium floor.
+	var frame := root.get_texture().get_image()
+	return frame.get_pixelv(Vector2i(Vector2(frame.get_size()) * 0.9))
 
 func _check_title_fountain(menu: Menu) -> void:
 	var spring := menu.spring
@@ -318,6 +333,7 @@ func _visit_checks() -> void:
 	var plot_bottom := exhibit.loss_surface.to_global(Vector3.DOWN * half_height)
 	var mouth_top := exhibit.apparatus.global_position.y + exhibit.field.radius(Field.LIMIT) * Exhibit.Apparatus.SCALE.y
 	check(plot_bottom.y > mouth_top and is_equal_approx(Exhibit.CHART_X * 2, 7.2), "Panels clear the expander mouths at the original display width")
+	_check_energy_view()
 	visitor.position = exhibit.to_global(Vector3(0, 0.01, edge + 0.02))
 	exhibit._process(0.3)
 	check(exhibit.apparatus.clock == 0.0, "Paused on the hall side of the stripe")
@@ -382,6 +398,7 @@ func _visit_checks() -> void:
 		var aim_origin := eye if pointer == Visitor.MOUSE_POINTER else visitor.global_position + Vector3.UP * 1.08
 		_select_launch(4, pointer, aim_origin)
 		check(exhibit.energy_panel.followed == 4 and exhibit.energy_panel.orbit == exhibit.apparatus.tracks[4].orbit, "Select the +70 km/s launch on the energy panel")
+		_check_tracked_halo()
 		check(is_equal_approx(exhibit.apparatus.clock, 0.1), "Following a launch preserves the trial")
 		_select_launch(5, pointer, aim_origin)
 	_set_slider(1, 0, eye)
@@ -400,6 +417,53 @@ func _visit_checks() -> void:
 	_aim(0, visitor.camera.global_position, landing, true)
 	check(visitor.global_position.distance_to(landing) < 0.06, "Seated approach by teleport")
 	_aim(0, visitor.camera.global_position, landing, false)
+	var energy_view := exhibit.to_global(Exhibit.ENERGY_VIEW)
+	_aim(0, visitor.camera.global_position, energy_view, true)
+	check(visitor.global_position.distance_to(energy_view) < 0.06, "Teleport to the shared view of the mirror and energy plot")
+	_aim(0, visitor.camera.global_position, energy_view, false)
+
+func _check_energy_view() -> void:
+	var face := exhibit.get_node("EnergyPlot") as MeshInstance3D
+	var half_size := (face.mesh as QuadMesh).size / 2
+	check(face.position.x < -Exhibit.DESK_SIZE.x / 2 and face.to_global(Vector3.UP * half_size.y).y < exhibit.apparatus.global_position.y,
+		"Energy lectern stands to the left of the controls and below the mirror axis")
+	var targets: Array[Vector3] = []
+	for x: float in [-half_size.x, 0.0, half_size.x]:
+		for y: float in [-half_size.y, 0.0, half_size.y]:
+			targets.append(face.to_global(Vector3(x, y, 0)))
+	var display := exhibit.apparatus
+	var track := display.tracks[exhibit.energy_panel.followed]
+	for phase in 16:
+		var state := track.orbit.sample(4.0 * track.orbit.leg_time / Orbit.CLOCK * phase / 16)
+		targets.append(display.to_global(display._particle_position(track, state)))
+	for ring in display.rings:
+		targets.append(ring.global_position)
+	# Use the project's desktop framing even under the 64 × 64 headless display.
+	var view := SubViewport.new()
+	view.size = Vector2i(ProjectSettings.get_setting("display/window/size/viewport_width"),
+		ProjectSettings.get_setting("display/window/size/viewport_height"))
+	view.render_target_update_mode = SubViewport.UPDATE_DISABLED
+	root.add_child(view)
+	var camera := Camera3D.new()
+	camera.fov = visitor.camera.fov
+	view.add_child(camera)
+	for height: float in [1.18, 1.71]:
+		var eye := exhibit.to_global(Exhibit.ENERGY_VIEW + Vector3.UP * height)
+		camera.global_position = eye
+		camera.look_at((face.global_position + display.global_position) / 2)
+		var left := eye.direction_to(face.to_global(Vector3.LEFT * half_size.x))
+		var right := eye.direction_to(face.to_global(Vector3.RIGHT * half_size.x))
+		check(left.angle_to(right) > deg_to_rad(32) and face.global_basis.z.dot(face.global_position.direction_to(eye)) > 0.9,
+			"Energy graph is large and faces the viewing position")
+		for point in targets:
+			var ray := PhysicsRayQueryParameters3D.create(eye, point, 1)
+			ray.exclude = [visitor.get_rid()]
+			check(camera.is_position_in_frustum(point), "Shared view at %.2f m includes %s (%s viewport)" % [
+				height, exhibit.to_local(point), camera.get_viewport().get_visible_rect().size])
+			var hit := visitor.get_world_3d().direct_space_state.intersect_ray(ray)
+			check(hit.is_empty(), "Sightline at %.2f m to %s clears the lecterns (hit %s)" % [
+				height, exhibit.to_local(point), exhibit.to_local(hit.position) if hit else "none"])
+	view.free()
 
 func _check_line_colour(index: int, expected: Color) -> void:
 	var speed := (2 * index - 7) * exhibit.spread * 1000.0 / 7.0
@@ -414,11 +478,13 @@ func _check_line_colour(index: int, expected: Color) -> void:
 func _check_energy_trace(eye: Vector3) -> void:
 	exhibit.reset_defaults()
 	var chart := exhibit.energy_panel
+	_check_tracked_halo()
 	check(exhibit.get_node("ApparatusClock").text.contains("2 µs"), "Particle clock is on the apparatus")
 	var launch := chart.samples[-1]
 	check(chart.samples.size() == 1 and absf(launch.y - 0.30894647) < 1e-6 and absf(launch.z - 0.53061796) < 1e-6,
 		"Particle 6 starts with 309 eV parallel and 531 eV perpendicular")
 	exhibit._process(chart.orbit.leg_time / Orbit.CLOCK)
+	_check_tracked_halo()
 	var turn := chart.samples[-1]
 	check(chart.samples.size() > 1 and turn.x == 0 and turn.y < 1e-6 and absf(turn.z - 0.83956443) < 1e-6,
 		"The magnetic turn transfers the launch parallel energy to perpendicular motion")
@@ -429,16 +495,31 @@ func _check_energy_trace(eye: Vector3) -> void:
 	var transit := chart.orbit.leg_time / Orbit.CLOCK
 	var cycle := transit + Orbit.TIP_FADE_SECONDS
 	exhibit._process(fposmod(transit + 0.08 - chart.age, cycle))
+	_check_tracked_halo()
 	var tip := chart.samples[-1]
 	check(absf(tip.x + 0.16) < 1e-4 and absf(tip.y - (launch.y + 4.0)) < 1e-5 and absf(tip.z - launch.z) < 1e-6,
 		"The ion gains 4 keV at the grounded tip and the trace ends at the physical boundary")
 	exhibit._process(0.105)
+	_check_tracked_halo()
 	check(absf(chart.samples[0].x + 0.05) < 1e-4 and absf(chart.samples[0].y - launch.y) < 1e-5,
 		"Relaunch starts a fresh trace at the midplane")
 	_set_slider(1, 0, eye)
 	_set_slider(2, 0, eye)
 	check(chart.samples[-1] == Vector3.ZERO and chart._axis_top > 0, "Zero-energy launch has a finite plot scale")
 	exhibit.reset_defaults()
+
+func _check_tracked_halo() -> void:
+	var display := exhibit.apparatus
+	var line := exhibit.energy_panel.followed
+	var track := display.tracks[line]
+	var state := track.orbit.sample(display.clock)
+	check(display.halo.position.is_equal_approx(display._particle_position(track, state))
+		and is_equal_approx(display.halo.modulate.a, state.z), "Halo follows the energy trace’s ion at its current launch age")
+	if DisplayServer.get_name() != "headless":
+		var first := line * display.COPIES
+		check(display.halo.position.is_equal_approx(display.heads.get_instance_transform(first).origin)
+			and absf(display.halo.modulate.a - display.heads.get_instance_color(first).a) < 0.004,
+			"Halo matches the rendered first marker’s position and opacity")
 
 func _check_displayed_relaunch(eye: Vector3) -> void:
 	# With a straight field and zero moment/potential the displayed heads must
@@ -531,7 +612,10 @@ func _desktop_pictures() -> void:
 	await _picture(folder + "/mirror-atrium.png", Vector3(-2.9, 1.71, 9.4), Vector3(-5.3, 1.7, 5.5))
 	await _picture(folder + "/gallery-three-approach.png", Vector3(5.9, 1.18, 10.3), Vector3(6.9, 1.55, 5.5))
 	await _picture(folder + "/mirror-console.png", Vector3(0.0, 1.65, 2.10), Vector3(0, 1.01, 0.88))
-	await _picture(folder + "/mirror-energy.png", Vector3(2.14, 1.53, 2.15), Vector3(2.34, 1.13, 0.99))
+	var energy_face := exhibit.get_node("EnergyPlot") as MeshInstance3D
+	var energy_target := (energy_face.position + exhibit.apparatus.position) / 2
+	await _picture(folder + "/mirror-energy.png", Exhibit.ENERGY_VIEW + Vector3.UP * 1.71, energy_target)
+	await _picture(folder + "/mirror-energy-seated.png", Exhibit.ENERGY_VIEW + Vector3.UP * 1.18, energy_target)
 	exhibit.energy_panel.get_viewport().get_texture().get_image().save_png(folder + "/mirror-energy-plot.png")
 	_set_slider(1, 490, visitor.camera.global_position)
 	_set_slider(2, 0.25, visitor.camera.global_position)

@@ -3,6 +3,7 @@ extends Control
 ## tracks and their ray targets; the SubViewports redraw on changes only.
 
 const Board := preload("res://museum/board_style.gd")
+const ION_HALO := preload("res://museum/mirror/tracked_ion_halo.tres")
 const Field := preload("res://museum/mirror/field.gd")
 const Orbit := preload("res://museum/mirror/orbit.gd")
 const SANS := preload("res://museum/fonts/DejaVuSans.ttf")
@@ -294,7 +295,7 @@ func _loss_plot() -> void:
 	draw_circle(Vector2(45, 569), 8, COLORS[followed], true, -1, true)
 	words(Vector2(65, 580), "Particle %d   %s   ·   %s" % [followed + 1, speed_label(speed), status[Field.outcome(speed * 1000, top)]], 31)
 	words(Vector2(37, 612), "Escape threshold at μ = %.2f keV/T    %.1f km/s" % [moment, sqrt(2.0 * top.joules / Field.MASS) / 1000], 24)
-	words(Vector2(37, 640), "Select a numbered point to trace its particle’s energy.", 21)
+	words(Vector2(37, 640), "Select a point to trace its ion’s energy. A white halo marks the ion.", 21)
 	draw_line(Vector2(36, 652), Vector2(764, 652), GRID, 2)
 	words(Vector2(37, 686), "Field lines show the outcome of each launch.", 25)
 	var legend := ["Turns back", "Escapes", "At rest / boundary"]

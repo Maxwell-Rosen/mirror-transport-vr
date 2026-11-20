@@ -17,4 +17,4 @@
 # Raw Gkeyll simulation output
 *.gkyl
 *.zip
-beams-and-tandem/*
+gkeyll-data/*

@@ -9,13 +9,13 @@ In the entry foyer, place a controls graphic beside the doorway, opposite the we
 | Look around | Turn your head. Flick the right stick left or right to turn in steps. | Move the mouse to look and aim. |
 | Walk along the floor | Push the left stick in the direction you want to move. | Use W and S to move forward and back, and A and D to step left and right. |
 
-For a comfortable way to travel in VR, aim at the floor near a gallery entrance and squeeze the trigger when the pointer extends to teleport to that viewpoint. In the mirror gallery you can also aim at the floor beyond either expander to look down the axis. This works seated or standing. The headset also tracks leaning and physical steps, so you can lean toward a label or step back to see the whole exhibit. You can reach each exhibit from a chair using the controllers alone.
+For a comfortable way to travel in VR, aim at the floor near a gallery entrance and squeeze the trigger when the pointer extends to teleport to that viewpoint. In the mirror gallery, aim at the open floor a step back and left of the controls to see the bouncing ion and energy plot together, or beyond either expander to look down the axis. This works seated or standing. The headset also tracks leaning and physical steps, so you can lean toward a label or step back to see the whole exhibit. You can reach each exhibit from a chair using the controllers alone.
 
 The broader exhibit plan also includes optional flight for viewing the taller displays, with ascent, descent, a level horizon and a control to return to the floor beneath you. [Exhibit plan](PLAN.md)
 
 ## Use an exhibit
 
-Point a controller at a button and squeeze the trigger, or aim with the mouse and left-click. To move a slider or probe, hold the trigger or left mouse button, move along the slider or rail, then release. Select a numbered launch point on the left plot to trace its particle’s kinetic energies on the lectern beside the controls. Dragging a slider changes that setting while the particles keep moving. The pedestal’s **Reset** restores all opening settings and restarts the staggered launches. [Mirror exhibit](INTRO_MIRROR_INTERACTIVE.md)
+Point a controller at a button and squeeze the trigger, or aim with the mouse and left-click. To move a slider or probe, hold the trigger or left mouse button, move along the slider or rail, then release. Select a numbered point on the loss-cone plot. A soft white glow follows that ion, and the lectern left of the launch controls plots its kinetic energies. Dragging a slider changes that setting while the particles keep moving. The pedestal’s **Reset** restores all opening settings and restarts the staggered launches. [Mirror exhibit](INTRO_MIRROR_INTERACTIVE.md)
 
 ## Title screen and pause menu
 

@@ -44,10 +44,12 @@ var rings: Array[Node3D] = []
 var exit_labels: Array[Label3D] = []
 var lines := MultiMesh.new()
 var heads := MultiMesh.new()
+var halo := Sprite3D.new()
 var tails := ArrayMesh.new()
 var clock := 0.0
 var last_tick := -1
 var trail_segments := 0
+var _followed_line := InstrumentPanel.DEFAULT_FOLLOWED
 var _samples_per_tick := 0
 var _history_size := 0
 var _tail_mesh := MeshInstance3D.new()
@@ -130,6 +132,12 @@ func build(model: Field, copper: Material, brass: Material, bed_top: float) -> v
 	markers.multimesh = heads
 	markers.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(markers)
+	halo.texture = InstrumentPanel.ION_HALO
+	halo.pixel_size = 0.0019
+	halo.render_priority = -1  # Draw behind the coloured particle heads.
+	halo.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	halo.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	add_child(halo)
 	_tail_mesh.mesh = tails
 	_tail_mesh.material_override = particles
 	_tail_mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
@@ -284,6 +292,18 @@ func _marker(line: int, copy: int, p: Vector3, opacity: float) -> void:
 	var id := line * COPIES + copy
 	heads.set_instance_transform(id, Transform3D(Basis.IDENTITY, p))
 	heads.set_instance_color(id, Color(InstrumentPanel.COLORS[line], opacity))
+	if line == _followed_line and copy == 0:
+		halo.position = p
+		if halo.modulate.a != opacity:
+			halo.modulate.a = opacity
+
+func follow(line: int) -> void:
+	if line == _followed_line:
+		return
+	_followed_line = line
+	var track := tracks[line]
+	var state := track.orbit.sample(clock)
+	_marker(line, 0, _particle_position(track, state), state.z)
 
 func _trail(line: int, copy: int, age: int, head: Vector3, opacity: float, generation: int) -> void:
 	var track := tracks[line]

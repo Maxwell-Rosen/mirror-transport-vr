@@ -11,6 +11,7 @@ const CHART_X := Field.LIMIT * Apparatus.SCALE.x
 const CHART_Y := 3.92
 const CHART_Z := 0.60
 const CHART_YAW := 32.0
+const ENERGY_VIEW := Vector3(-0.75, 0, 3.40)
 
 var field := Field.new()
 var spread := Field.DEFAULT_SPREAD
@@ -58,6 +59,8 @@ func _ready() -> void:
 	zero.rotation.x = -PI / 2
 	box(Vector3(0, 0.10, 0.74), Vector3(1.57, 0.20, 0.63), "base", true)
 	box(Vector3(0, 0.50, 0.74), Vector3(1.43, 0.72, 0.43), "oak", true)
+	for kind: InstrumentPanel.Face in InstrumentPanel.Face.values():
+		_add_panel(kind)
 	desk = _make_face(InstrumentPanel.Face.CONTROLS, Vector3(0, 0.98, 0.88), Vector3(deg_to_rad(-40.0), 0, 0), DESK_SIZE)
 	_touch_face(desk, touch_surface, DESK_SIZE)
 	for side in [-1, 1]:
@@ -74,16 +77,21 @@ func _ready() -> void:
 		var face := _make_face(InstrumentPanel.Face.LOSS if side < 0 else InstrumentPanel.Face.POTENTIAL, centre, angles, face_size)
 		if side < 0:
 			_touch_face(face, loss_surface, face_size)
-	# The energy lectern faces the controls and sits below the expander sightline.
-	var energy_at := Vector3(2.34, 1.13, 0.99)
-	var energy_angles := Vector3(deg_to_rad(-38), deg_to_rad(-12), 0)
-	box(Vector3(energy_at.x, 0.085, energy_at.z), Vector3(1.10, 0.17, 0.62), "base", true)
-	box(Vector3(energy_at.x, 0.55, energy_at.z - 0.12), Vector3(0.46, 0.86, 0.22), "oak", true)
-	box(energy_at - Basis.from_euler(energy_angles).z * 0.11, Vector3(0.70, 0.48, 0.13), "oak", false, energy_angles)
-	_make_face(InstrumentPanel.Face.ENERGY, energy_at, energy_angles,
-		Vector2(1.78, 1.78 * EnergyPanel.PIXELS.y / EnergyPanel.PIXELS.x))
+	_build_energy_lectern()
 	assemble()
 	reset_defaults()
+
+func _build_energy_lectern() -> void:
+	var metres := Vector2(EnergyPanel.PIXELS) * (2.0 / EnergyPanel.PIXELS.x)
+	var centre := Vector3(-2.58, 1.08, 1.02)
+	var angles := Vector3(deg_to_rad(-14), deg_to_rad(24), 0)
+	var face := _make_face(InstrumentPanel.Face.ENERGY, centre, angles, metres)
+	face.name = "EnergyPlot"
+	var mount := face.transform * Vector3(0, -0.18, -0.16)
+	var yaw := Vector3(0, angles.y, 0)
+	box(Vector3(mount.x, 0.075, mount.z), Vector3(0.96, 0.15, 0.46), "base", true, yaw)
+	box(Vector3(mount.x, (mount.y + 0.15) / 2, mount.z), Vector3(0.52, mount.y - 0.15, 0.20), "oak", true, yaw)
+	box(mount, Vector3(0.72, 0.26, 0.24), "oak", false, angles)
 
 func _signage() -> void:
 	# Face the threshold with one inscription above the field and a clear axis below.
@@ -148,12 +156,7 @@ func _touch_face(face: MeshInstance3D, body: StaticBody3D, metres: Vector2) -> v
 	collider.position.z = -shape.size.z / 2
 	body.add_child(collider)
 
-func _make_face(kind: InstrumentPanel.Face, at: Vector3, angles: Vector3, metres: Vector2) -> MeshInstance3D:
-	var basis := Basis.from_euler(angles)
-	var backing := Vector3(metres.x + 0.045, metres.y + 0.045, 0.045)
-	box(at - basis.z * 0.03, backing, "lip", false, angles)
-	# Recess the solid back so the touch surface is the first hit from the front.
-	barrier(at - basis.z * 0.05, Vector3(backing.x, backing.y, 0.05), angles)
+func _add_panel(kind: InstrumentPanel.Face) -> void:
 	var viewport := SubViewport.new()
 	match kind:
 		InstrumentPanel.Face.CONTROLS: viewport.size = InstrumentPanel.CONTROL_SIZE
@@ -169,9 +172,16 @@ func _make_face(kind: InstrumentPanel.Face, at: Vector3, angles: Vector3, metres
 	panel.kind = kind
 	viewport.add_child(panel)
 	panels.append(panel)
+
+func _make_face(kind: InstrumentPanel.Face, at: Vector3, angles: Vector3, metres: Vector2) -> MeshInstance3D:
+	var basis := Basis.from_euler(angles)
+	var backing := Vector3(metres.x + 0.045, metres.y + 0.045, 0.045)
+	box(at - basis.z * 0.03, backing, "lip", false, angles)
+	# Recess the solid back so the touch surface is the first hit from the front.
+	barrier(at - basis.z * 0.05, Vector3(backing.x, backing.y, 0.05), angles)
 	var material := StandardMaterial3D.new()
 	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	material.albedo_texture = viewport.get_texture()
+	material.albedo_texture = panels[kind].get_viewport().get_texture()
 	material.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR
 	var quad := QuadMesh.new()
 	quad.size = metres
@@ -235,6 +245,7 @@ func _process(delta: float) -> void:
 func _observe_energy(force := false) -> void:
 	var line := panels[InstrumentPanel.Face.LOSS].followed
 	var track := apparatus.tracks[line]
+	apparatus.follow(line)
 	energy_panel.observe(line, track.orbit, track.direction, apparatus.clock, force)
 
 func _pixel(world_point: Vector3) -> Vector2:

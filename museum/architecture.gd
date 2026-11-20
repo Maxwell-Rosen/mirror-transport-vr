@@ -1,12 +1,14 @@
 extends Node3D
 ## Repeated architectural pieces share geometry and draw calls within each room.
 const Board := preload("res://museum/board_style.gd")
+# Baked from seamless smooth simplex noise (frequency 0.055, #ece9e4 to white)
+# so the stone is ready on the first frame after a scene reload.
+const STONE_GRAIN := preload("res://museum/stone_grain.png")
 
 var finishes := {}
 var batches := {}
 var prototypes := {}
 var zone := "Foyer"
-var stone_grain := NoiseTexture2D.new()
 var structure := StaticBody3D.new()
 
 func finish(key: String, hex: String, metallic := 0.0, roughness := 0.84) -> void:
@@ -15,16 +17,7 @@ func finish(key: String, hex: String, metallic := 0.0, roughness := 0.84) -> voi
 	m.metallic = metallic
 	m.roughness = roughness
 	if key in ["floor", "floor2", "plaster", "stone", "trim", "limestone"]:
-		if stone_grain.noise == null:
-			var noise := FastNoiseLite.new()
-			noise.noise_type = FastNoiseLite.TYPE_SIMPLEX_SMOOTH
-			noise.frequency = 0.055
-			stone_grain.noise = noise
-			stone_grain.seamless = true
-			var tint := Gradient.new()
-			tint.colors = PackedColorArray([Color("#ece9e4"), Color.WHITE])
-			stone_grain.color_ramp = tint
-		m.albedo_texture = stone_grain
+		m.albedo_texture = STONE_GRAIN
 		m.uv1_triplanar = true
 		m.uv1_world_triplanar = true
 		m.uv1_scale = Vector3.ONE * 0.55

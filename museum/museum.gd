@@ -247,7 +247,7 @@ func gallery(s: float, z: float, number: int) -> void:
 		var inner_edge := 7.94 + JAMB_DEPTH / 2
 		mirror.set_gallery(to_global(Vector3(s * inner_edge, 0, z)), OPENING, BAY - 0.24, HALL_WIDTH / 2 + DEPTH - 0.10 - inner_edge)
 		viewpoint(s * 8.95, z)
-		for stop in [Vector3(0, 0, 2.1), Vector3(-4.22, 0, 0), Vector3(4.22, 0, 0)]:
+		for stop in [Vector3(0, 0, 2.1), mirror.ENERGY_VIEW, Vector3(-4.22, 0, 0), Vector3(4.22, 0, 0)]:
 			var landing: Vector3 = to_local(mirror.to_global(stop))
 			viewpoint(landing.x, landing.z)
 		for edge in [-1.0, 1.0]:
