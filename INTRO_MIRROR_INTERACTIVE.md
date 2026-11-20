@@ -1,15 +1,91 @@
-# Interactive mirror demo
+# Exhibit 1 · The Magnetic Mirror
 
-This is the first thing players are met with. Exhibit 1. This is an interactive demo to explore the mirror loss cone. The double lorentzian geometry is shown in a table-top device. 8 field lines are shown, where there are 2 tori at the mirror throats. This is a simple mirror. The demo sits atop a pedestal, where there are various sliders on a control pannel. Particles orbit the field lines, bouncing at a reasonable speed, period around 4 seconds but keeping units rather physical, however the bouncing should not be too fast. There are several, around 5, particles on each field line which are tracing particle orbits. Each particle should have a disappearing trailing fading tail, which helps players see the history of where the particles were.
+**Which particles turn back, and which escape through the ends?** At the pedestal, follow the ion marked **+450 km/s**. Leave the other controls at their opening settings, set the mirror ratio to 15 and watch it cross the right-hand ring. Raise the ratio to 20 and launch it again. It turns before the ring, crosses the midplane and turns at the other end. Its launch speed and magnetic moment are the same in both trials.
 
-The animated mirror has a few sliders. The mirror ratio can be adjusted, going from straight field lines, mirror ratio 1, to high confinement, mirror ratio 50. The radius at the midplane z=0 remains fixed when the magnetic field strength is changed.
+Show two copper-coloured throat rings in profile, eight field lines and five ions per line with short fading trails. Give each line’s ions a colour and a matching numbered point on the loss-cone plot. Colour the field line for its current launch outcome. Bright blue marks confined ions, dark blue-grey marks escaping ions and pale grey marks a launch at rest or on the boundary. The central sign identifies the **idealized deuterium ion trajectories**. An ion turns where its motion along the field stops and reverses. It escapes the central cell when it crosses a throat moving outward. [Gallery layout](SETTING.md)
 
-A graphic lies on the control panel, showing the mirror loss cone, which is the trapped passing boundary. The coordinates are magnetic moment on the y-axis and parallel velocity on the x-axis. All particles start at z=0.The 8 field lines have particles with different parallel velocities, which are fixed in 8 equally spaced points, shown on the graphic. THe field lines are all blue, and the particles on the same field line are the same color, but the color of the particles varies from field line to field line. This color is shown as a point on the control pannel so that players understand which point is which particle trace. The spread of the parallel velocity points can be controlled by a slider on the control panel
+## Double-Lorentzian field
 
-A slider controls the magnetic moment of the particles. Another slider controls the ambipolar potential in the mirror. This can be represented as a parabola. A graphic on the control panel should show the potential here, as well as the loss cone changing according to the ambipolar potential. The potential slider can either be positive or negative, so it should start at zero, which is in the middle.
+Use physical axial position $Z$ in metres, with the midplane at zero. The two Lorentzians are centred at $\pm a$, with $a=0.98\,\mathrm{m}$. In the thesis reference geometry their width is $\gamma_*=0.124904\,\mathrm{m}$ and their amplitude parameter is $\mathcal B=6.51292\,\mathrm{T\,m}$. The reference flux is $\psi(r,Z)=r^2 F_*(Z)/2$, where
 
-There is a reset button to put all particles back to z=0
+$$
+L_\gamma(Z)=\frac{1}{1+[(Z-a)/\gamma]^2}+\frac{1}{1+[(Z+a)/\gamma]^2},
+\qquad F_*(Z)=\frac{\mathcal B}{\pi\gamma_*}L_{\gamma_*}(Z).
+$$
 
-For simplicity, you may want to implement some reduced equations. The code may want to track the gyrocenters and rotation frequency, employing a drift-kinetic framework.
+Set $B_0=F_*(0)=0.53062\,\mathrm{T}$. The positive peak is at $Z_t=0.97997\,\mathrm{m}$, where the field reaches $16.6649\,\mathrm{T}$. Mark the default slider position **Thesis geometry (nominal R32)** with a live ratio readout of **31.41**. Show the midplane and throat strengths in tesla beside the slider. [Thesis geometry construction](<../PhD-thesis-latex/Chapter Gkeyll Foundations/tex-files/mirror-geometry.tex>) · [Published flux model, Eq. 1](https://arxiv.org/pdf/2305.06372)
 
-The animation should stop when players get too far away from the exhibit to save on compute. Place a yellow and black line on the floor to show that there is a radius which animations play inside. It should be quite generous.
+Keep $B_0$ fixed as the visitor changes the ratio $R_m=B_t/B_0$. From 3 to 50, narrow the two Lorentzians as the ratio rises, following the thesis geometry scan. For each requested ratio, solve for $\gamma$ by bisection on $[0.09,0.46]\,\mathrm{m}$, using the positive peak $Z_t=\arg\max_{Z\ge0}L_\gamma(Z)$.
+
+$$
+R_m=\frac{L_\gamma(Z_t)}{L_\gamma(0)},\qquad
+F(Z)=B_0\frac{L_\gamma(Z)}{L_\gamma(0)},
+\qquad \psi(r,Z)=\tfrac12 r^2 F(Z).
+$$
+
+For $1\le R_m<3$, blend the ratio-three profile $F_3$ with a uniform field using $F=B_0+(R_m-1)(F_3-B_0)/2$. This exhibit extension gives exactly straight lines at one and joins the double-Lorentzian scan continuously at three. Place the exits at the current peaks, keeping the ratio-three positions for the blend. Follow both expanders to the run boundaries at $Z=\pm2.5\,\mathrm{m}$, about 1.52 physical metres beyond each throat. The configuration-space limits and the mirror-grid limits in the input deck agree with the first and last saved physical nodes. [Run input](../gkylmax/a-thesis-simulations/1x-beams/sim.c) · [Double-Lorentzian scan inputs](../gkyl-paper-inp/2026_PRE_hts_mirror_equilibria/generate_efit/write_efit_double_lorentzian.py)
+
+All eight lines lie on the flux surface through $r_0=0.10\,\mathrm{m}$ at the midplane, spaced at $45^\circ$ in azimuth. Compute the line radius, local field strength and arc length from the same flux. Primes denote derivatives with respect to $Z$.
+
+$$
+r(Z)=r_0\sqrt{B_0/F(Z)},\qquad
+B_Z=F(Z),\qquad B_r=-\tfrac12 r F'(Z),\qquad
+B(Z)=\sqrt{B_Z^2+B_r^2},\qquad \frac{ds}{dZ}=\sqrt{1+[r'(Z)]^2}.
+$$
+
+At either throat $r_t=r_0/\sqrt{R_m}$, about 1.78 cm at the default. The rings need enough clearance for the straight-field setting. Draw the model at **1.44× axial scale and 5.4× radial scale**. The display is 7.2 m tip to tip, with 2.82 m between the rings and a 54 cm midplane radius. Each flared expander extends another 2.19 m in the gallery. Label the relative radial enlargement **3.75×**. Apply the scale to finished positions, after computing physical lengths, speeds and forces.
+
+## Launch controls and plots
+
+| Pedestal control | Proposed range | Opening setting |
+| --- | --- | --- |
+| Mirror ratio $R_m$ (dimensionless) | 1–50, with a detent at the thesis geometry | 31.40658 |
+| Parallel speed spread $V$ | 0–1,400 km/s | 1,050 km/s |
+| Magnetic moment $\mu$ | 0–1.00 keV/T | 0.25 keV/T |
+| Midplane potential relative to the throats $\Delta\phi$ | −5 to +5 kV, with zero at the centre | 0 kV |
+
+Launch from $Z=0$ with $v_{\parallel0,i}=(2i-7)V/7$ for $i=0,\ldots,7$. At the default the four speed magnitudes are 150, 450, 750 and 1,050 km/s, each launched in both directions. All five ions on a line share that line’s launch velocity and the common $\mu$. Stagger the five releases across a full bounce or a trip to the expander tip and relaunch. Round the interval to the nearest 1/60 exhibit second and cap it at 1.5 exhibit seconds so a slow trial fills promptly. While dragging a slider, hold the ions at launch and update the geometry, plots and launch points together. On release, start a fresh trial. **Reset** clears the trails and returns every guiding centre to the midplane with the current controls. Keep an escaping marker visible through the entire expander, where the model potential stays at zero. At the tip, fade it over 0.16 exhibit seconds and relaunch it at the midplane with a fresh trail. [VR and desktop bindings](CONTROLS.md)
+
+Use two graphs on the panel. Keep their axes in physical units as the sliders move.
+
+- **Where will each ion go?** Plot signed *launch parallel velocity* $v_{\parallel0}$ (−1,400 to +1,400 km/s) horizontally and *magnetic moment* $\mu$ (0 to 1 keV/T) vertically. Draw the boundary derived below and label the regions **turns back** and **escapes**. Plot the eight launch points on the selected $\mu$ row. At $V=0$ they coincide. Label the point **8 launches at rest along the field**.
+- **What accelerates the ion?** Plot the prescribed potential $\phi(Z)=\Delta\phi[1-(Z/Z_t)^2]$ between the two rings. Label *axial position* $Z$ (m) and *electric potential* $\phi$ (kV), with a fixed −5 to +5 kV vertical scale. Both throats are at zero. Continue the curve at zero to each expander tip. A positive midplane potential gives a positive ion kinetic energy as it moves outward. A negative one raises the energy needed to escape. Label this **model ambipolar potential**.
+
+## Orbit dynamics and the loss cone
+
+Use collisionless guiding centres on the prescribed lines. Take the run’s deuterium model, $q=+e$ and $m=2.014m_p$. Compute in SI, converting keV/T to J/T, kV to V and km/s to m/s at input. For fixed controls the magnetic moment $\mu=mv_\perp^2/(2B)$ and total energy $H$ are conserved. With $s$ increasing toward positive $Z$,
+
+$$
+U(s)=\mu B(s)+q\phi(s),\qquad H=\tfrac12 m v_\parallel^2+U(s),\qquad
+\dot s=v_\parallel,\qquad m\dot v_\parallel=-\mu\frac{dB}{ds}-q\frac{d\phi}{ds}.
+$$
+
+As an ion enters stronger field, its perpendicular kinetic energy $\mu B$ increases. With the potential set to zero this gain comes entirely from parallel motion. For display, advance each of the eight distinct launches once and sample its orbit at the five release times. A fixed physical substep in $(s,v_\parallel)$ with a bracketed turning-point or exit event allows a smooth reversal at the first reachable $H=U$. An ion launched with zero parallel speed stays at the symmetric midplane. [Thesis orbit classification](<../PhD-thesis-latex/Chapter Gkeyll Foundations/tex-files/orbit-average-phase-implementation.tex>)
+
+For each plotted $\mu$, find the highest effective potential **on the path from the midplane to the exit**. The two exits are symmetric. The two branches of the boundary are
+
+$$
+\Delta U(\mu)=\max_{0\le Z\le Z_t}\,[U(Z)-U(0)],\qquad
+v_{\parallel0}=\pm\sqrt{2\Delta U(\mu)/m}.
+$$
+
+Refine interior maxima and include both endpoints. For a moving launch, a speed magnitude above the threshold escapes and one below it turns. Mark equality as **on the boundary** for a nonzero launch. The orbit and the plot must use the same field and potential. At zero potential, $\Delta U=\mu B_0(R_m-1)$. For $R_m>1$ the boundary on this plot is the parabola $\mu=m v_{\parallel0}^2/[2 B_0(R_m-1)]$. In velocity space the same boundary is a cone about each axial direction, with half-angle $\sin^{-1}(1/\sqrt{R_m})$. At $R_m=1$ the general rule still works, including purely electrostatic trapping. At $\mu=0$ the gyro-radius vanishes.
+
+## Playback and visible gyration
+
+Calibrate to the **+450 km/s** launch at the opening settings. Its first turn is at $Z_b=0.86424\,\mathrm{m}$. A *full bounce* returns through the midplane with the original velocity sign. In physical time,
+
+$$
+T_b=4\int_0^{Z_b}\frac{(ds/dZ)\,dZ}{\sqrt{2[H-U(Z)]/m}}
+    =9.261\,\mu\mathrm{s}.
+$$
+
+Label the pedestal **“1 exhibit second = 2.315 µs of ion motion.”** That makes this bounce four seconds. Keep the same clock for every launch and slider setting so changes in bounce and transit times remain visible.
+
+Draw the gyromotion about the local field tangent with physical radius $\rho=mv_\perp/(|q|B)$ and angular frequency magnitude $\Omega=|q|B/m$. For legibility, advance the visible phase at $\Omega/64$ in physical time, in the positive ion’s sense of rotation. Label **“Gyro rotation shown at 1/64 speed relative to ion motion.”** At the reference midplane $\rho=4.45\,\mathrm{mm}$, about 2.4 cm at display scale. Transform the physical gyro offset with the line, and fade the last 0.2 exhibit seconds of each trail.
+
+## Checks for the first build
+
+- **Geometry.** Use the `1x-beams` static geometry requested through the [simulation data workflow](PLAN.md#platform-and-simulation-data) to verify these reference values for frame 0, time 0 s. At the positive midplane-adjacent cell centre, expect $Z=0.010876\,\mathrm{m}$ and $B=0.53087\,\mathrm{T}$. The positive peak cell has $Z=0.979165\,\mathrm{m}$ and $B=16.66235\,\mathrm{T}$. These are cell-centre evaluations of the saved linear DG field in `zzim-geo_int_bmag.gkyl`, paired with `zzim-geo_corn_mc2nu_pos_deflated.gkyl`. Check the default model at those same physical coordinates to within 0.1%. Cross-check radii against `zzim-geo_corn_nodes.gkyl`, which gives 0.10000 m at the midplane node and 0.01785 m at the node nearest the positive throat. At the expander tips, the saved nodes at $Z=\pm2.5\,\mathrm{m}$ have radius 0.19998 m. The adjacent field cells are centred at $|Z|=2.4875\,\mathrm{m}$ with field strength 0.13563 T. Record these files, `sim.c`, the analytic slider formula and the display scaling in the exhibit manifest. The launch points, potentials and trajectories are analytic exhibit settings.
+- **Orbits and plot.** At the default the threshold is 619.4 km/s. The ±150 and ±450 km/s launches turn, and the ±750 and ±1,050 km/s launches escape. With straight lines and zero potential, every moving launch escapes. With the reference geometry, $\mu=0.25\,\mathrm{keV/T}$ and $\Delta\phi=+4\,\mathrm{kV}$, the barrier is about 0.097 keV at $Z=0.964\,\mathrm{m}$. Set $V=490$ km/s and follow the +70 km/s ion. It turns at $Z=0.950\,\mathrm{m}$. A throat-only comparison would incorrectly predict escape.
+- **Timing and interaction.** On desktop, check ten full reference bounces for less than 0.1% drift in energy relative to the launch kinetic energy, turns within 1 mm of the predicted position and a four-second return within 1%. Verify the same resets and slider releases with a controller ray. Keep the controls readable from a chair. Start the orbit clock when the visitor crosses the painted threshold into the gallery or teleports inside. Verify that the clock runs at both axial viewpoints and pauses with the trails when the visitor returns to the atrium. Resume the same trial on re-entry. Check the active display with all 40 markers against the sustained 72 fps Quest 3 target.
