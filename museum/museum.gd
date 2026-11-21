@@ -10,6 +10,7 @@ const JAMB_DEPTH := 0.64
 const END := -45.0
 const BAY_COUNT := 4
 const FOUNTAIN_RADIUS := 2.15
+const GALLERY_TITLES := {1: "The Magnetic\nMirror", 2: "Between\nBounces", 3: "Time\nDilation"}
 var spring := preload("res://museum/spring.gd").new()
 
 func _ready() -> void:
@@ -124,7 +125,7 @@ func gallery(s: float, z: float, number: int) -> void:
 	box(Vector3(s*7.93,jamb_height+lintel_height*0.5,z),Vector3(0.70,lintel_height,frame_width),"trim",true)
 	# Rooms extend outward, with the long axis available for the tandem gallery.
 	var mid := s*(HALL_WIDTH/2+DEPTH/2)
-	var is_open := number == 1 or number == 2
+	var is_open := GALLERY_TITLES.has(number)
 	box(Vector3(mid,-0.10,z),Vector3(DEPTH,0.20,BAY),"floor",is_open)
 	box(Vector3(mid,5.1,z),Vector3(DEPTH,0.20,BAY),"stone")
 	box(Vector3(s*(8+DEPTH),2.5,z),Vector3(0.2,5,BAY),"stone",is_open)
@@ -139,7 +140,7 @@ func gallery(s: float, z: float, number: int) -> void:
 	var sign_z := z + SIGN_OFFSET
 	box(Vector3(s*7.75,1.74,sign_z),Vector3(0.09,1.40,1.60),"board")
 	if is_open:
-		var title := "The Magnetic\nMirror" if number == 1 else "Between\nBounces"
+		var title: String = GALLERY_TITLES[number]
 		lettering(str(number), Vector3(s*7.69, 1.76, sign_z - s*0.55), 0.45, yaw, true)
 		lettering("·", Vector3(s*7.69, 1.76, sign_z - s*0.30), 0.21, yaw)
 		lettering(title, Vector3(s*7.69, 1.76, sign_z - s*0.16), 0.125, yaw, false, true)

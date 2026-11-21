@@ -74,6 +74,7 @@ func _run() -> void:
 	_check_teleport()
 	_check_exhibit_trigger()
 	_check_bead_trigger()
+	_check_lamp_trigger()
 	await _check_pause_and_reset()
 
 	menu = current_scene.get_node("VisitMenu")
@@ -169,13 +170,13 @@ func _check_teleport() -> void:
 	_stick(Vector2.ZERO)
 	check(visitor.position == HALL and not arc.visible, "Losing tracking cancels the pending jump until a fresh tilt")
 
-	var approach := Vector3(-6, 0.01, -17.5)
+	var approach := Vector3(-6, 0.01, -27.5)
 	visitor.face_atrium(approach)
 	for x: float in [-9.5, -7.69]:
-		_point_at(Vector3(-6.5, 0, -17.5))
+		_point_at(Vector3(-6.5, 0, -27.5))
 		_stick(Vector2.RIGHT)
 		check(arc.ring.is_visible_in_tree(), "Clear floor beside the gallery is reachable")
-		_point_at(Vector3(x, 0, -17.5))
+		_point_at(Vector3(x, 0, -27.5))
 		visitor.update_controller()
 		check(arc.visible and not arc.ring.is_visible_in_tree(), "The arc stops at a barrier and the circle requires capsule clearance")
 		_stick(Vector2.ZERO)
@@ -216,6 +217,27 @@ func _check_bead_trigger() -> void:
 	rings.advance(6)
 	check(rings.panel.paused and rings.panel.t == rings.Data.data.model.hold,
 		"The seated right controller can pause the bead stand and inspect the orbit-averaged phase")
+
+func _check_lamp_trigger() -> void:
+	var room := visitor.dilation
+	visitor.face_atrium(Vector3(-6,0.01,-17.5))
+	var landing := Vector3(-9.25,0,-17.5)
+	_point_at(landing)
+	_stick(Vector2.RIGHT)
+	var indicated := visitor.teleport_arc.ring.global_position
+	check(visitor.teleport_arc.ring.visible and indicated.distance_to(landing) < 0.09, "A seated visitor can teleport through the Gallery 3 entrance")
+	_stick(Vector2.ZERO)
+	check(visitor.position.distance_to(indicated) < 0.025 and room.contains_visitor(visitor.camera.global_position), "Gallery 3 has a walkable landing")
+	visitor.face_atrium(room.to_global(Vector3(1.92,0.01,2.55)))
+	for button in room.buttons:
+		_point_at(button.global_position)
+		hand.set_input(&"interact", 1.0)
+		visitor.update_controller()
+		check(room.hover == room.buttons.find(button), "The right trigger reaches each lamp control")
+		hand.set_input(&"interact", 0.0)
+		visitor.update_controller()
+	check(not room.mobile.saved_rates and room.mobile.slice_index == 1 and room.mobile.selected == 0,
+		"Quest trigger changes the clock mode, sample slice and inspected lamp")
 
 func _check_pause_and_reset() -> void:
 	visitor.face_atrium(HALL)

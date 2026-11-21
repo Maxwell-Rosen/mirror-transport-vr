@@ -1,0 +1,165 @@
+{
+  "run": "1x-beams",
+  "frame": 75,
+  "saved_time_s": 0.50015,
+  "files": {
+    "beta": "zzim-ion_fdot_multiplier_75.gkyl",
+    "ion_distribution": "zzim-ion_75.gkyl",
+    "axial_map": "zzim-geo_corn_mc2nu_pos_deflated.gkyl",
+    "velocity_map": "zzim-ion_mapc2p_vel.gkyl",
+    "velocity_jacobian": "zzim-ion_jacobvel.gkyl",
+    "total_jacobian": "zzim-geo_int_jacobtot.gkyl",
+    "magnetic_field": "zzim-geo_int_bmag.gkyl",
+    "density_check": "zzim-ion_M0_75.gkyl",
+    "geometry_jacobian": "zzim-geo_int_jacobgeo.gkyl"
+  },
+  "mu_cell": 0,
+  "mu_keV_T": 0.0443697167939313,
+  "reference_period_s": 3.6,
+  "brightness_decades": 24,
+  "brightness_floor": 0.15,
+  "method": {
+    "selection": "Positive-Z cell nearest the midplane and cell of maximum positive-Z cell-centre B. Ten positive parallel velocities in the lowest magnetic moment bin. Indices are zero-based.",
+    "coordinates": "Cell centres from physical faces of the saved 1D p=1 axial map and separable ion velocity maps. Magnetic moment in keV/T. The equally spaced clock rings order the selected velocities and do not represent distances.",
+    "beta": "Direct cellwise P0 fdot_multiplier value, dimensionless. One turn and one smooth pulse per reference_period_s / beta exhibit seconds. Reference mode uses 1 at every lamp.",
+    "relative_f": "Absolute physical cell-average ion distribution, divided by the largest of the ten sampled values in each slice. Physical average = distribution constant mode / (sqrt(8) * velocity Jacobian * cell-average total configuration Jacobian).",
+    "brightness": "Peak filament drive = floor + (1-floor) * clamp(1 + log10(relative_f) / brightness_decades, 0, 1). The pulse envelope modulates this between 28% and 100%.",
+    "check": "Integrating the signed reconstructed distribution over all velocities recovers the saved M0 density integral in each displayed axial cell, including the configuration Jacobian, to relative tolerance 1e-9."
+  },
+  "slices": [
+    {
+      "name": "Right throat",
+      "z_cell": 298,
+      "z_m": 0.9791294092455979,
+      "lamps": [
+        {
+          "v_cell": 41,
+          "v_parallel_m_s": 768473.7414578092,
+          "relative_f": 1.0,
+          "beta": 1.0
+        },
+        {
+          "v_cell": 42,
+          "v_parallel_m_s": 861364.3337579832,
+          "relative_f": 0.3545474681767481,
+          "beta": 1.0
+        },
+        {
+          "v_cell": 44,
+          "v_parallel_m_s": 1060184.4408732804,
+          "relative_f": 0.004005737183127712,
+          "beta": 1.0
+        },
+        {
+          "v_cell": 45,
+          "v_parallel_m_s": 1167581.0519168333,
+          "relative_f": 0.0004001647730497068,
+          "beta": 1.0
+        },
+        {
+          "v_cell": 46,
+          "v_parallel_m_s": 1281486.7435911195,
+          "relative_f": 2.0537840321457936e-05,
+          "beta": 1.0
+        },
+        {
+          "v_cell": 47,
+          "v_parallel_m_s": 1402992.6703432824,
+          "relative_f": 1.8095811530595904e-06,
+          "beta": 1.0
+        },
+        {
+          "v_cell": 48,
+          "v_parallel_m_s": 1533403.7785961328,
+          "relative_f": 6.320242597785814e-07,
+          "beta": 1.0
+        },
+        {
+          "v_cell": 52,
+          "v_parallel_m_s": 2181653.669965985,
+          "relative_f": 4.237189889882141e-11,
+          "beta": 0.7629487845295251
+        },
+        {
+          "v_cell": 57,
+          "v_parallel_m_s": 3564355.5097100064,
+          "relative_f": 2.388676299215224e-18,
+          "beta": 0.48370806967279584
+        },
+        {
+          "v_cell": 63,
+          "v_parallel_m_s": 9038124.554356823,
+          "relative_f": 3.7000365675018964e-24,
+          "beta": 0.18602132919044667
+        }
+      ]
+    },
+    {
+      "name": "Near midplane",
+      "z_cell": 200,
+      "z_m": 0.014864655941957568,
+      "lamps": [
+        {
+          "v_cell": 41,
+          "v_parallel_m_s": 768473.7414578092,
+          "relative_f": 1.0,
+          "beta": 1.0
+        },
+        {
+          "v_cell": 42,
+          "v_parallel_m_s": 861364.3337579832,
+          "relative_f": 0.010656247432422522,
+          "beta": 1.0
+        },
+        {
+          "v_cell": 44,
+          "v_parallel_m_s": 1060184.4408732804,
+          "relative_f": 1.3028067099226719e-06,
+          "beta": 1.0
+        },
+        {
+          "v_cell": 45,
+          "v_parallel_m_s": 1167581.0519168333,
+          "relative_f": 3.344395217913769e-08,
+          "beta": 1.0
+        },
+        {
+          "v_cell": 46,
+          "v_parallel_m_s": 1281486.7435911195,
+          "relative_f": 4.387630154376024e-10,
+          "beta": 1.0
+        },
+        {
+          "v_cell": 47,
+          "v_parallel_m_s": 1402992.6703432824,
+          "relative_f": 7.103859796517472e-12,
+          "beta": 1.0
+        },
+        {
+          "v_cell": 48,
+          "v_parallel_m_s": 1533403.7785961328,
+          "relative_f": 2.694321141025715e-13,
+          "beta": 1.0
+        },
+        {
+          "v_cell": 52,
+          "v_parallel_m_s": 2181653.669965985,
+          "relative_f": 2.958371449190047e-13,
+          "beta": 1.0
+        },
+        {
+          "v_cell": 57,
+          "v_parallel_m_s": 3564355.5097100064,
+          "relative_f": 1.8815443971716759e-13,
+          "beta": 1.0
+        },
+        {
+          "v_cell": 63,
+          "v_parallel_m_s": 9038124.554356823,
+          "relative_f": 7.503683619621663e-14,
+          "beta": 1.0
+        }
+      ]
+    }
+  ]
+}

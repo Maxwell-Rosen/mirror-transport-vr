@@ -6,15 +6,18 @@ const Foyer := preload("res://museum/foyer/foyer.gd")
 const START := Foyer.MAT_TOP
 const Mirror := preload("res://gallery-1/game/exhibit.gd")
 const Bounces := preload("res://gallery-2/game/exhibit.gd")
+const Dilation := preload("res://gallery-3/game/exhibit.gd")
 const InstrumentPanel := preload("res://gallery-1/game/panel.gd")
 const TeleportArc := preload("res://museum/teleport.gd")
 const STICK_DEADZONE := 0.15
 const STICK_CENTER := 0.10
 const POINTER_REST := 0.18
 enum Teleport { READY, AIMING, WAIT_FOR_CENTER }
+enum Station { MIRROR, BEADS, LAMPS }
 
 @onready var mirror: Mirror = $"../MagneticMirror"
 @onready var bounces: Bounces = $"../BetweenBounces"
+@onready var dilation: Dilation = $"../TimeDilation"
 var xr_active := false
 var skip_capture_motion := true
 var camera: Camera3D
@@ -26,7 +29,9 @@ var teleport_state := Teleport.READY
 var controller_tracked := false
 var pointer_down := false
 var hovered_widget := -1
-var hovering_rings := false
+var hover_station := Station.MIRROR
+var hovering_rings: bool:
+	get: return hover_station == Station.BEADS
 var mouse_edges: Array[bool] = []
 var reticle: Control
 
@@ -85,13 +90,21 @@ func _build_controller() -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if xr_active:
 		return
-	if event is InputEventKey and event.pressed and not event.echo and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED and bounces.at_rings(camera.global_position):
-		if event.keycode == KEY_TAB:
-			bounces.rings.panel.tab(event.shift_pressed)
-			get_viewport().set_input_as_handled()
-		elif event.keycode in [KEY_ENTER, KEY_KP_ENTER] and bounces.rings.panel.focus >= 0:
-			bounces.rings.press(bounces.rings.panel.focus)
-			get_viewport().set_input_as_handled()
+	if event is InputEventKey and event.pressed and not event.echo and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
+		if dilation.at_desk(camera.global_position):
+			if event.keycode == KEY_TAB:
+				dilation.tab(event.shift_pressed)
+				get_viewport().set_input_as_handled()
+			elif event.keycode in [KEY_ENTER, KEY_KP_ENTER] and dilation.focus >= 0:
+				dilation.press(dilation.focus)
+				get_viewport().set_input_as_handled()
+		elif bounces.at_rings(camera.global_position):
+			if event.keycode == KEY_TAB:
+				bounces.rings.panel.tab(event.shift_pressed)
+				get_viewport().set_input_as_handled()
+			elif event.keycode in [KEY_ENTER, KEY_KP_ENTER] and bounces.rings.panel.focus >= 0:
+				bounces.rings.press(bounces.rings.panel.focus)
+				get_viewport().set_input_as_handled()
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		if skip_capture_motion:
 			skip_capture_motion = false
@@ -115,6 +128,7 @@ func cancel_interaction() -> void:
 	pointer_down = false
 	mirror.release()
 	bounces.rings.clear_focus()
+	dilation.clear_focus()
 	_hover(-1)
 	if reticle:
 		reticle.hide()
@@ -123,13 +137,14 @@ func cancel_interaction() -> void:
 		teleport_arc.hide()
 		ray.hide()
 
-func _hover(widget: int, rings := false) -> void:
-	if hovered_widget == widget and hovering_rings == rings:
+func _hover(widget: int, station := Station.MIRROR) -> void:
+	if hovered_widget == widget and hover_station == station:
 		return
 	hovered_widget = widget
-	hovering_rings = rings
-	mirror.highlight(-1 if rings else widget)
-	bounces.rings.point(widget if rings else -1)
+	hover_station = station
+	mirror.highlight(widget if station == Station.MIRROR else -1)
+	bounces.rings.point(widget if station == Station.BEADS else -1)
+	dilation.point(widget if station == Station.LAMPS else -1)
 	if reticle:
 		reticle.queue_redraw()
 
@@ -144,7 +159,8 @@ func _physics_process(_delta: float) -> void:
 		update_controller()
 	elif Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		walk = Input.get_vector(&"walk_left", &"walk_right", &"walk_back", &"walk_forward")
-		reticle.visible = mirror.contains_visitor(camera.global_position) or bounces.contains_visitor(camera.global_position)
+		var eye := camera.global_position
+		reticle.visible = mirror.contains_visitor(eye) or bounces.contains_visitor(eye) or dilation.contains_visitor(eye)
 		var aim := -camera.global_basis.z
 		for down in mouse_edges:
 			aim_pointer(camera.global_position, aim, down)
@@ -204,21 +220,29 @@ func aim_pointer(start: Vector3, direction: Vector3, down: bool) -> float:
 	pointer_down = down
 	var inside := mirror.contains_visitor(camera.global_position)
 	var in_bounces := bounces.contains_visitor(camera.global_position)
+	var in_dilation := dilation.contains_visitor(camera.global_position)
 	if mirror.grabbed >= 0:
 		if down and inside:
 			return start.distance_to(mirror.drag(start, direction))
 		mirror.release()
-	if inside or in_bounces:
+	if inside or in_bounces or in_dilation:
 		var query := PhysicsRayQueryParameters3D.create(start, start + direction * 20)
 		query.exclude = [get_rid()]
 		var hit := get_world_3d().direct_space_state.intersect_ray(query)
 		var surface: Object = hit.get("collider")
 		if in_bounces and surface == bounces.rings.touch_surface:
 			var widget := bounces.rings.widget_at(hit.position)
-			_hover(widget, true)
+			_hover(widget, Station.BEADS)
 			if widget >= 0 and just_pressed:
 				bounces.rings.press(widget)
 			return start.distance_to(hit.position)
+		if in_dilation and surface:
+			var widget := dilation.widget_at(surface)
+			if widget >= 0:
+				_hover(widget, Station.LAMPS)
+				if just_pressed:
+					dilation.press(widget)
+				return start.distance_to(hit.position)
 		if inside and (surface == mirror.touch_surface or surface == mirror.loss_surface):
 			var widget := mirror.widget_at(surface, hit.position)
 			_hover(widget)

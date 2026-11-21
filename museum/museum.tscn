@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://museum/museum.gd" id="1"]
 [ext_resource type="Script" path="res://museum/visitor.gd" id="2"]
@@ -9,6 +9,7 @@
 [ext_resource type="Script" path="res://museum/foyer/foyer.gd" id="7"]
 
 [ext_resource type="PackedScene" path="res://gallery-2/game/between_bounces.tscn" id="8"]
+[ext_resource type="PackedScene" path="res://gallery-3/game/time_dilation.tscn" id="9"]
 
 [node name="MirrorTransportMuseum" type="Node3D"]
 script = ExtResource("1")
@@ -28,6 +29,10 @@ rotation = Vector3(0, 1.5707963, 0)
 
 [node name="BetweenBounces" parent="." instance=ExtResource("8")]
 position = Vector3(8, 0, -7.5)
+
+[node name="TimeDilation" parent="." instance=ExtResource("9")]
+position = Vector3(-16, 0, -17.5)
+rotation = Vector3(0, 1.5707963, 0)
 
 [node name="Promenade" type="AudioStreamPlayer" parent="."]
 process_mode = 3

@@ -1,6 +1,6 @@
 # Mirror Transport VR
 
-Walk through the museum for Maxwell Rosen’s PhD thesis on magnetic mirror equilibrium and plasma transport. The first doors on the left and right lead to **The Magnetic Mirror** and **Between Bounces**. The remaining six galleries are under construction.
+Walk through the museum for Maxwell Rosen’s PhD thesis on magnetic mirror equilibrium and plasma transport. The first doors on the left and right lead to **The Magnetic Mirror** and **Between Bounces**. The second door on the left opens into **Time Dilation**. Five galleries are under construction.
 
 ## Gallery layout
 
@@ -10,6 +10,7 @@ The 16 m wide atrium has four 10 m bays on each side. Numbering runs from the fo
 | --- | --- | --- |
 | [1 · The Magnetic Mirror](gallery-1/README.md) | Which particles turn back, and which escape through the ends? | Playable |
 | [2 · Between Bounces](gallery-2/README.md) | Can you predict how much plasma escapes without computing every bounce? | Playable |
+| [3 · Time Dilation](gallery-3/README.md) | Which lights fall behind the beat? | Playable |
 
 Each gallery has a top-level folder named for its entrance number, such as `gallery-1/` or `gallery-2/`. Start a new gallery’s plan in its `README.md`. Put its Godot scenes, scripts, and resources in `game/`, design drawings in `sketches/`, and its exporters and checks in `tools/`. The Quest APK and editor ZIP automatically collect each numbered gallery’s `game/` files.
 
@@ -41,7 +42,7 @@ Run the build from the project directory on the Linux laptop.
 ./build_apk
 ```
 
-The signed standalone game is `exports/MirrorTransport.apk`. The build takes a fresh copy of the saved game files, including uncommitted changes. It checks the APK signature, ARM64 libraries, immersive Quest launch settings and packaged reference data for both exhibits before replacing the previous APK.
+The signed standalone game is `exports/MirrorTransport.apk`. The build takes a fresh copy of the saved game files, including uncommitted changes. It checks the APK signature, ARM64 libraries, immersive Quest launch settings and packaged reference data for all three exhibits before replacing the previous APK.
 
 1. With Developer Mode enabled, connect the Quest 3 to the laptop with a **USB-C data cable**. Put on the headset and approve **Allow USB debugging** for this laptop.
 2. Run `./build_apk --install-only` to install the existing APK. If several Android devices are attached, the script lists them. Set `ANDROID_SERIAL` to the Quest’s serial and run the command again.

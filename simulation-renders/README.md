@@ -6,6 +6,8 @@ Keep the original runs local in `gkeyll-data/<run>/`. When reducing a texture or
 
 Gallery 2 ships a lossless phase–time dye texture and native bead trajectories with their wall and trapped-loss events from its teaching models. Its manifest records the sources, normalizations, frames and transformations. [Between Bounces manifest](gallery-2/manifest.json) · [Exporter](../gallery-2/tools/export_gallery.py)
 
+Gallery 3 ships twenty sampled clock rates and relative ion distribution values from frame 75 of `1x-beams`. Its manifest also records the physical coordinates, brightness mapping and reference clock. [Time Dilation manifest](gallery-3/manifest.json) · [Exporter](../gallery-3/tools/export_lamps.py)
+
 ## Plot a saved field in Python
 
 Run this example from the project root. It uses Postgkyl to read the static magnetic field and its axial coordinate map from `gkeyll-data/1x-beams/`. Both diagnostics store linear discontinuous Galerkin coefficients. At a cell centre, only the constant coefficient contributes, with a factor of 1/√2.
