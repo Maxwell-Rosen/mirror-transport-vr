@@ -9,17 +9,19 @@ const START := Foyer.MAT_TOP
 const Mirror := preload("res://gallery-1/game/exhibit.gd")
 const Bounces := preload("res://gallery-2/game/exhibit.gd")
 const Dilation := preload("res://gallery-3/game/exhibit.gd")
+const IonLosses := preload("res://gallery-4/game/exhibit.gd")
 const InstrumentPanel := preload("res://gallery-1/game/panel.gd")
 const TeleportArc := preload("res://museum/teleport.gd")
 const STICK_DEADZONE := 0.15
 const STICK_CENTER := 0.10
 const POINTER_REST := 0.18
 enum Teleport { READY, AIMING, WAIT_FOR_CENTER }
-enum Station { MIRROR, BEADS, LAMPS }
+enum Station { MIRROR, BEADS, LAMPS, LOSSES }
 
 @onready var mirror: Mirror = $"../MagneticMirror"
 @onready var bounces: Bounces = $"../BetweenBounces"
 @onready var dilation: Dilation = $"../TimeDilation"
+@onready var losses: IonLosses = $"../IonLosses"
 var xr_active := false
 var skip_capture_motion := true
 var camera: Camera3D
@@ -96,12 +98,22 @@ func _unhandled_input(event: InputEvent) -> void:
 	if xr_active:
 		return
 	if event is InputEventKey and event.pressed and not event.echo and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
-		if dilation.at_desk(camera.global_position):
-			if event.keycode == KEY_TAB:
-				dilation.tab(event.shift_pressed)
+		var desk: Node3D
+		if losses.at_desk(camera.global_position):
+			desk = losses
+		elif dilation.at_desk(camera.global_position):
+			desk = dilation
+		if desk:
+			if desk == losses and losses.mask_focused() and event.keycode in [KEY_LEFT, KEY_RIGHT, KEY_DOWN, KEY_UP]:
+				var step := Vector2i(int(event.keycode == KEY_RIGHT) - int(event.keycode == KEY_LEFT),
+					int(event.keycode == KEY_UP) - int(event.keycode == KEY_DOWN))
+				losses.step_mask(step)
 				get_viewport().set_input_as_handled()
-			elif event.keycode in [KEY_ENTER, KEY_KP_ENTER] and dilation.focus >= 0:
-				dilation.press(dilation.focus)
+			elif event.keycode == KEY_TAB:
+				desk.tab(event.shift_pressed)
+				get_viewport().set_input_as_handled()
+			elif event.keycode in [KEY_ENTER, KEY_KP_ENTER] and desk.focus >= 0:
+				desk.press(desk.focus)
 				get_viewport().set_input_as_handled()
 		elif bounces.at_rings(camera.global_position):
 			if event.keycode == KEY_TAB:
@@ -134,6 +146,7 @@ func cancel_interaction() -> void:
 	mirror.release()
 	bounces.rings.clear_focus()
 	dilation.clear_focus()
+	losses.clear_focus()
 	_hover(-1)
 	if reticle:
 		reticle.hide()
@@ -150,6 +163,7 @@ func _hover(widget: int, station := Station.MIRROR) -> void:
 	mirror.highlight(widget if station == Station.MIRROR else -1)
 	bounces.rings.point(widget if station == Station.BEADS else -1)
 	dilation.point(widget if station == Station.LAMPS else -1)
+	losses.point(widget if station == Station.LOSSES else -1)
 	if reticle:
 		reticle.queue_redraw()
 
@@ -164,13 +178,17 @@ func _physics_process(_delta: float) -> void:
 		update_controller()
 	elif Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		var walk := Input.get_vector(&"walk_left", &"walk_right", &"walk_back", &"walk_forward")
+		if losses.mask_focused():
+			# Arrow keys select velocity cells while the plot has keyboard focus. WASD still walks.
+			walk = Vector2(int(Input.is_physical_key_pressed(KEY_D)) - int(Input.is_physical_key_pressed(KEY_A)),
+				int(Input.is_physical_key_pressed(KEY_W)) - int(Input.is_physical_key_pressed(KEY_S))).limit_length(1.0)
 		var speed := SPRINT_SPEED if Input.is_action_pressed(&"sprint") else WALK_SPEED
 		var forward := -camera.global_basis.z
 		forward.y = 0
 		forward = forward.normalized()
 		motion = (forward * walk.y + forward.cross(Vector3.UP) * walk.x) * speed
 		var eye := camera.global_position
-		reticle.visible = mirror.contains_visitor(eye) or bounces.contains_visitor(eye) or dilation.contains_visitor(eye)
+		reticle.visible = mirror.contains_visitor(eye) or bounces.contains_visitor(eye) or dilation.contains_visitor(eye) or losses.contains_visitor(eye)
 		var aim := -camera.global_basis.z
 		for down in mouse_edges:
 			aim_pointer(camera.global_position, aim, down)
@@ -227,11 +245,12 @@ func aim_pointer(start: Vector3, direction: Vector3, down: bool) -> float:
 	var inside := mirror.contains_visitor(camera.global_position)
 	var in_bounces := bounces.contains_visitor(camera.global_position)
 	var in_dilation := dilation.contains_visitor(camera.global_position)
+	var in_losses := losses.contains_visitor(camera.global_position)
 	if mirror.grabbed >= 0:
 		if down and inside:
 			return start.distance_to(mirror.drag(start, direction))
 		mirror.release()
-	if inside or in_bounces or in_dilation:
+	if inside or in_bounces or in_dilation or in_losses:
 		var query := PhysicsRayQueryParameters3D.create(start, start + direction * 20)
 		query.exclude = [get_rid()]
 		var hit := get_world_3d().direct_space_state.intersect_ray(query)
@@ -242,12 +261,16 @@ func aim_pointer(start: Vector3, direction: Vector3, down: bool) -> float:
 			if widget >= 0 and just_pressed:
 				bounces.rings.press(widget)
 			return start.distance_to(hit.position)
-		if in_dilation and surface:
-			var widget := dilation.widget_at(surface)
+		if (in_dilation or in_losses) and surface:
+			var room: Node3D = losses if in_losses else dilation
+			var widget: int = room.widget_at(surface)
 			if widget >= 0:
-				_hover(widget, Station.LAMPS)
+				_hover(widget, Station.LOSSES if in_losses else Station.LAMPS)
 				if just_pressed:
-					dilation.press(widget)
+					if in_losses:
+						losses.press_at(widget, hit.position)
+					else:
+						dilation.press(widget)
 				return start.distance_to(hit.position)
 		if inside and (surface == mirror.touch_surface or surface == mirror.loss_surface):
 			var widget := mirror.widget_at(surface, hit.position)

@@ -17,7 +17,8 @@ const PHOTO_OFFSET := (OPENING / 2 + JAMB_WIDTH + BAY / 2) / 2
 const END := -45.0
 const BAY_COUNT := 4
 const FOUNTAIN_RADIUS := 2.15
-const GALLERY_TITLES := {1: "The Magnetic\nMirror", 2: "Between\nBounces", 3: "Time\nDilation"}
+const GALLERY_TITLES := {1: "The Magnetic\nMirror", 2: "Between\nBounces", 3: "Time\nDilation",
+	4: "Which ions\ncan reach\na wall?"}
 const GALLERY_PHOTOS := {
 	1: [preload("res://museum/photographs/graduate-students.webp"), "Princeton program in plasma physics graduate students"],
 	2: [preload("res://museum/photographs/poster-session.webp"), "Poster session"],
@@ -162,6 +163,7 @@ func gallery(s: float, z: float, number: int) -> void:
 	match number:
 		2: depth = $BetweenBounces.ROOM_DEPTH
 		3: depth = $TimeDilation.ROOM_DEPTH
+		4: depth = $IonLosses.ROOM_DEPTH
 	var mid := s*(HALL_WIDTH/2+depth/2)
 	var is_open := GALLERY_TITLES.has(number)
 	if is_open:
@@ -193,7 +195,8 @@ func gallery(s: float, z: float, number: int) -> void:
 			box(Vector3(mid, 0.14, z + edge * (BAY / 2 - 0.16)), Vector3(depth, 0.26, 0.13), "stone")
 			box(Vector3(mid, 0.29, z + edge * (BAY / 2 - 0.17)), Vector3(depth, 0.05, 0.15), "trim")
 			# Tuck the planters along the side walls, clear of the end-wall prints.
-			plant(s * (HALL_WIDTH / 2 + depth - 2.0), z + edge * (BAY / 2 - 0.86))
+			if number != 4: # The two rear instruments in Gallery 4 occupy both flanks.
+				plant(s * (HALL_WIDTH / 2 + depth - 2.0), z + edge * (BAY / 2 - 0.86))
 		box(Vector3(s * (8 + depth - 0.16), 0.14, z), Vector3(0.13, 0.26, BAY), "stone")
 		box(Vector3(s * (8 + depth - 0.17), 0.29, z), Vector3(0.15, 0.05, BAY), "trim")
 	else:

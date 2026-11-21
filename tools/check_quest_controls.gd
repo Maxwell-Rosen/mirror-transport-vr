@@ -77,6 +77,7 @@ func _run() -> void:
 	_check_exhibit_trigger()
 	_check_bead_trigger()
 	await _check_lamp_trigger()
+	await _check_loss_trial()
 	await _check_pause_and_reset()
 
 	menu = current_scene.get_node("VisitMenu")
@@ -279,6 +280,46 @@ func _check_lamp_trigger() -> void:
 	check(figure.volume.empty.visible and panel.slice_index == 4 and figure.selected[0] == 8,
 		"The empty saved case is explained while the other sculptures retain their selections")
 
+func _check_loss_trial() -> void:
+	var room := visitor.losses
+	visitor.face_atrium(room.to_global(Vector3(0, 0.01, 1.85)))
+	var landing := room.to_global(Vector3(0, 0, -1.25))
+	_point_at(landing)
+	_stick(Vector2.RIGHT)
+	check(visitor.teleport_arc.ring.visible and visitor.teleport_arc.ring.global_position.distance_to(landing) < 0.09,
+		"The Gallery 4 arch has a clear seated teleport landing")
+	_stick(Vector2.ZERO)
+	check(room.contains_visitor(visitor.camera.global_position), "Teleport crosses the Gallery 4 threshold")
+	room._process(0)
+	var deadline := Time.get_ticks_msec() + 15000
+	while room.requested and Time.get_ticks_msec() < deadline:
+		await process_frame
+	if not room.installation:
+		check(false, "The loss classifier loads through the Quest entrance")
+		return
+	await physics_frame
+	var rail = room.installation.energy
+	_stand_in_front(room.get_node("EnergyMount"))
+	_trigger_at(rail.buttons[rail.Widget.EDGE])
+	_trigger_at(rail.buttons[rail.Widget.PASSING])
+	check(int(rail.cell.trapped_corners) == 1 and rail.playing and rail.sample.open[rail.direction],
+		"The right trigger finds a passing corner in the held cell")
+	_trigger_at(rail.buttons[rail.Widget.BEAM])
+	check(absf(rail.sample.reach_z_m[1] - 0.10453) < 0.0001, "The trigger selects the electrostatic trapping example")
+	_trigger_at_point(rail.get_mask_hit_point(35, 3))
+	check(int(rail.cell.iv) == 35 and int(rail.cell.im) == 3 and rail.corner == -1,
+		"The controller probes a mapped velocity cell directly")
+	var grid = room.installation.grid
+	_stand_in_front(room.get_node("GridMount"))
+	_trigger_at(grid.buttons[grid.Action.SIMULATION_GRID])
+	check(grid.target == 1.0, "The right trigger starts the grid comparison")
+	var velocity = room.installation.velocity
+	_stand_in_front(room.get_node("VelocityMount"))
+	_trigger_at(velocity.buttons[velocity.Action.TIP])
+	_trigger_at(velocity.buttons[velocity.Action.GRID_LINES])
+	check(velocity.zoomed and not velocity.grid_visible and velocity.mask_visible,
+		"The right trigger enlarges the loss-cone tip and toggles its native grid")
+
 func _stand_in_front(mount: Node3D) -> void:
 	var direction := mount.global_basis.z
 	direction.y = 0
@@ -287,7 +328,10 @@ func _stand_in_front(mount: Node3D) -> void:
 	visitor.face_atrium(floor_point)
 
 func _trigger_at(button: StaticBody3D) -> void:
-	_point_at(button.global_position)
+	_trigger_at_point(button.global_position)
+
+func _trigger_at_point(world_point: Vector3) -> void:
+	_point_at(world_point)
 	hand.set_input(&"interact", 1.0)
 	visitor.update_controller()
 	hand.set_input(&"interact", 0.0)

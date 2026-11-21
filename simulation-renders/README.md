@@ -8,6 +8,8 @@ Gallery 2 ships lossless dye histories for the river and whirlpool, and native b
 
 Gallery 3 ships twenty sampled clock rates and relative cell-integrated ion contents from frame 75 of `1x-beams`. Its manifest also records the physical coordinates, logarithmic brightness mapping, exhibit clock and illustrative damping envelope. [Time Dilation manifest](gallery-3/manifest.json) · [Exporter](../gallery-3/tools/export_lamps.py)
 
+Gallery 4 ships three native cuts of the frame-2 beam-run loss-cone mask, the maps and field traces for probing all 6,144 cells, two samplings of the axial magnetic field and two original thesis prints. The near-midplane cut also carries 2,048 signed distribution values for the computational and physical grid comparison. The exporters verify the saved mask and the distribution’s velocity integral against the independent ion-density diagnostic. [Loss and grid manifest](gallery-4/manifest.json) · [Mask and axial grid exporter](../gallery-4/tools/export_exhibit.py) · [Velocity distribution exporter](../gallery-4/tools/velocity_grid.py)
+
 ## Plot a saved field in Python
 
 Run this example from the project root. It uses Postgkyl to read the static magnetic field and its axial coordinate map from `gkeyll-data/1x-beams/`. Both diagnostics store linear discontinuous Galerkin coefficients. At a cell centre, only the constant coefficient contributes, with a factor of 1/√2.

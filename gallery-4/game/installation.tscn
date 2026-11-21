@@ -1,0 +1,14 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://gallery-4/game/installation.gd" id="1"]
+[ext_resource type="JSON" path="res://simulation-renders/gallery-4/loss.json" id="loss"]
+[ext_resource type="JSON" path="res://simulation-renders/gallery-4/grid.json" id="grid"]
+[ext_resource type="Texture2D" path="res://simulation-renders/gallery-4/phase-compression.png" id="phase"]
+[ext_resource type="JSON" path="res://simulation-renders/gallery-4/velocity.json" id="velocity"]
+
+[node name="Installation" type="Node3D"]
+script = ExtResource("1")
+loss_data = ExtResource("loss")
+grid_data = ExtResource("grid")
+phase_print = ExtResource("phase")
+velocity_data = ExtResource("velocity")

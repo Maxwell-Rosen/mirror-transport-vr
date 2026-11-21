@@ -14,9 +14,7 @@ Time dilation
 
 ## Gallery 4
 
-Hamiltonian based classification of losses. Show the loss cone mask from the Gkeyll simulations.
-
-Non-uniform grids are on display here too. Perhaps there could be an animated sculpture about the non-uniform grids, how we pack cells near the turning points to make the change in magnetic field over each cell closer to constant. It would be good to show some figures from simulations and data here.
+**Which ions can reach a wall?** Pick an ion on the saved Gkeyll mask and trace its path. Find the trapped corner in a passing cell and the slow ion confined by the beam-driven electric well. Compare the velocity grid on two rulers, then move 400 axial cells into place near the steep throat flanks. [Playable trial and simulation checks](gallery-4/README.md)
 
 ## Gallery 5
 

@@ -97,12 +97,17 @@ def verify_apk(apk, sdk, env, project):
                      "gallery-1/game/reference/manifest.json", "gallery-1/game/reference/field-profile.csv",
                      "gallery-2/game/between_bounces.tscn", "simulation-renders/gallery-2/river.png",
                      "simulation-renders/gallery-2/transport.json", "gallery-3/game/time_dilation.tscn",
-                     "simulation-renders/gallery-3/manifest.json"):
+                     "simulation-renders/gallery-3/manifest.json", "gallery-4/game/loss_classification.tscn",
+                     "gallery-4/game/installation.tscn", "simulation-renders/gallery-4/entrance.png",
+                     "simulation-renders/gallery-4/phase-compression.png",
+                     "simulation-renders/gallery-4/magnetic-field-coordinates.png"):
             if name.encode() not in index:
                 raise ValueError(f"Missing Godot resource in APK: {name}")
         for path in ("gallery-1/game/reference/manifest.json", "gallery-1/game/reference/field-profile.csv",
                      "simulation-renders/gallery-2/transport.json",
-                     "simulation-renders/gallery-2/manifest.json", "simulation-renders/gallery-3/manifest.json"):
+                     "simulation-renders/gallery-2/manifest.json", "simulation-renders/gallery-3/manifest.json",
+                     "simulation-renders/gallery-4/manifest.json", "simulation-renders/gallery-4/loss.json",
+                     "simulation-renders/gallery-4/grid.json", "simulation-renders/gallery-4/velocity.json"):
             if package.read(f"assets/{path}") != (project / path).read_bytes():
                 raise ValueError(f"Packaged reference data differs from {path}")
 

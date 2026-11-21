@@ -405,7 +405,7 @@ func _visit_checks() -> void:
 			visitor.position = Vector3(side * 6.7, 0.04, z)
 			var hit := visitor.move_and_collide(Vector3(side * 2.8, 0, 0))
 			var number := 2 * bay + (1 if side < 0 else 2)
-			check((hit == null) == (number <= 3), "Gallery %d entrance at %s" % [number, visitor.position])
+			check((hit == null) == (number <= 4), "Gallery %d entrance at %s" % [number, visitor.position])
 			var plaque_z: float = z + current_scene.SIGN_OFFSET
 			for height: float in [1.18, 1.71]:
 				var eye := Vector3(side * 4.4, height, plaque_z)

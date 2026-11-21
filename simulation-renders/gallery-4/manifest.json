@@ -1,0 +1,130 @@
+{
+  "run": "1x-beams",
+  "solver_changeset": "3e32cda94b0d",
+  "converter": "gallery-4/tools/export_exhibit.py",
+  "source_directory": "gkeyll-data/1x-beams/",
+  "loss": {
+    "asset": "loss.json",
+    "sha256": "5ea58a43eba990f303115efcb41a4da07066ea393dce29a3f76ae1c50f684b06",
+    "frame": 2,
+    "saved_time_s": 0.04000047056236778,
+    "species": "ion",
+    "mass_kg": 3.368659976918e-27,
+    "charge_c": 1.602176487e-19,
+    "phase": "First orbit-average phase. sim.c and slurm-7132.out identify the Loss cone multiplier.",
+    "sources": {
+      "mask": "zzim-ion_fdot_multiplier_2.gkyl",
+      "potential": "zzim-field_2.gkyl",
+      "bmag": "zzim-geo_corn_bmag.gkyl",
+      "position": "zzim-geo_corn_mc2nu_pos_deflated.gkyl",
+      "nodes": "zzim-geo_corn_nodes.gkyl",
+      "velocity": "zzim-ion_mapc2p_vel.gkyl"
+    },
+    "quantity": "Cellwise-constant ion distribution time-derivative multiplier, nodal order 0. 1 = evolve (all corners trapped), 0 = hold (at least one corner reaches a wall).",
+    "sampling": "Three unfiltered native cuts in (signed v_parallel, mu). Each mask[im][iv] character is the exact bit at (iz,iv,im). Z[m], v_parallel[m/s], mu[keV/T].",
+    "selected_axial_cells": [
+      200,
+      291,
+      298
+    ],
+    "positive_velocity_cells": [
+      40,
+      48,
+      45
+    ],
+    "negative_velocity_cells": [
+      23,
+      15,
+      18
+    ],
+    "magnetic_moment_cell": 8,
+    "linked_probe": "Every one of the 6,144 cells on the three cuts can be selected. Bounds use the stitched physical map edges. Computations use both incident native velocity-map traces and the saved mass via kinetic_kev_per_v2 = m_i/(2 keV in joules). The reference SHA-256 covers 6,144 bytes in [slice,iv,im] order, one trapped bit per corner.",
+    "cut_cell": "Inner slope, (iz,iv,im)=(291,37,11). Only corner 1 is trapped. The other seven can reach a wall, so the saved flag is passing (0). On the lower axial face the Hamiltonian-trapped region covers about 17.24% of the physical velocity-cell area (trapezoidal integration of the critical speed at 1,001 moment samples).",
+    "beam_well": "Midplane, (iz,iv,im)=(200,32,0). All eight corners are trapped. Corner 2 has zero magnetic moment to roundoff and turns on both electrostatic shoulders. Off-centre density peaks near the injected beams\u2019 turning points produce the well, as described in Chapter Gkeyll POA simulations/tex-files/results_lorentzian.tex.",
+    "profiles": "Flattened left and right P1 traces in increasing Z, both field traces kept at shared faces. Static physical Z and magnetic field B[T] from geometry frame 0 (0 s), q_i phi[keV] from the frame-2 DG electrostatic potential. The run-wide velocity map stores no frame or time. Modal endpoint values are c0/sqrt(2) +/- sqrt(3/2) c1.",
+    "classifier": "H = m_i v_parallel^2/2 + mu B + q_i phi. Use piecewise-linear U=mu B + q_i phi. Take its maximum on each path, including its launch point, both DG traces, and the grounded conducting-sheath endpoint mu B_wall + q_i * 0 V. H >= E_wall opens that path. The first forbidden segment gives the turning Z by linear interpolation.",
+    "corners": "Index = 4*z_side + 2*v_side + mu_side. Side 0 means the lower physical face, side 1 the upper. Center probes use the midpoint of each mapped cell. No population weighting.",
+    "display": "The route reveal is exhibit time within one frozen snapshot. Point energies and wall access do not represent a time-resolved orbit or particle flux."
+  },
+  "entrance": {
+    "asset": "entrance.png",
+    "source": "loss.json",
+    "converter": "gallery-4/tools/entrance_print.py",
+    "run": "1x-beams",
+    "frame": 2,
+    "saved_time_s": 0.04000047056236778,
+    "cell": [
+      291,
+      37,
+      11
+    ],
+    "corner_index": 1,
+    "quantities": "Only trapped corner of the inner-slope cut cell and native ion multiplier. Physical axial position (m), signed velocity (m/s), magnetic moment (keV/T), H and U (keV)."
+  },
+  "grid": {
+    "asset": "grid.json",
+    "sha256": "4200f93ff6c21bd24884c7f240a0eb54785f6e5e597b23d69feee260e233bc1b",
+    "frame": 0,
+    "saved_time_s": 0.0,
+    "sources": {
+      "nodes": "zzim-geo_corn_nodes.gkyl",
+      "map": "zzim-geo_corn_mc2nu_pos_deflated.gkyl",
+      "field": "zzim-geo_corn_bmag.gkyl",
+      "face_check": "zzim-geo_surf0_bmag.gkyl"
+    },
+    "units": {
+      "mapped_z_m": "m",
+      "uniform_z_m": "m",
+      "b_t": "T",
+      "variation": "T"
+    },
+    "sampling": "401 native axial Z nodes checked against both traces of the coordinate map. B(Z) interpolates the continuous corner-field P1 traces in physical metres. The independent surface diagnostic agrees with the field at left faces to 2 nT.",
+    "comparison": "The uniform reference resamples B(Z) in 400 equal physical cells with the same endpoints. For each cell variation sums absolute field increments across all interior native faces. A probe within 1 pm of a face uses the cell on its right. Width in mm is 1000*(Zright-Zleft).",
+    "display": "Motion between the two grids diagrams cell placement at fixed B(Z). The mapped grid remains static in the simulation. The local face magnifier has a physical Z ruler."
+  },
+  "velocity_grid": {
+    "asset": "velocity.json",
+    "converter": "gallery-4/tools/velocity_grid.py",
+    "provenance": "The asset records its diagnostic sources, dimensions, transformations and verification."
+  },
+  "prints": {
+    "source": "Maxwell Rosen, PhD thesis, PhD-thesis-latex",
+    "caption_source": "Chapter Gkeyll Foundations/tex-files/nonuniform-grids.tex",
+    "conversion": "Full original single-page PDFs rasterized without cropping at 1536 pixels on the long edge with pdftoppm. RGB PNGs retain the published axes and scales.",
+    "figures": [
+      {
+        "asset": "phase-compression.png",
+        "figure": "4.2",
+        "source": "Chapter Gkeyll POA simulations/figures/phase-compression.pdf",
+        "pdf_sha256": "844c93a0cc7d00e76027ea08b635d43c7ffabe59aa298d8aa65e1944628159e4",
+        "png_sha256": "6d3c291e48c6efbfe71118babd327abe856473b1f1187937acf6a1c199cda937",
+        "pixels": [
+          1536,
+          768
+        ],
+        "quantity": "Constant-energy contours in the published magnetic-only model B(\u2113)=\u2113\u2076, \u03bc=m=1, H=0.1 through 0.6 in model units."
+      },
+      {
+        "asset": "magnetic-field-coordinates.png",
+        "figure": "4.5",
+        "source": "Chapter Gkeyll POA simulations/figures/lorentzian-sims/magnetic-field-coordinates.pdf",
+        "pdf_sha256": "0d89e66ec116d28f6b7117db2589e2793134d8911ab51e2b6d96bce9573a745d",
+        "png_sha256": "72051b2622964af2d91d00011705d7218e7de9a6d1b8a9d0f5be1fc3030cef54",
+        "pixels": [
+          1536,
+          692
+        ],
+        "quantity": "Published Maxwellian baseline geometry. The physical and computational rulers locate the same field crest."
+      }
+    ]
+  },
+  "verification": {
+    "phase_cells_checked": 819200,
+    "evolved_cells": 208544,
+    "held_cells": 610656,
+    "shipped_mask_bits_checked": 6144,
+    "mapped_and_equal_grid_cells_checked": 800,
+    "phase_cell_corners_checked_in_joules_and_kev": 49152,
+    "probe_states_checked": 20
+  }
+}
