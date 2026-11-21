@@ -2,6 +2,9 @@ extends "res://museum/architecture.gd"
 ## The mobile faces the second opening on the left. Local +Z leads back to the atrium.
 
 const Mobile := preload("res://gallery-3/game/mobile.gd")
+const PhaseFigure := preload("res://gallery-3/game/phase_space_figure.gd")
+# Keep heavy resources out of the museum's preload chain.
+const FIGURE_PATH := "res://gallery-3/game/phase_space_figure.tscn"
 enum Widget { START, RATES, SLICE, LAMP }
 const BUTTON_SIZE := Vector2(1.12, 0.175)
 
@@ -16,6 +19,9 @@ var amplitude_label: Label3D
 var rate_label: Label3D
 var focus := -1
 var hover := -1
+var figure: PhaseFigure
+var figure_requested := false
+var visitor_in_room := false
 
 func _ready() -> void:
 	zone = "TimeDilation"
@@ -148,9 +154,17 @@ func _refresh() -> void:
 	captions[Widget.LAMP].text = "Inspect next ring"
 
 func widget_at(surface: Object) -> int:
+	if figure:
+		var swatch := figure.buttons.find(surface)
+		if swatch >= 0:
+			return buttons.size() + swatch
 	return buttons.find(surface)
 
 func press(widget: int) -> void:
+	if widget >= buttons.size():
+		if figure:
+			figure.press(widget - buttons.size())
+		return
 	match widget:
 		Widget.START:
 			mobile.start_together()
@@ -167,6 +181,8 @@ func press(widget: int) -> void:
 func _show_focus() -> void:
 	for i in indicators.size():
 		indicators[i].visible = i == hover or i == focus
+	if figure:
+		figure.point((hover if hover >= buttons.size() else focus) - buttons.size())
 
 func point(widget: int) -> void:
 	if widget != hover:
@@ -174,10 +190,16 @@ func point(widget: int) -> void:
 		_show_focus()
 
 func tab(backward: bool) -> void:
-	if focus < 0:
-		focus = buttons.size() - 1 if backward else 0
+	var camera := get_viewport().get_camera_3d()
+	var first := 0
+	var end := buttons.size()
+	if camera and figure and figure.at_board(camera.global_position):
+		first = end
+		end += figure.buttons.size()
+	if focus < first or focus >= end:
+		focus = end - 1 if backward else first
 	else:
-		focus = wrapi(focus + (-1 if backward else 1), 0, buttons.size())
+		focus = wrapi(focus + (-1 if backward else 1), first, end)
 	_show_focus()
 
 func clear_focus() -> void:
@@ -190,14 +212,48 @@ func contains_visitor(eye: Vector3) -> bool:
 	return absf(p.x) < 4.88 and p.z > -7.88 and p.z < 7.76
 
 func at_desk(eye: Vector3) -> bool:
+	if figure and figure.at_board(eye):
+		return true
 	var p := desk.to_local(eye)
 	return absf(p.x) < 1.8 and p.z > 0 and p.z < 2.8
 
+func _update_figure(inside: bool) -> void:
+	if inside != visitor_in_room:
+		visitor_in_room = inside
+		if inside and not figure_requested:
+			figure_requested = ResourceLoader.load_threaded_request(FIGURE_PATH, "PackedScene") == OK
+		elif not inside and figure:
+			figure.hide()
+			figure.queue_free()
+			figure = null
+			if focus >= buttons.size():
+				clear_focus()
+			if hover >= buttons.size():
+				point(-1)
+	if not figure_requested:
+		return
+	match ResourceLoader.load_threaded_get_status(FIGURE_PATH):
+		ResourceLoader.THREAD_LOAD_LOADED:
+			var scene := ResourceLoader.load_threaded_get(FIGURE_PATH) as PackedScene
+			figure_requested = false
+			if inside:
+				figure = scene.instantiate() as PhaseFigure
+				add_child(figure)
+		ResourceLoader.THREAD_LOAD_FAILED, ResourceLoader.THREAD_LOAD_INVALID_RESOURCE:
+			figure_requested = false
+			push_error("Could not load the Gallery 3 phase-space figure")
+
+func _exit_tree() -> void:
+	if figure_requested:
+		ResourceLoader.load_threaded_get(FIGURE_PATH)
+
 func _process(delta: float) -> void:
 	var camera := get_viewport().get_camera_3d()
+	_update_figure(camera != null and contains_visitor(camera.global_position))
 	if camera:
 		var eye := to_local(camera.global_position)
 		if absf(eye.x) < 4.88 and eye.z > -7.88 and eye.z < 11.8:
 			mobile.advance(delta)
-		if not at_desk(camera.global_position):
+		var at_figure := figure != null and figure.at_board(camera.global_position)
+		if not at_desk(camera.global_position) or (focus >= 0 and at_figure != (focus >= buttons.size())):
 			clear_focus()

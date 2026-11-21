@@ -1,0 +1,17 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://gallery-3/game/phase_space_figure.gd" id="1"]
+[ext_resource type="PackedScene" path="res://simulation-renders/gallery-3/time-dilation.glb" id="2"]
+[ext_resource type="Texture2D" path="res://simulation-renders/gallery-3/time-dilation.png" id="3"]
+[ext_resource type="JSON" path="res://simulation-renders/gallery-3/time-dilation.json" id="4"]
+
+[node name="PhaseSpaceFigure" type="Node3D"]
+script = ExtResource("1")
+print_texture = ExtResource("3")
+manifest = ExtResource("4")
+
+[node name="Contours" parent="." instance=ExtResource("2")]
+position = Vector3(-1.65, 0.86, -5.15)
+
+[node name="Print" type="Node3D" parent="."]
+position = Vector3(1.72, 1.90, -7.81)
