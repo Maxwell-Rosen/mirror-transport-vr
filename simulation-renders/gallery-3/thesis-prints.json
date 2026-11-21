@@ -1,0 +1,59 @@
+{
+  "source": "Maxwell Rosen, PhD thesis (PhD-thesis-latex)",
+  "conversion": "Original one-page PDF rasterized with pdftoppm to RGB PNG at 1536 pixels on the long side. No crop, replotting or recoloring. The print quad preserves aspect ratio. Lossless Godot texture import with mipmaps.",
+  "figures": [
+    {
+      "figure": "5.23",
+      "asset": "dilation-occupancy.png",
+      "source": "Chapter Gkeyll POA simulations/figures/algorithm-sensitivity/time-dilation-occupancy.pdf",
+      "plot_script": "Chapter Gkeyll POA simulations/figures/algorithm-sensitivity/time-dilation-mask.py",
+      "diagnostics": [
+        "zzim-ion_75.gkyl",
+        "zzim-ion_fdot_multiplier_75.gkyl",
+        "zzim-ion_jacobvel.gkyl",
+        "zzim-geo_int_jacobtot.gkyl",
+        "zzim-geo_corn_mc2nu_pos_deflated.gkyl",
+        "zzim-ion_mapc2p_vel.gkyl"
+      ],
+      "quantity": "Mapped phase cells with beta < 1 or |mean f_i| >= 10% of the local peak, fraction of cells and absolute ion content masked vs axial position. Dotted control curve uses undilated ion content.",
+      "pixels": [
+        1536,
+        1268
+      ],
+      "pdf_sha256": "96d403f9a342bf237f942da782902d6dc431ce35e02bbaaf7bf130a7c43a51c4",
+      "png_sha256": "a6be8809975f11b4eef351b9bc2a40c03c9d68adda747e527b25e36676c55824",
+      "caption_source": "Chapter Gkeyll POA simulations/tex-files/without-time-dialtion.tex",
+      "runs": [
+        "1x-beams",
+        "1x-beams-no-tdil"
+      ],
+      "frame": 75,
+      "saved_time_s": 0.50015
+    },
+    {
+      "figure": "5.25",
+      "asset": "dilation-comparison.png",
+      "source": "Chapter Gkeyll POA simulations/figures/algorithm-sensitivity/time-dilation-comparison.pdf",
+      "plot_script": "Chapter Gkeyll POA simulations/figures/algorithm-sensitivity/time-dilation-comparison.py",
+      "diagnostics": [
+        "zzim-ion_BiMaxwellianMoments_75.gkyl",
+        "zzim-geo_corn_mc2nu_pos_deflated.gkyl",
+        "zzim-ion_integrated_moms.gkyl"
+      ],
+      "quantity": "Density (m^-3), parallel flow (m/s), parallel and perpendicular ion temperatures (keV) vs each run's mapped axial position. Linear y axes for z < 0 and positive values on log y axes for z > 0.",
+      "pixels": [
+        1536,
+        1280
+      ],
+      "pdf_sha256": "14d939a5d5ea56d41116a34607159a31435feebcd21928c4fbaa62306a310ef3",
+      "png_sha256": "2ca543f8e8be6adc18758fc63aad9cf0595d25c72b756cf8ce2a6202dc353462",
+      "caption_source": "Chapter Gkeyll POA simulations/tex-files/without-time-dialtion.tex",
+      "runs": [
+        "1x-beams",
+        "1x-beams-no-tdil"
+      ],
+      "frame": 75,
+      "saved_time_s": 0.50015
+    }
+  ]
+}

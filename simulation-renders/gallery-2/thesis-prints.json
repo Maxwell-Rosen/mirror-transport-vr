@@ -1,0 +1,33 @@
+{
+  "source": "Maxwell Rosen, PhD thesis (PhD-thesis-latex)",
+  "conversion": "Original one-page PDF rasterized with pdftoppm to RGB PNG at 1536 pixels on the long side. No crop, replotting or recoloring. The print quad preserves aspect ratio. Lossless Godot texture import with mipmaps.",
+  "figures": [
+    {
+      "figure": "3.5",
+      "asset": "orbit-paths.png",
+      "source": "Chapter POA Toy Models/figures/phase-compression.pdf",
+      "caption_source": "Chapter POA Toy Models/tex-files/five_equation_toy_model.tex",
+      "kind": "Schematic of the five-equation model, no simulated frame.",
+      "pixels": [
+        1536,
+        615
+      ],
+      "pdf_sha256": "aeb981a0c7643b1be936cce43d2c3fe8aba395342f10d302552f9c18e0fa8d25",
+      "png_sha256": "ffd2de0c02e08be729b587721c73eac61027f5fa1a3f181a23533c415d56b708"
+    },
+    {
+      "figure": "3.6",
+      "asset": "orbit-phases.png",
+      "source": "Chapter POA Toy Models/figures/fiveeq_modulated_vs_exact_distributed_source_distributed_loss.pdf",
+      "caption_source": "Chapter POA Toy Models/tex-files/fiveeq_distS_distL.tex",
+      "model": "Chapter POA Toy Models/scripts/paper_fiveeq_time_evolution_demonstration_distS_distLoss.ipynb",
+      "kind": "Five-equation toy-model transient. Distributed source and coupling, S=1, nu_c=1, nu_parallel=1000, alpha=0.1. Time is in the normalized units on the published axes.",
+      "pixels": [
+        1536,
+        922
+      ],
+      "pdf_sha256": "0be967b584ebdd9f4fcb540c1631d2a8af5283d6a137919d72ff7424dfaef60e",
+      "png_sha256": "719ba59a022a5ce7167d7c218e9ef487dd168e340a083ddea3aad8411e473327"
+    }
+  ]
+}
