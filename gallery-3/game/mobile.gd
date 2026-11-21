@@ -1,5 +1,5 @@
 extends "res://museum/architecture.gd"
-## Each ring is a clock for one fixed phase-space cell. Local +Z faces the entrance.
+## Each ring is a clock for one fixed phase-space cell. Local +Z faces the aisle.
 
 const Data := preload("res://simulation-renders/gallery-3/manifest.json")
 const RIM := 1.58

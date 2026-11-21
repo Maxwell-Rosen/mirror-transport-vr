@@ -1,0 +1,58 @@
+{
+  "run": "1x-beams",
+  "frame": 75,
+  "saved_time_s": 0.50015,
+  "files": {
+    "beta": "zzim-ion_fdot_multiplier_75.gkyl",
+    "ion_distribution": "zzim-ion_75.gkyl",
+    "axial_map": "zzim-geo_corn_mc2nu_pos_deflated.gkyl",
+    "velocity_map": "zzim-ion_mapc2p_vel.gkyl",
+    "velocity_jacobian": "zzim-ion_jacobvel.gkyl",
+    "total_jacobian": "zzim-geo_int_jacobtot.gkyl",
+    "magnetic_field": "zzim-geo_int_bmag.gkyl",
+    "density_check": "zzim-ion_M0_75.gkyl",
+    "geometry_jacobian": "zzim-geo_int_jacobgeo.gkyl",
+    "saved_rate": "zzim-ion_cflrate_75.gkyl"
+  },
+  "v_cell": 34,
+  "v_parallel_Mm_s": 0.1911952727853155,
+  "ridge_mu_cell": 31,
+  "ridge_mu_keV_T": 67.76672638944206,
+  "mu_faces_keV_T": [
+    -9.616567379734916e-18,
+    70.99154687029005
+  ],
+  "z_range_m": [
+    -2.4999999999999987,
+    2.4999999999999987
+  ],
+  "grid_Z_mu": [
+    400,
+    32
+  ],
+  "masked_cells_in_cut": 4031,
+  "floor_ns": 0.5255648418821391,
+  "cap_1e9_per_s": 1.9027147942751004,
+  "x_scale": 0.28,
+  "depth_m": 1.0,
+  "rate_centre_x": -0.81,
+  "time_centre_x": 0.81,
+  "m_per_decade": 0.32,
+  "rate_axis_min_1e9_per_s": 0.01,
+  "time_axis_min_ns": 0.04,
+  "quantities": "Two reliefs at the parallel velocity of the globally shortest uncapped cell. Each top covers the mapped Z and mu faces of one native cell. Depth increases with mu toward the aisle. Height is m_per_decade * log10(quantity / axis_min). A 28 mm lip hangs below the front cell tops. The saved rate is cflrate/1e9 in 10^9 s^-1. The unit-Courant step in ns is its reciprocal. The violet tops use the saved beta < 1 mask.",
+  "ridge": "At the centre of the highest mu bin, reconstruct the uncapped rate as saved rate / beta. The amber ribbon reproduces that rate and its reciprocal cell by cell along Z at the same saved instant. It is offset 42 to 75 mm toward the aisle for visibility.",
+  "colors_sRGB": {
+    "Surface": "#64b4be",
+    "Step": "#396779",
+    "Plateau": "#c4a0ee",
+    "PlateauEdge": "#896ba2",
+    "Uncapped": "#ffba5c"
+  },
+  "verification": "Recover the input rate and reciprocal from every height; check all violet tops against the saved cap. Reload the GLB and compare every triangle with the native-face coordinates and height to 1e-7 exhibit m.",
+  "asset": {
+    "file": "cfl-relief.glb",
+    "bytes": 4175832,
+    "sha256": "a3ede43f2562f497f3283ae0b5fb065b7f0260aed03010fcbbf77c27fd8a27f9"
+  }
+}

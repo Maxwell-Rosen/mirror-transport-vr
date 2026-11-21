@@ -1,0 +1,413 @@
+{
+  "run": "1x-beams",
+  "frame": 75,
+  "saved_time_s": 0.50015,
+  "files": {
+    "beta": "zzim-ion_fdot_multiplier_75.gkyl",
+    "ion_distribution": "zzim-ion_75.gkyl",
+    "axial_map": "zzim-geo_corn_mc2nu_pos_deflated.gkyl",
+    "velocity_map": "zzim-ion_mapc2p_vel.gkyl",
+    "velocity_jacobian": "zzim-ion_jacobvel.gkyl",
+    "total_jacobian": "zzim-geo_int_jacobtot.gkyl",
+    "magnetic_field": "zzim-geo_int_bmag.gkyl",
+    "density_check": "zzim-ion_M0_75.gkyl",
+    "geometry_jacobian": "zzim-geo_int_jacobgeo.gkyl",
+    "saved_rate": "zzim-ion_cflrate_75.gkyl"
+  },
+  "method": "Unit Courant factor. Saved tau [ns] = 1e9 / saved P0 cflrate [1/s]. Reconstructed tau [ns] = saved tau * P0 fdot_multiplier (dimensionless beta), at the same instant.",
+  "coordinates": "Native mapped faces from the axial and velocity maps. Probe coordinates are cell centres. Z in m, parallel velocity in 10^6 m/s, magnetic moment in keV/T.",
+  "surface": "Closed exterior faces of the cells with tau <= upper_ns. Merge only coplanar faces. Empty saved selections draw no surface. Nonempty saved selections match the reconstructed union exactly.",
+  "mesh_axes": "Local +X is Z, -Z is parallel velocity, +Y is magnetic moment. Same model space as time-dilation.glb.",
+  "exhibit_metres_per_axis_unit_Z_vparallel_mu": [
+    0.6,
+    0.07,
+    0.018
+  ],
+  "contours": [
+    {
+      "node": "Tau01",
+      "upper_ns": 0.1,
+      "sRGB": "#d6f4ff",
+      "before_cells": 38037,
+      "with_cells": 0
+    },
+    {
+      "node": "Tau02",
+      "upper_ns": 0.25,
+      "sRGB": "#98d8ef",
+      "before_cells": 216748,
+      "with_cells": 0
+    },
+    {
+      "node": "Tau03",
+      "upper_ns": 0.5,
+      "sRGB": "#69b5d5",
+      "before_cells": 356868,
+      "with_cells": 0
+    },
+    {
+      "node": "Tau04",
+      "upper_ns": 1,
+      "sRGB": "#418cae",
+      "before_cells": 479245,
+      "with_cells": 479245
+    },
+    {
+      "node": "Tau05",
+      "upper_ns": 5,
+      "sRGB": "#316784",
+      "before_cells": 702675,
+      "with_cells": 702675
+    },
+    {
+      "node": "Tau06",
+      "upper_ns": 20,
+      "sRGB": "#23475b",
+      "before_cells": 798237,
+      "with_cells": 798237
+    }
+  ],
+  "sites": [
+    {
+      "name": "Right throat",
+      "z_cell": 298,
+      "z_m": 0.9791294092455979
+    },
+    {
+      "name": "Near midplane",
+      "z_cell": 200,
+      "z_m": 0.014864655941957568
+    },
+    {
+      "name": "Left throat crest",
+      "z_cell": 101,
+      "z_m": -0.9791294092454716
+    },
+    {
+      "name": "Left throat, outer slope",
+      "z_cell": 76,
+      "z_m": -1.0475026537774768
+    }
+  ],
+  "probe_tracks": [
+    {
+      "v_cell": 41,
+      "mu_cell": 0,
+      "v_parallel_Mm_s": 0.7684737414578092,
+      "mu_keV_T": 0.044369716793931285,
+      "samples": [
+        {
+          "before_ns": 0.8744660706223409,
+          "with_ns": 0.8744660706223409,
+          "beta": 1.0
+        },
+        {
+          "before_ns": 12.267325763032277,
+          "with_ns": 12.267325763032277,
+          "beta": 1.0
+        },
+        {
+          "before_ns": 0.8746691767681933,
+          "with_ns": 0.8746691767681933,
+          "beta": 1.0
+        },
+        {
+          "before_ns": 0.9877848391860267,
+          "with_ns": 0.9877848391860267,
+          "beta": 1.0
+        }
+      ]
+    },
+    {
+      "v_cell": 42,
+      "mu_cell": 0,
+      "v_parallel_Mm_s": 0.861364333757983,
+      "mu_keV_T": 0.044369716793931285,
+      "samples": [
+        {
+          "before_ns": 0.812854066413845,
+          "with_ns": 0.812854066413845,
+          "beta": 1.0
+        },
+        {
+          "before_ns": 10.985021589904237,
+          "with_ns": 10.985021589904237,
+          "beta": 1.0
+        },
+        {
+          "before_ns": 0.8130502611905297,
+          "with_ns": 0.8130502611905297,
+          "beta": 1.0
+        },
+        {
+          "before_ns": 0.890078541533682,
+          "with_ns": 0.890078541533682,
+          "beta": 1.0
+        }
+      ]
+    },
+    {
+      "v_cell": 44,
+      "mu_cell": 0,
+      "v_parallel_Mm_s": 1.0601844408732806,
+      "mu_keV_T": 0.044369716793931285,
+      "samples": [
+        {
+          "before_ns": 0.706603457307005,
+          "with_ns": 0.706603457307005,
+          "beta": 1.0
+        },
+        {
+          "before_ns": 8.972051442392756,
+          "with_ns": 8.972051442392756,
+          "beta": 1.0
+        },
+        {
+          "before_ns": 0.7067852904326687,
+          "with_ns": 0.7067852904326687,
+          "beta": 1.0
+        },
+        {
+          "before_ns": 0.7342955849728579,
+          "with_ns": 0.7342955849728579,
+          "beta": 1.0
+        }
+      ]
+    },
+    {
+      "v_cell": 45,
+      "mu_cell": 0,
+      "v_parallel_Mm_s": 1.1675810519168333,
+      "mu_keV_T": 0.044369716793931285,
+      "samples": [
+        {
+          "before_ns": 0.6599232911605398,
+          "with_ns": 0.6599232911605398,
+          "beta": 1.0
+        },
+        {
+          "before_ns": 8.161773215119773,
+          "with_ns": 8.161773215119773,
+          "beta": 1.0
+        },
+        {
+          "before_ns": 0.6600977594092496,
+          "with_ns": 0.6600977594092496,
+          "beta": 1.0
+        },
+        {
+          "before_ns": 0.6707092650090639,
+          "with_ns": 0.6707092650090639,
+          "beta": 1.0
+        }
+      ]
+    },
+    {
+      "v_cell": 46,
+      "mu_cell": 0,
+      "v_parallel_Mm_s": 1.2814867435911195,
+      "mu_keV_T": 0.044369716793931285,
+      "samples": [
+        {
+          "before_ns": 0.6165418873210637,
+          "with_ns": 0.6165418873210637,
+          "beta": 1.0
+        },
+        {
+          "before_ns": 7.4469396787110265,
+          "with_ns": 7.4469396787110265,
+          "beta": 1.0
+        },
+        {
+          "before_ns": 0.6167088904199758,
+          "with_ns": 0.6167088904199758,
+          "beta": 1.0
+        },
+        {
+          "before_ns": 0.6141682383207776,
+          "with_ns": 0.6141682383207776,
+          "beta": 1.0
+        }
+      ]
+    },
+    {
+      "v_cell": 47,
+      "mu_cell": 0,
+      "v_parallel_Mm_s": 1.4029926703432825,
+      "mu_keV_T": 0.044369716793931285,
+      "samples": [
+        {
+          "before_ns": 0.5759033811626144,
+          "with_ns": 0.5759033811626144,
+          "beta": 1.0
+        },
+        {
+          "before_ns": 6.8093152510837225,
+          "with_ns": 6.8093152510837225,
+          "beta": 1.0
+        },
+        {
+          "before_ns": 0.5760628239049634,
+          "with_ns": 0.5760628239049634,
+          "beta": 1.0
+        },
+        {
+          "before_ns": 0.563368134145764,
+          "with_ns": 0.563368134145764,
+          "beta": 1.0
+        }
+      ]
+    },
+    {
+      "v_cell": 48,
+      "mu_cell": 0,
+      "v_parallel_Mm_s": 1.5334037785961327,
+      "mu_keV_T": 0.044369716793931285,
+      "samples": [
+        {
+          "before_ns": 0.5375632657558572,
+          "with_ns": 0.5375632657558572,
+          "beta": 1.0
+        },
+        {
+          "before_ns": 6.234942972836742,
+          "with_ns": 6.234942972836742,
+          "beta": 1.0
+        },
+        {
+          "before_ns": 0.5377150548902776,
+          "with_ns": 0.5377150548902776,
+          "beta": 1.0
+        },
+        {
+          "before_ns": 0.5173012557525358,
+          "with_ns": 0.5255648418821393,
+          "beta": 0.984276752417437
+        }
+      ]
+    },
+    {
+      "v_cell": 52,
+      "mu_cell": 0,
+      "v_parallel_Mm_s": 2.1816536699659856,
+      "mu_keV_T": 0.044369716793931285,
+      "samples": [
+        {
+          "before_ns": 0.4009790573054302,
+          "with_ns": 0.5255648418821393,
+          "beta": 0.7629487845295251
+        },
+        {
+          "before_ns": 4.383288456579739,
+          "with_ns": 4.383288456579739,
+          "beta": 1.0
+        },
+        {
+          "before_ns": 0.40109936004965485,
+          "with_ns": 0.5255648418821393,
+          "beta": 0.7631776863407532
+        },
+        {
+          "before_ns": 0.3667277810031309,
+          "with_ns": 0.5255648418821393,
+          "beta": 0.6977783743863362
+        }
+      ]
+    },
+    {
+      "v_cell": 57,
+      "mu_cell": 0,
+      "v_parallel_Mm_s": 3.5643555097100066,
+      "mu_keV_T": 0.044369716793931285,
+      "samples": [
+        {
+          "before_ns": 0.25421995515469775,
+          "with_ns": 0.5255648418821393,
+          "beta": 0.48370806967279584
+        },
+        {
+          "before_ns": 2.663627641771142,
+          "with_ns": 2.663627641771142,
+          "beta": 1.0
+        },
+        {
+          "before_ns": 0.2542996163549012,
+          "with_ns": 0.5255648418821393,
+          "beta": 0.4838596422169527
+        },
+        {
+          "before_ns": 0.2241134371908138,
+          "with_ns": 0.5255648418821393,
+          "beta": 0.42642395253880483
+        }
+      ]
+    },
+    {
+      "v_cell": 63,
+      "mu_cell": 0,
+      "v_parallel_Mm_s": 9.038124554356823,
+      "mu_keV_T": 0.044369716793931285,
+      "samples": [
+        {
+          "before_ns": 0.09776627046268249,
+          "with_ns": 0.5255648418821393,
+          "beta": 0.18602132919044667
+        },
+        {
+          "before_ns": 1.0054832422573126,
+          "with_ns": 1.0054832422573126,
+          "beta": 1.0
+        },
+        {
+          "before_ns": 0.09779750393163432,
+          "with_ns": 0.5255648418821393,
+          "beta": 0.18608075757389786
+        },
+        {
+          "before_ns": 0.08478569556230023,
+          "with_ns": 0.5255648418821393,
+          "beta": 0.1613229972892933
+        }
+      ]
+    },
+    {
+      "v_cell": 34,
+      "mu_cell": 31,
+      "v_parallel_Mm_s": 0.1911952727853155,
+      "mu_keV_T": 67.76672638944206,
+      "samples": [
+        {
+          "before_ns": 2.956651046644918,
+          "with_ns": 2.956651046644918,
+          "beta": 1.0
+        },
+        {
+          "before_ns": 30.19119835234249,
+          "with_ns": 30.19119835234249,
+          "beta": 1.0
+        },
+        {
+          "before_ns": 2.9572825089146266,
+          "with_ns": 2.9572825089146266,
+          "beta": 1.0
+        },
+        {
+          "before_ns": 0.05255648418821394,
+          "with_ns": 0.5255648418821393,
+          "beta": 0.1
+        }
+      ]
+    }
+  ],
+  "shortest_track": 10,
+  "shortest_site": 3,
+  "midplane_site": 1,
+  "left_crest_site": 2,
+  "floor_ns": 0.5255648418821391,
+  "overlays": "Reuse the beta < 1 and relative |f_i| >= 0.1 surfaces from time-dilation.glb. The population threshold is relative to the velocity-space peak at each Z.",
+  "verification": "Check the saved rate cap in every phase cell, the signed velocity integral against M0 in all 400 axial cells, three independent probe references, and reloaded GLB triangles and enclosed volumes against mapped grid faces and selected cell volumes.",
+  "asset": {
+    "bytes": 1551016,
+    "sha256": "8073c5e7ee25913e3c33710897e85b49acebba80226a7c2396ddd1dcdf3639af"
+  }
+}

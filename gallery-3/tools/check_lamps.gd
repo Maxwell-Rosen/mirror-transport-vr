@@ -51,7 +51,8 @@ func _run() -> void:
 	check(room.rate_label.text.contains("0.186") and room.rate_label.text.contains("19.4 s"), "Probe reads the outer throat clock")
 
 	for eye_y: float in [1.18, 1.71]:
-		visitor.face_atrium(room.to_global(Vector3(1.92,0.01,2.72)))
+		var approach := room.desk.to_global(Vector3.BACK * 1.4)
+		visitor.face_atrium(Vector3(approach.x, 0.01, approach.z))
 		visitor.camera.position.y = eye_y
 		for button in room.buttons:
 			var start := visitor.camera.global_position
@@ -99,8 +100,10 @@ func _run() -> void:
 		mobile.selected = mobile.peak_drive.size() - 1
 		mobile.advance(data.reference_period_s * 1.05)
 		room._refresh()
-		await _photo("mobile", Vector3(0.02,1.62,4.55), Vector3(0.20,2.10,-0.36))
-		await _photo("desk", Vector3(1.76,1.32,2.69), room.desk.position)
+		await _photo("mobile", Vector3(-0.90,1.65,5.22), room.to_local(mobile.global_position))
+		var seated_eye := room.to_local(room.desk.to_global(Vector3.BACK * 1.68))
+		seated_eye.y = 1.32
+		await _photo("desk", seated_eye, room.to_local(room.desk.global_position))
 	for type: String in ["AudioStreamPlayer", "AudioStreamPlayer3D"]:
 		for player in current_scene.find_children("*", type, true, false):
 			player.stop()

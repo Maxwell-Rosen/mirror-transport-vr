@@ -5,6 +5,7 @@ const Visitor := preload("res://museum/visitor.gd")
 const Menu := preload("res://museum/visit_menu.gd")
 const Face := preload("res://gallery-1/game/panel.gd")
 const BeadFace := preload("res://gallery-2/game/bead_face.gd")
+const LocalTime := preload("res://gallery-3/game/local_time.gd")
 const HALL := Vector3(0, 0.01, -8)
 
 class TestRuntime extends XRInterfaceExtension:
@@ -74,7 +75,7 @@ func _run() -> void:
 	_check_teleport()
 	_check_exhibit_trigger()
 	_check_bead_trigger()
-	_check_lamp_trigger()
+	await _check_lamp_trigger()
 	await _check_pause_and_reset()
 
 	menu = current_scene.get_node("VisitMenu")
@@ -228,7 +229,7 @@ func _check_lamp_trigger() -> void:
 	check(visitor.teleport_arc.ring.visible and indicated.distance_to(landing) < 0.09, "A seated visitor can teleport through the Gallery 3 entrance")
 	_stick(Vector2.ZERO)
 	check(visitor.position.distance_to(indicated) < 0.025 and room.contains_visitor(visitor.camera.global_position), "Gallery 3 has a walkable landing")
-	visitor.face_atrium(room.to_global(Vector3(1.92,0.01,2.55)))
+	_stand_in_front(room.desk)
 	for button in room.buttons:
 		_point_at(button.global_position)
 		hand.set_input(&"interact", 1.0)
@@ -238,6 +239,43 @@ func _check_lamp_trigger() -> void:
 		visitor.update_controller()
 	check(not room.mobile.saved_rates and room.mobile.slice_index == 1 and room.mobile.selected == 0,
 		"Quest trigger changes the clock mode, sample slice and inspected lamp")
+
+	room._process(0)
+	var deadline := Time.get_ticks_msec() + 15000
+	while room.figure_requested and Time.get_ticks_msec() < deadline:
+		await process_frame
+	check(room.figure != null, "The right-wall sculptures load for a seated visitor")
+	if not room.figure:
+		return
+	await physics_frame
+	var figure := room.figure
+	_stand_in_front(figure.key_mount)
+	_trigger_at(figure.key_buttons[8])
+	check(figure.selected[0] == 8, "Right trigger selects the 10% bar on the mask plinth")
+	var panel := figure.time_panel
+	_stand_in_front(panel)
+	_trigger_at(panel.buttons[LocalTime.ControlID.CONTOURS])
+	await physics_frame
+	_trigger_at(panel.buttons[LocalTime.ControlID.SHORTEST])
+	_trigger_at(panel.buttons[LocalTime.ControlID.CAPPED])
+	check(panel.active and panel.count_label.text.begins_with("0 cells at or below 0.1 ns")
+		and figure.selected[0] == 8, "The controller compares the capped CFL cells independently of the mask statue")
+	_trigger_at(panel.buttons[LocalTime.ControlID.RELIEFS])
+	check(figure.cfl.reliefs.is_visible_in_tree(), "The paired rate and step return together")
+
+func _stand_in_front(mount: Node3D) -> void:
+	var direction := mount.global_basis.z
+	direction.y = 0
+	var floor_point := mount.global_position + direction.normalized() * 1.5
+	floor_point.y = 0.01
+	visitor.face_atrium(floor_point)
+
+func _trigger_at(button: StaticBody3D) -> void:
+	_point_at(button.global_position)
+	hand.set_input(&"interact", 1.0)
+	visitor.update_controller()
+	hand.set_input(&"interact", 0.0)
+	visitor.update_controller()
 
 func _check_pause_and_reset() -> void:
 	visitor.face_atrium(HALL)

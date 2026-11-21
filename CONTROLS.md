@@ -20,7 +20,7 @@ Point the right controller at a button and pull the index trigger, or aim with t
 
 On the Gallery 2 bead stand, select **Pause** to inspect the orbits or **Next phase** to jump to the hold and release. **Play** resumes from the selected time. **Replay** returns to the opening frame. Use the mouse or right trigger. On desktop, stand near the front of the rings and use **Tab** or **Shift+Tab** to focus either button and **Enter** to activate it. [Between Bounces](gallery-2/README.md)
 
-At the Gallery 3 lectern, choose **Start together** to align the lamps. Switch between the reference and saved rates, change the axial slice, or inspect the next ring. Use the mouse or right trigger. At the desk, **Tab** and **Shift+Tab** select a control and **Enter** activates it. [Time Dilation](gallery-3/README.md)
+At the Gallery 3 lectern, choose **Start together** to align the lamps. Switch between the reference and saved rates, change the axial slice, or inspect the next ring. Use the mouse or right trigger. Select a colour on the mask plinth or its companion print to isolate a shell. The next plinth opens on **Rate & step reliefs**. Choose **Midplane** to move both white probes, or **Phase-space contours** to compare **Uncapped estimate** and **Saved rate cap** at the selected lamp cell. At each station, **Tab** and **Shift+Tab** select a visible control and **Enter** activates it. [Time Dilation](gallery-3/README.md)
 
 ## Title screen and pause menu
 

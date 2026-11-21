@@ -1,5 +1,8 @@
-extends "res://museum/architecture.gd"
-## The mobile faces the second opening on the left. Local +Z leads back to the atrium.
+extends Node3D
+## Room +Z leads to the atrium. On RightWall, +X runs toward the entrance and +Z faces the aisle.
+
+const Architecture := preload("res://museum/architecture.gd")
+const Board := preload("res://museum/board_style.gd")
 
 const Mobile := preload("res://gallery-3/game/mobile.gd")
 const PhaseFigure := preload("res://gallery-3/game/phase_space_figure.gd")
@@ -8,8 +11,10 @@ const FIGURE_PATH := "res://gallery-3/game/phase_space_figure.tscn"
 enum Widget { START, RATES, SLICE, LAMP }
 const BUTTON_SIZE := Vector2(1.12, 0.175)
 
-@onready var mobile: Mobile = $Mobile
-@onready var desk: Node3D = $Desk
+@onready var wall: Architecture = $RightWall
+@onready var reading_wall: Architecture = $ReadingWall
+@onready var mobile: Mobile = $RightWall/Mobile
+@onready var desk: Node3D = $RightWall/Desk
 var buttons: Array[StaticBody3D] = []
 var captions: Array[Label3D] = []
 var indicators: Array[MeshInstance3D] = []
@@ -24,67 +29,79 @@ var figure_requested := false
 var visitor_in_room := false
 
 func _ready() -> void:
-	zone = "TimeDilation"
-	add_child(structure)
-	finish_board()
-	finish("brass", "bea06e", 0.48, 0.36)
-	finish("wood", "70533e", 0.04, 0.59)
-	finish("enamel", "253c39", 0.25, 0.56)
-	finish("rule", Board.RULE.to_html(false))
+	wall.zone = "TimeDilation"
+	wall.add_child(wall.structure)
+	wall.finish_board()
+	wall.finish("brass", "bea06e", 0.48, 0.36)
+	wall.finish("wood", "70533e", 0.04, 0.59)
+	wall.finish("enamel", "253c39", 0.25, 0.56)
+	wall.finish("rule", Board.RULE.to_html(false))
 	var base := Vector3(mobile.position.x, 0, mobile.position.z)
-	piece("64", base + Vector3.UP * 0.10, Vector3(3.63,0.20,1.18), "wood")
-	piece("64", base + Vector3.UP * 0.207, Vector3(3.59,0.014,1.14), "brass")
-	piece("64", base + Vector3.UP * 0.225, Vector3(3.57,0.024,1.13), "enamel")
-	barrier(base + Vector3.UP * 1.04, Vector3(3.45,2.08,1.02))
+	wall.piece("64", base + Vector3.UP * 0.10, Vector3(3.63,0.20,1.18), "wood")
+	wall.piece("64", base + Vector3.UP * 0.207, Vector3(3.59,0.014,1.14), "brass")
+	wall.piece("64", base + Vector3.UP * 0.225, Vector3(3.57,0.024,1.13), "enamel")
+	wall.barrier(base + Vector3.UP * 1.04, Vector3(3.45,2.08,1.02))
 	for side: float in [-1, 1]:
 		var joint := mobile.transform * Vector3(side * Mobile.RIM * 0.6, Mobile.RIM * 0.8, -0.02)
 		var ceiling := Vector3(joint.x + side * 0.16, 4.96, joint.z)
 		_rod(joint, ceiling, 0.009)
-		drum(ceiling, 0.14, 0.06, "brass")
+		wall.drum(ceiling, 0.14, 0.06, "brass")
 	var light := OmniLight3D.new()
-	light.position = Vector3(-2.4,3.95,1.30)
+	light.position = Vector3(4.8,3.85,2.55)
 	light.light_color = Color("#fff0d4")
 	light.light_energy = 1.20
 	light.omni_range = 5.2
-	add_child(light)
-	var sign_at := Vector3(mobile.position.x,4.16,-0.05)
-	box(sign_at, Vector3(4.12,0.44,0.045), "brass")
-	box(sign_at + Vector3.BACK * 0.024, Vector3(4.09,0.41,0.02), "board")
-	lettering("Which lights fall behind the beat?", sign_at + Vector3.BACK * 0.039, 0.153, 0, true)
-	_wall_board()
+	wall.add_child(light)
+	_reading_boards()
 	_build_desk()
-	assemble()
+	wall.assemble()
 	_refresh()
 
 func _rod(a: Vector3, b: Vector3, radius: float) -> void:
 	var span := b - a
-	piece("12", (a + b) / 2, Vector3(2 * radius, span.length(), 2 * radius), "brass",
+	wall.piece("12", (a + b) / 2, Vector3(2 * radius, span.length(), 2 * radius), "brass",
 		Basis(Quaternion(Vector3.UP, span.normalized())).get_euler())
 
-func _wall_board() -> void:
-	var centre := Vector3(-4.855,1.61,0.55)
-	box(centre, Vector3(0.05,1.68,3.89), "brass")
-	box(centre + Vector3.RIGHT * 0.027, Vector3(0.02,1.65,3.86), "board")
-	var left := centre + Vector3(0.041,0,1.77)
-	lettering("One turn, one pulse", left + Vector3.UP * 0.62, 0.15, PI/2, true, true)
+func _reading_boards() -> void:
+	reading_wall.add_child(reading_wall.structure)
+	reading_wall.finish_board()
+	reading_wall.finish("brass", "bea06e", 0.48, 0.36)
 	var lines := [
-		"The lamp above the rim keeps a 3.6-second beat.",
-		"Each hoop is a clock for a group of ions. The outer hoops",
-		"sample higher parallel speeds. The lamps glow most brightly",
-		"where the ion distribution is largest on the sampled cut.",
-		"Brightness uses a logarithmic scale to reveal the faint lamps.",
-		"Fast motion can force a short numerical time step. In those",
-		"cells Gkeyll slows the distribution update by a factor β.",
-		"At half rate, one circuit takes two reference beats."
+		"Gkeyll groups ions by position and velocity. An ion can",
+		"cross a box by moving along the mirror or by changing",
+		"speed. The fastest crossing limits the step for every box.",
+		"",
+		"Each hoop follows one box. The lamp above the rim",
+		"pulses every 3.6 exhibit seconds. At half rate (β = 0.5),",
+		"a hoop takes two beats to turn. Brightness shows the ion",
+		"distribution on this cut, on a logarithmic scale."
 	]
-	for i in lines.size():
-		lettering(lines[i], left + Vector3.UP * (0.35 - 0.133 * i), 0.085, PI/2, false, true)
+	_reading_board(-5.35, "Which lights fall behind the beat?", "\n".join(lines))
+	_reading_board(0.25, "Why look near a mirror throat?",
+		"On either side of a throat, the magnetic field changes steeply.\n" +
+		"Ions with a large magnetic moment μ feel a strong push back\n" +
+		"toward weaker field. Their speed can cross a velocity bin in a\n" +
+		"fraction of a nanosecond. Most turn back before this slope.")
+	_reading_board(5.25, "What does a longer step buy?",
+		"At the shortest-step cell, β = 0.1. Its update covers a tenth\n" +
+		"of each shared tick. The grid can take ten times longer steps,\n" +
+		"so following slow collisions takes about a tenth as many updates.\n" +
+		"In a fixed field, ions trace the same paths at a different pace.")
+	reading_wall.assemble()
+
+func _reading_board(x: float, title: String, body: String) -> void:
+	var centre := Vector3(x, 1.58, 0.03)
+	reading_wall.box(centre, Vector3(3.60, 1.54, 0.045), "brass")
+	reading_wall.box(centre + Vector3.BACK * 0.026, Vector3(3.56, 1.50, 0.018), "board")
+	reading_wall.lettering(title, centre + Vector3(-1.62, 0.56, 0.041), 0.141, 0, true, true)
+	var label := reading_wall.lettering(body, centre + Vector3(-1.62, 0.32, 0.041), 0.092, 0, false, true)
+	label.vertical_alignment = VERTICAL_ALIGNMENT_TOP
 
 func _desk_box(at: Vector3, size: Vector3, surface: String, solid := false) -> void:
-	box(desk.transform * at, size, surface, solid, desk.rotation)
+	wall.box(desk.transform * at, size, surface, solid, desk.rotation)
 
 func _desk_text(words: String, at: Vector3, height: float, title := false, left := true) -> Label3D:
-	var label := lettering(words, at, height, 0, title, left)
+	var label := wall.lettering(words, at, height, 0, title, left)
 	label.reparent(desk, false)
 	return label
 
@@ -94,8 +111,8 @@ func _build_desk() -> void:
 	_desk_box(Vector3(0,0,0.030), Vector3(2.515,1.355,0.016), "board")
 	for x: float in [-0.86,0.86]:
 		var mount := desk.transform * Vector3(x,-0.38,-0.075)
-		box(Vector3(mount.x,mount.y / 2,mount.z), Vector3(0.088,mount.y,0.088), "wood")
-	box(Vector3(desk.position.x,0.06,desk.position.z - 0.08), Vector3(2.44,0.12,0.56), "enamel", true)
+		wall.box(Vector3(mount.x,mount.y / 2,mount.z), Vector3(0.088,mount.y,0.088), "wood")
+	wall.box(Vector3(desk.position.x,0.06,desk.position.z - 0.08), Vector3(2.44,0.12,0.56), "enamel", true)
 	var data: Dictionary = Mobile.Data.data
 	location_label = _desk_text("", Vector3(-1.16,0.548,0.043), 0.105, true)
 	_desk_text("%s   ·   frame %d   ·   t = %.6f s" % [data.run, data.frame, data.saved_time_s],
@@ -156,14 +173,23 @@ func _refresh() -> void:
 func widget_at(surface: Object) -> int:
 	if figure:
 		var swatch := figure.buttons.find(surface)
+		if swatch < 0:
+			swatch = figure.key_buttons.find(surface)
 		if swatch >= 0:
 			return buttons.size() + swatch
+		var control := figure.time_panel.buttons.find(surface)
+		if control >= 0:
+			return buttons.size() + figure.buttons.size() + control
 	return buttons.find(surface)
 
 func press(widget: int) -> void:
 	if widget >= buttons.size():
 		if figure:
-			figure.press(widget - buttons.size())
+			var index := widget - buttons.size()
+			if index < figure.buttons.size():
+				figure.press(index)
+			else:
+				figure.time_panel.press(index - figure.buttons.size())
 		return
 	match widget:
 		Widget.START:
@@ -173,33 +199,46 @@ func press(widget: int) -> void:
 			mobile.start_together()
 		Widget.SLICE:
 			mobile.set_slice(1 - mobile.slice_index)
+			_sync_lamp_probe()
 		Widget.LAMP:
 			mobile.selected = (mobile.selected + 1) % mobile.peak_drive.size()
 			mobile.advance(0)
+			_sync_lamp_probe()
 	_refresh()
+
+func _sync_lamp_probe() -> void:
+	if figure:
+		var cut: Dictionary = Mobile.Data.data.slices[mobile.slice_index]
+		figure.time_panel.set_lamp(cut.z_cell, cut.lamps[mobile.selected].v_cell, Mobile.Data.data.mu_cell)
 
 func _show_focus() -> void:
 	for i in indicators.size():
 		indicators[i].visible = i == hover or i == focus
 	if figure:
-		figure.point((hover if hover >= buttons.size() else focus) - buttons.size())
+		var picked := focus if focus >= 0 else hover
+		figure.point(picked - buttons.size())
+		figure.time_panel.point(picked - buttons.size() - figure.buttons.size())
 
 func point(widget: int) -> void:
 	if widget != hover:
 		hover = widget
+		if widget >= 0:
+			focus = -1
 		_show_focus()
 
 func tab(backward: bool) -> void:
 	var camera := get_viewport().get_camera_3d()
-	var first := 0
-	var end := buttons.size()
-	if camera and figure and figure.at_board(camera.global_position):
-		first = end
-		end += figure.buttons.size()
-	if focus < first or focus >= end:
-		focus = end - 1 if backward else first
+	if not camera:
+		return
+	var span := _focus_range(camera.global_position)
+	if span.y == 0:
+		return
+	if figure and span.x == buttons.size() + figure.buttons.size():
+		focus = span.x + figure.time_panel.tab_index(focus - span.x, backward)
+	elif focus < span.x or focus >= span.y:
+		focus = span.y - 1 if backward else span.x
 	else:
-		focus = wrapi(focus + (-1 if backward else 1), first, end)
+		focus = wrapi(focus + (-1 if backward else 1), span.x, span.y)
 	_show_focus()
 
 func clear_focus() -> void:
@@ -211,11 +250,27 @@ func contains_visitor(eye: Vector3) -> bool:
 	var p := to_local(eye)
 	return absf(p.x) < 4.88 and p.z > -7.88 and p.z < 7.76
 
-func at_desk(eye: Vector3) -> bool:
-	if figure and figure.at_board(eye):
-		return true
+func _focus_range(eye: Vector3) -> Vector2i:
+	if figure:
+		var print_end := buttons.size() + figure.buttons.size()
+		var at_print := figure.at_board(eye)
+		var at_time := figure.time_panel.at_panel(eye)
+		if at_print and at_time:
+			# The print and console meet at the far-right corner. Tab follows the face in view.
+			var camera := get_viewport().get_camera_3d()
+			if camera:
+				at_time = camera.global_basis.z.dot(figure.time_panel.global_basis.z) > camera.global_basis.z.dot(figure.print_mount.global_basis.z)
+		if at_time:
+			return Vector2i(print_end, print_end + figure.time_panel.buttons.size())
+		if at_print:
+			return Vector2i(buttons.size(), print_end)
 	var p := desk.to_local(eye)
-	return absf(p.x) < 1.8 and p.z > 0 and p.z < 2.8
+	if absf(p.x) < 1.5 and p.z > 0 and p.z < 2.8:
+		return Vector2i(0, buttons.size())
+	return Vector2i.ZERO
+
+func at_desk(eye: Vector3) -> bool:
+	return _focus_range(eye).y > 0
 
 func _update_figure(inside: bool) -> void:
 	if inside != visitor_in_room:
@@ -238,7 +293,8 @@ func _update_figure(inside: bool) -> void:
 			figure_requested = false
 			if inside:
 				figure = scene.instantiate() as PhaseFigure
-				add_child(figure)
+				wall.add_child(figure)
+				_sync_lamp_probe()
 		ResourceLoader.THREAD_LOAD_FAILED, ResourceLoader.THREAD_LOAD_INVALID_RESOURCE:
 			figure_requested = false
 			push_error("Could not load the Gallery 3 phase-space figure")
@@ -254,6 +310,7 @@ func _process(delta: float) -> void:
 		var eye := to_local(camera.global_position)
 		if absf(eye.x) < 4.88 and eye.z > -7.88 and eye.z < 11.8:
 			mobile.advance(delta)
-		var at_figure := figure != null and figure.at_board(camera.global_position)
-		if not at_desk(camera.global_position) or (focus >= 0 and at_figure != (focus >= buttons.size())):
-			clear_focus()
+		if focus >= 0:
+			var span := _focus_range(camera.global_position)
+			if focus < span.x or focus >= span.y:
+				clear_focus()
