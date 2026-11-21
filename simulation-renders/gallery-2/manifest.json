@@ -1,0 +1,47 @@
+{
+  "exhibit": "Between Bounces",
+  "kind": "Analytic dye and stochastic bead teaching models",
+  "exporter": "gallery-2/tools/export_gallery.py",
+  "river.png": {
+    "run": "Periodic dye-river teaching model, in exhibit seconds",
+    "source": "gallery-2/tools/river_model.py",
+    "diagnostic": "Dimensionless dye concentration. Three side-by-side profiles: loop f/f* in turns, receiving stream f/f* in channel lengths, independent straight river C/C* from its upstream tap to its outlet.",
+    "axes": "Each strip includes both endpoints. Frames run from 0 through period_s inclusive at fps. One extra row gives constant slow-speed equilibria for the loop and independent river.",
+    "transform": "Periodic 256-point Fourier advection-dispersion with local source/drain Strang splitting at 0.0125 s. Drain-weighted sluice mixing and delayed downstream advection in passing time. Exact characteristics and periodic inlet pool for the straight river. Linear resampling; lossless RGB bytes, F = pack_max (256 R + G)/65535, no gamma conversion or mipmaps.",
+    "playback": {
+      "period_s": 28,
+      "hold_s": 4,
+      "release_s": 12,
+      "fps": 20,
+      "points": 129,
+      "pack_max": 1.25,
+      "loop_full": 0.5,
+      "loop_slow": 0.05,
+      "passing_speed": 0.25,
+      "mouth": 0.5,
+      "mouth_half_width": 0.015625,
+      "length_m": 3.0,
+      "speed_m_s": 1.0,
+      "slow_m_s": 0.5
+    },
+    "parameters": {
+      "feed_and_drain_width_turns": 0.25,
+      "exchange_per_s": 0.01,
+      "dispersion_turns2_s": 0.006,
+      "gate_mixing_s": 0.5,
+      "dose_J_over_A_Cstar_m_s": 0.6,
+      "linear_loss_per_s": 0.5,
+      "inlet_volume_over_area_m": 1.0
+    }
+  },
+  "transport.json": {
+    "run": "Distributed nearest-neighbour scattering on three closed orbits and two open trajectories, seed 236",
+    "source": "gallery-2/tools/planar_models.py:BeadStudy",
+    "diagnostic": "Equal-weight bead histories [id, segments]. Each segment is [start, end, old track, new track, starting phase]. Tracks 0–2 are trapped, 3 is blue, 4 is orange. Events identify the bead and time of a wall arrival or trapped loss during the hold.",
+    "time": "Exhibit seconds 0–36 after 900 model seconds of full-rate warm-up. Four exhibit seconds per model second. Native endpoints are retained across the displayed interval.",
+    "geometry": "Tabletop metres. The angle measures progress around an orbit. Radius labels a different orbit in phase space. Open paths follow the concentric semicircle from −π to 0 and then its tangent to the wall. Radii, straight length and clock settings are embedded in the asset.",
+    "transform": "Continuous circular motion, 0.65 exhibit seconds of smooth radial interpolation per scattering event, then a rigid tilt of the whole tabletop. During the held phase a trapped loss ends at the separatrix halfway to the blue path. Passing positions and transfers use the same frozen clock.",
+    "rates": "Per model second: inner supply 2.32 beads, each neighbouring trapped hop 0.208, outer-to-blue 0.64 on its semicircle, blue–orange exchange 1.40 on their semicircles. Full and slowed laps last 5 and 15 exhibit seconds. The passing phase advances at 0.72 radians per active exhibit second on the bend and 0.72 tabletop metres per active exhibit second on the straight.",
+    "interpretation": "Stochastic illustration of the phase split in the thesis chapter The Pseudo Orbit-Averaging Algorithm and the topology in Combined Model §3.5.1. Counts describe the bead model."
+  }
+}

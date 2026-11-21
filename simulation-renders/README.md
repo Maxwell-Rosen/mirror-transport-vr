@@ -1,8 +1,10 @@
 # Simulation renders
 
-Put the textures and 3D data that ship with the museum here, including slice atlases and isosurface meshes. Commit the finished assets to GitHub. Keep each file **under 100 MB** (100,000,000 bytes) and aim well below that for quick exhibit loading and small desktop and Quest downloads.
+Put the simulation textures and 3D data that ship with the museum here, including slice atlases and isosurface meshes. Group them by gallery number under `simulation-renders/gallery-N/` and link to their manifests from the corresponding gallery plan. Commit the finished assets to GitHub. Keep each file **under 100 MB** (100,000,000 bytes) and aim well below that for quick exhibit loading and small desktop and Quest downloads.
 
 Keep the original runs local in `gkeyll-data/<run>/`. When reducing a texture or simplifying a mesh, compare the exported values and coordinates at representative locations, such as the midplane and a throat, with the same diagnostic and frame. Record the source files, units, frame, saved time and any conversion or reduction in the asset manifest. [Exhibit-specific checks](../PLAN.md#platform-and-simulation-data)
+
+Gallery 2 ships a lossless phase–time dye texture and native bead trajectories with their wall and trapped-loss events from its teaching models. Its manifest records the sources, normalizations, frames and transformations. [Between Bounces manifest](gallery-2/manifest.json) · [Exporter](../gallery-2/tools/export_gallery.py)
 
 ## Plot a saved field in Python
 

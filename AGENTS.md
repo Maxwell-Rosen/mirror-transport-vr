@@ -7,8 +7,11 @@ Build a museum where visitors can explore magnetic mirror equilibrium and plasma
 - Use [SETTING.md](SETTING.md) for the museum layout, sightlines and exhibit entrances.
 - Use [CONTROLS.md](CONTROLS.md) for movement, interaction and returning to the foyer.
 - Use [MUSIC.md](MUSIC.md) for the museum’s musical tone, instrument timbres and phrasing.
-- Use [INTRO_MIRROR_INTERACTIVE.md](INTRO_MIRROR_INTERACTIVE.md) for the first exhibit’s particle orbits, sliders and loss-cone plot.
+- Use [Gallery 1 · The Magnetic Mirror](gallery-1/README.md) for the first exhibit’s layout, particle orbits, sliders, loss-cone plot and reference checks.
+- Use [Gallery 2 · Between Bounces](gallery-2/README.md) for the current room plan, sketches and pseudo-orbit averaging trials.
 - Use [PLAN.md](PLAN.md) for the broader exhibit plan, simulation exports and first playable build.
+
+Give each gallery a top-level `gallery-N/` folder matching its entrance number. Keep its notes and plans in that folder, its Godot scenes, scripts and resources in `game/`, and its sketches and gallery-specific tools alongside them. The shared foyer, atrium, controls and menus live in `museum/`.
 
 ## Blackboards and lettering
 
@@ -27,5 +30,7 @@ Every plot, mesh, animation and probe readout that presents simulation data must
 ## VR and desktop
 
 The planned stack is Godot 4, GDScript and OpenXR. Share exhibit scenes and data between the standalone Meta Quest 3 experience and the downloadable desktop build. Precompute scientific assets offline and package them with the game.
+
+Deliver the standalone Quest game as `exports/MirrorTransport.apk`. Run `./build_apk` from the repository root. For a requested USB installation, use `./build_apk --install-only` with the verified APK, or `./build_apk --install` to build and deploy an update. Keep the same package ID and signing key across updates. Both the APK and the optional on-headset editor ZIP collect numbered galleries’ `gallery-N/game/` folders automatically. Register new shared runtime folders in `tools/quest_project.py`. [Quest build and installation](README.md#build-and-install-the-quest-3-apk)
 
 Keep labels and controls within view and reach from seated and standing positions. Make each exhibit interaction available with a mouse and keyboard as well as VR controllers. Use the desktop build to check exhibit behaviour. Verify comfort, scale and sustained performance on the headset, with 72 fps as the first playable build’s target.

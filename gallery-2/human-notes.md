@@ -1,0 +1,3 @@
+On the wall opposite from the exhibits, it would be good to put some math and details about what the pseudo orbit averaging scheme is doing. Perhaps 3 blackboards for the 3 exhibits would be appropriate. One should describe the orbit average phase, using relevant equations. Explain the motivation for the pseudo orbit averaging scheme and how it's designed. Bigger time steps come from being able to step on collision times without resolving every bounce.
+
+The blackboard behind the pendulum statue is difficult to read because it's behind the pendulum. If there is relevant text to each of the exhibits, it should either go above, below, or to the side. Never behind, as the exhibit will block the text. 

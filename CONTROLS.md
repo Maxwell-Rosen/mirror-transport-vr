@@ -6,21 +6,22 @@ In the entry foyer, place a controls graphic beside the doorway, opposite the we
 
 | Action | Meta Quest 3 | Desktop |
 | --- | --- | --- |
-| Look around | Turn your head. Flick the right stick left or right to turn in steps. | Move the mouse to look and aim. |
-| Walk along the floor | Push the left stick in the direction you want to move. | Use W and S to move forward and back, and A and D to step left and right. |
+| Look around | Turn your head. | Move the mouse to look and aim. |
+| Walk along the floor | Take physical steps within your play space. | W or ↑ moves forward, S or ↓ moves back, A or ← steps left, and D or → steps right. |
+| Teleport | Tilt the right thumbstick in any direction and point the right controller. Release the stick to land at the floor circle. | — |
 
-For a comfortable way to travel in VR, aim at the floor near a gallery entrance and squeeze the trigger when the pointer extends to teleport to that viewpoint. In the mirror gallery, aim at the open floor a step back and left of the controls to see the bouncing ion and energy plot together, or beyond either expander to look down the axis. This works seated or standing. The headset also tracks leaning and physical steps, so you can lean toward a label or step back to see the whole exhibit. You can reach each exhibit from a chair using the controllers alone.
+While you hold the stick off-centre, an arc from the right controller follows your aim. A circle marks clear floor within a four-metre horizontal radius of your feet. To cancel, aim at a wall so the circle disappears, then release. The headset also tracks leaning and physical steps, so you can lean toward a label or step back to see the whole exhibit. You can reach each exhibit from a chair using the right controller.
 
 The broader exhibit plan also includes optional flight for viewing the taller displays, with ascent, descent, a level horizon and a control to return to the floor beneath you. [Exhibit plan](PLAN.md)
 
 ## Use an exhibit
 
-Point a controller at a button and squeeze the trigger, or aim with the mouse and left-click. To move a slider or probe, hold the trigger or left mouse button, move along the slider or rail, then release. Select a numbered point on the loss-cone plot. A soft white glow follows that ion, and the lectern left of the launch controls plots its kinetic energies. Dragging a slider changes that setting while the particles keep moving. The pedestal’s **Reset** restores all opening settings and restarts the staggered launches. [Mirror exhibit](INTRO_MIRROR_INTERACTIVE.md)
+Point the right controller at a button and pull the index trigger, or aim with the mouse and left-click. To move a slider or probe, hold the trigger or left mouse button, move along the slider or rail, then release. [Gallery 1 launch controls and plots](gallery-1/README.md#launch-controls-and-plots)
+
+On the Gallery 2 bead stand, select **Pause** to inspect the orbits or **Next phase** to jump to the hold and release. **Play** resumes from the selected time. **Replay** returns to the opening frame. Use the mouse or right trigger. On desktop, stand near the front of the rings and use **Tab** or **Shift+Tab** to focus either button and **Enter** to activate it. [Between Bounces](gallery-2/README.md)
 
 ## Title screen and pause menu
 
-Choose **Enter the museum**. The title and its music fade to black, then the foyer appears as the Promenade fades in. Press **Esc** on desktop or **A** on the right Quest controller to pause the visit and read all controls. The music continues quietly while paused and returns to its usual level as you resume. Drag **Volume** or select **Mute audio** to adjust all museum sound. On a keyboard, Tab to the slider and use the arrow keys. Unmuting restores the selected volume. **Resume visit** or the same pause button continues from the same spot. **Reset to title** ends the visit and restores the opening settings. Use the mouse or Tab and Enter on desktop, or point either controller and squeeze its trigger.
+On the title screen, choose **Enter the museum** to begin or **Exit** to close the game. In either menu, use the mouse or Tab and Enter on desktop. On Quest, aim the right controller and pull its index trigger. A yellow ring marks where the ray meets the menu.
 
-## Return to the foyer
-
-From anywhere in the museum, hold **Select** until the circular progress indicator fills. Release early to cancel. When the circle fills, you return to the starting spot in the foyer facing the atrium doorway. The Select bindings are **X** on the left Quest controller and **Home** on the keyboard.
+When you enter, the title and its music fade to black, then the foyer appears as the Promenade fades in. Press **Esc** on desktop or **A** on the right Quest controller to pause the visit and read all controls. The music continues quietly while paused and returns to its usual level as you resume. Drag **Volume** or select **Mute audio** to adjust all museum sound. On a keyboard, Tab to the slider and use the arrow keys. Unmuting restores the selected volume. **Resume visit** or the same pause button continues from the same spot. Choose **Reset to title**, then **Enter the museum** to start a fresh visit on the foyer mat.

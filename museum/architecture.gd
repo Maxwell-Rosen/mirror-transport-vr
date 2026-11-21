@@ -1,5 +1,7 @@
 extends Node3D
 ## Repeated architectural pieces share geometry and draw calls within each room.
+const SERIF := preload("res://museum/fonts/DejaVuSerif.ttf")
+const SANS := preload("res://museum/fonts/DejaVuSans.ttf")
 const Board := preload("res://museum/board_style.gd")
 # Baked from seamless smooth simplex noise (frequency 0.055, #ece9e4 to white)
 # so the stone is ready on the first frame after a scene reload.
@@ -81,3 +83,43 @@ func assemble() -> void:
 		model.material_override = finishes[parts[2]]
 		add_child(model)
 	batches.clear()
+
+func lettering(words: String, at: Vector3, height: float, yaw := 0.0, display := false, left := false) -> Label3D:
+	var label := Label3D.new()
+	label.text = words
+	label.font = SERIF if display else SANS
+	label.font_size = 72
+	label.pixel_size = height / 72
+	label.outline_size = 0
+	label.modulate = Board.TEXT
+	label.double_sided = false
+	label.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC
+	if left:
+		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	add_child(label)
+	label.position = at
+	label.rotation.y = yaw
+	return label
+
+func pavement(width: int, start: int, length_m: int) -> void:
+	box(Vector3(0,-0.12,start + length_m * 0.5), Vector3(width,0.24,length_m),"joint",true)
+	for j in range(length_m / 2):
+		for i in range(width / 2):
+			var tone := "floor2" if (i*7+j*3)%5 < 2 else "floor"
+			box(Vector3(-width*0.5+1+i*2,0.001,start+1+j*2),Vector3(1.989,0.004,1.989),tone)
+
+func bench(x: float,z: float) -> void:
+	for dz in [-0.50,0.50]:
+		box(Vector3(x,0.215,z+dz),Vector3(0.51,0.40,0.19),"green")
+	for i in 4:
+		box(Vector3(x+(i-1.5)*0.15,0.48,z),Vector3(0.139,0.12,1.56),"wood")
+	barrier(Vector3(x,0.28,z),Vector3(0.61,0.56,1.56))
+
+func plant(x: float,z: float) -> void:
+	drum(Vector3(x,0.31,z),0.63,0.62,"pot",12)
+	drum(Vector3(x,0.59,z),0.69,0.13,"pot",12)
+	barrier(Vector3(x,0.31,z),Vector3(0.62,0.62,0.62))
+	for i in 13:
+		var a := i*2.4
+		var h := 0.62+0.32*sin(i*1.7)
+		piece("leaf",Vector3(x+0.18*cos(a),0.64+h*0.38,z+0.18*sin(a)),Vector3(0.28,h,0.10),"leaf" if i%2 else "leaf2",Vector3(0,-a,-0.52))

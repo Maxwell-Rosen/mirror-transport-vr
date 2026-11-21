@@ -1,0 +1,129 @@
+{
+  "run": "1x-beams",
+  "frame": 0,
+  "saved_time_s": 0.0,
+  "gkeyll_changeset": "deefedd25b49",
+  "diagnostic": "Static magnetic field magnitude and physical geometry",
+  "asset": "field-profile.csv",
+  "cells": 400,
+  "sources": {
+    "zzim-geo_int_bmag.gkyl": "a1f0b2ca413938f6e2900917fc2d1b2fcca62be61843a857944867e9671ff701",
+    "zzim-geo_corn_mc2nu_pos_deflated.gkyl": "11a54818da9b43a321588e67c286daf61239778e18b78e778fc139e47cb97da2",
+    "zzim-geo_corn_nodes.gkyl": "6a681a051508d50e9fcccc896c5006bfd587d529f517babf0e57d3978a83a4bd",
+    "zzim-stat.json": "13ead1cb1078a836e5379f0ea44e1259ff7c42efb774d6f44cbafd8804c94d64"
+  },
+  "source_hash": "SHA-256",
+  "source_directory": "data/1x-beams/",
+  "input_deck": "gkylmax/a-thesis-simulations/1x-beams/sim.c",
+  "geometry_scan": "gkyl-paper-inp/2026_PRE_hts_mirror_equilibria/generate_efit/write_efit_double_lorentzian.py",
+  "flux_reference": "https://arxiv.org/pdf/2305.06372#page=3",
+  "interpretation": "PhD-thesis-latex/Chapter Gkeyll Foundations/tex-files/{mirror-geometry,orbit-average-phase-implementation}.tex",
+  "conversion": "gallery-1/tools/export_mirror_geometry.py",
+  "field_profile": "All physical cell centres. Orthonormal P1 coefficients from zzim-geo_int_bmag.gkyl and zzim-geo_corn_mc2nu_pos_deflated.gkyl evaluated at xi=0. No smoothing or normalization.",
+  "node_check": "Use the R and Z components (0 and 1) of zzim-geo_corn_nodes.gkyl directly. The first and last nodes match Z_min/Z_max and grid_inp.zmin/zmax in sim.c. End fields are sampled at the adjacent cell centres.",
+  "checks": [
+    {
+      "quantity": "B_T",
+      "index": 200,
+      "z_m": 0.010875720864608222,
+      "saved": 0.530873521480424,
+      "model": 0.5308096424946399,
+      "relative_error": 0.00012032806911510541
+    },
+    {
+      "quantity": "B_T",
+      "index": 298,
+      "z_m": 0.9791653233743922,
+      "saved": 16.6623473633023,
+      "model": 16.664216510763953,
+      "relative_error": 0.00011217791952722322
+    },
+    {
+      "quantity": "B_T",
+      "index": 0,
+      "z_m": -2.487499999999999,
+      "saved": 0.13563285619598978,
+      "model": 0.1356249085754998,
+      "relative_error": 5.859657248896699e-05
+    },
+    {
+      "quantity": "B_T",
+      "index": 399,
+      "z_m": 2.487499999999999,
+      "saved": 0.1356328561959883,
+      "model": 0.1356249085754998,
+      "relative_error": 5.8596572478086806e-05
+    },
+    {
+      "quantity": "r_m",
+      "index": 200,
+      "z_m": 1.9727646302994395e-08,
+      "saved": 0.09999982241492084,
+      "model": 0.09999999999999994,
+      "relative_error": 1.7758539445633659e-06
+    },
+    {
+      "quantity": "r_m",
+      "index": 299,
+      "z_m": 0.9804758018815471,
+      "saved": 0.0178451035253216,
+      "model": 0.017844042961907846,
+      "relative_error": 5.9431620121896955e-05
+    },
+    {
+      "quantity": "r_m",
+      "index": 0,
+      "z_m": -2.4999999999999996,
+      "saved": 0.19998104612842615,
+      "model": 0.19998140125334285,
+      "relative_error": 1.7757928743034057e-06
+    },
+    {
+      "quantity": "r_m",
+      "index": 400,
+      "z_m": 2.499999999999999,
+      "saved": 0.19998104612842613,
+      "model": 0.1999814012533428,
+      "relative_error": 1.775792874081361e-06
+    }
+  ],
+  "analytic_exhibit": {
+    "runtime": [
+      "gallery-1/game/field.gd",
+      "gallery-1/game/orbit.gd"
+    ],
+    "geometry": "L=sum over ±a of 1/(1+((Z±a)/width)^2). F=B0*L/L(0), psi=r²F/2. Bisect width on [0.09,0.46] m for the requested peak/midplane ratio. Below 3, F=B0+(R-1)*(F3-B0)/2.",
+    "reference": {
+      "a_m": 0.98,
+      "width_m": 0.124904,
+      "amplitude_T_m": 6.51292,
+      "midplane_radius_m": 0.1,
+      "midplane_B_T": 0.5306179611912949
+    },
+    "quantities": "Eight azimuths on one flux surface. Launch velocities, common magnetic moment, quadratic ambipolar potential and collisionless trajectories are analytic visitor settings.",
+    "particle": {
+      "charge_C": 1.602176487e-19,
+      "mass_kg": 3.368659976918e-27,
+      "source": "sim.c and core/zero/gkyl_const.h at the recorded Gkeyll changeset"
+    },
+    "opening_controls": {
+      "parallel_speed_spread_km_s": 400,
+      "magnetic_moment_keV_T": 1.0,
+      "midplane_potential_kV": 0.0
+    },
+    "launch": "v_parallel0=(2i-7)V/7, i=0..7. Five releases per line, staggered by one fifth of the opening bounce or escape/relaunch cycle, rounded to 1/60 exhibit s and capped at 1.5 exhibit s. Live edits resample each particle at its existing launch age. Reset restores the trial clock and controls.",
+    "potential": "Phi=delta_phi*(1-(Z/Zt)^2) inside the rings and zero throughout the expanders. The escape threshold satisfies m*v_parallel0^2/2 = max over [0,Zt] of mu*(B(Z)-B0) + q*(phi(Z)-phi(0)), with q=+e. Draw the branches where a finite turning region exists.",
+    "orbit": "Invert time of flight and integrated gyro phase on the first reachable energy-conserving leg. Reflect trapped legs by symmetry. A passing particle crosses the throat with phi held at zero through the expander, fades at the displayed tip over 0.16 exhibit s, and relaunches at the midplane with a fresh trail.",
+    "field_line_colour": "Bright blue for returning launches, dark blue-grey for escaping launches, pale grey for rest or boundary. Colour encodes the particle outcome at the current controls.",
+    "energy_trace": "First marker on the selected line. K_parallel = K_parallel0 - (U(Z)-U(0)) and K_perp = mu B(Z). Show up to 10 physical microseconds since selection, control change or relaunch, ending at the expander tip. Energies in eV or keV use the same guiding-centre orbit as the marker.",
+    "axial_range_m": [
+      -2.5,
+      2.5
+    ],
+    "axial_scale": 1.44,
+    "radial_scale": 5.4,
+    "relative_radial_enlargement": 3.75,
+    "physical_seconds_per_exhibit_second": 2e-06,
+    "visible_gyro_frequency_fraction": 1.0
+  }
+}

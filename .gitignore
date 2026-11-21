@@ -13,8 +13,11 @@
 .godot_credentials
 *.keystore
 *.jks
+*.p12
+__pycache__/
 
 # Raw Gkeyll simulation output
 *.gkyl
 *.zip
 gkeyll-data/*
+gallery-2/sketches/*

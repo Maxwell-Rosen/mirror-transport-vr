@@ -1,0 +1,24 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://gallery-2/game/exhibit.gd" id="1"]
+[ext_resource type="Script" path="res://gallery-2/game/pendulums.gd" id="2"]
+[ext_resource type="Script" path="res://gallery-2/game/river.gd" id="3"]
+[ext_resource type="Script" path="res://gallery-2/game/transport.gd" id="4"]
+
+[node name="BetweenBounces" type="Node3D"]
+script = ExtResource("1")
+
+[node name="Pendulums" type="Node3D" parent="."]
+position = Vector3(2.2, 0, 2.3)
+rotation = Vector3(0, 3.14159265, 0)
+script = ExtResource("2")
+
+[node name="River" type="Node3D" parent="."]
+position = Vector3(6, 0, 2.3)
+rotation = Vector3(0, 3.14159265, 0)
+script = ExtResource("3")
+
+[node name="Transport" type="Node3D" parent="."]
+position = Vector3(10.4, 0, 2.3)
+rotation = Vector3(0, 3.14159265, 0)
+script = ExtResource("4")

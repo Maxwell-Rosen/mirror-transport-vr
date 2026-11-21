@@ -3,6 +3,7 @@ extends Control
 
 signal continue_visit
 signal restart_visit
+signal exit_requested
 
 const Board := preload("res://museum/board_style.gd")
 const SANS := preload("res://museum/fonts/DejaVuSans.ttf")
@@ -13,19 +14,19 @@ const PAUSE_SIZE := Vector2(932, 660)
 const AUDIO_SETTINGS := "user://audio.cfg"
 const CONTROLS := [
 	["Look and aim", "Move mouse", "Turn head and point controller"],
-	["Walk", "W A S D", "Left stick or physical steps"],
-	["Turn in steps", "—", "Flick right stick left or right"],
-	["Teleport", "—", "Aim at floor near a viewpoint + trigger"],
-	["Select button or particle", "Left click", "Point and squeeze trigger"],
-	["Drag a slider", "Hold left click and drag", "Hold trigger and drag"],
-	["Return to foyer", "Hold Home for 1.2 s", "Hold left X for 1.2 s"],
-	["Pause or resume", "Esc", "Right A"],
-	["Choose in menus", "Click or Tab, then Enter", "Point and squeeze trigger"],
+	["Walk", "WASD or arrow keys", "Physical steps"],
+	["Aim teleport", "—", "Tilt stick any way and aim the arc"],
+	["Land at circle (up to 4 m)", "—", "Release stick"],
+	["Select button or particle", "Left click", "Pull index trigger"],
+	["Drag a slider", "Hold left click and drag", "Hold index trigger and drag"],
+	["Pause or resume", "Esc", "A"],
+	["Choose in menus", "Click or Tab, then Enter", "Point and pull index trigger"],
 ]
 
 var title := true
 var primary := Button.new()
 var restart := Button.new()
+var exit_button := Button.new()
 var volume := HSlider.new()
 var mute := CheckBox.new()
 var settings := ConfigFile.new()
@@ -35,11 +36,17 @@ func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	_style_button(primary, true)
 	_style_button(restart, false)
+	_style_button(exit_button, false)
 	primary.name = "Continue"
 	restart.name = "Restart"
 	restart.text = "Reset to title"
+	exit_button.name = "Exit"
+	exit_button.text = "Exit"
+	exit_button.position = Vector2(344, 370)
+	exit_button.size = Vector2(136, 61)
 	primary.pressed.connect(func(): continue_visit.emit())
 	restart.pressed.connect(func(): restart_visit.emit())
+	exit_button.pressed.connect(exit_requested.emit)
 	volume.name = "Volume"
 	volume.accessibility_name = "Master volume"
 	volume.step = 1
@@ -116,12 +123,13 @@ func configure(is_title: bool) -> void:
 	restart.position = Vector2(300, 572)
 	restart.size = Vector2(236, 61)
 	restart.visible = not title
+	exit_button.visible = title
 	volume.visible = not title
 	mute.visible = not title
 	queue_redraw()
 
 func control_at(pixel: Vector2) -> Control:
-	for control: Control in [primary, restart, volume, mute]:
+	for control: Control in [primary, restart, exit_button, volume, mute]:
 		if control.visible and control.get_rect().has_point(pixel):
 			return control
 	return null
@@ -149,11 +157,11 @@ func _draw() -> void:
 		_words(Vector2(34, 107), "Visit paused", 50, SERIF)
 		var columns := [36, 297, 549]
 		for i in 3:
-			_words(Vector2(columns[i], 157), ["Controls", "Keyboard & mouse", "Quest controllers"][i], 21)
+			_words(Vector2(columns[i], 157), ["Controls", "Keyboard & mouse", "Quest · right controller"][i], 21)
 		draw_line(Vector2(36, 170), Vector2(896, 170), Board.RULE, 1.5)
 		for row in CONTROLS.size():
 			for column in 3:
-				_words(Vector2(columns[column], 198 + row * 33), CONTROLS[row][column], 18)
+				_words(Vector2(columns[column], 198 + row * 38), CONTROLS[row][column], 18)
 		draw_line(Vector2(36, 485), Vector2(896, 485), Board.RULE, 1)
 		_words(Vector2(36, 529), "Volume", 23)
 		draw_string(SANS, Vector2(540, 529), "%d%%" % roundi(volume.value), HORIZONTAL_ALIGNMENT_RIGHT, 76, 23, Board.TEXT)

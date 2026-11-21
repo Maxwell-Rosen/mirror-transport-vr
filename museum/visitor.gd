@@ -2,38 +2,40 @@ extends CharacterBody3D
 
 const DESKTOP_HEIGHT := 1.83
 const DESKTOP_EYE_HEIGHT := 1.71
-const START := Vector3(0,0,8)
-const HOLD_TIME := 1.2
-const Mirror := preload("res://museum/mirror/exhibit.gd")
-const InstrumentPanel := preload("res://museum/mirror/panel.gd")
-const MOUSE_POINTER := 2
+const Foyer := preload("res://museum/foyer/foyer.gd")
+const START := Foyer.MAT_TOP
+const Mirror := preload("res://gallery-1/game/exhibit.gd")
+const Bounces := preload("res://gallery-2/game/exhibit.gd")
+const InstrumentPanel := preload("res://gallery-1/game/panel.gd")
+const TeleportArc := preload("res://museum/teleport.gd")
+const STICK_DEADZONE := 0.15
+const STICK_CENTER := 0.10
+const POINTER_REST := 0.18
+enum Teleport { READY, AIMING, WAIT_FOR_CENTER }
+
 @onready var mirror: Mirror = $"../MagneticMirror"
+@onready var bounces: Bounces = $"../BetweenBounces"
 var xr_active := false
 var skip_capture_motion := true
 var camera: Camera3D
 var origin: XROrigin3D
-var hands: Array[XRController3D] = []
-var rays: Array[MeshInstance3D] = []
-var pressed := [false, false, false]
-var hover_widgets := [-1, -1, -1]
-var drag_pointer := -1
+var right_hand: XRController3D
+var ray: MeshInstance3D
+var teleport_arc: TeleportArc
+var teleport_state := Teleport.READY
+var controller_tracked := false
+var pointer_down := false
+var hovered_widget := -1
+var hovering_rings := false
 var mouse_edges: Array[bool] = []
-var mouse_down := false
 var reticle: Control
-var snap_ready := true
-var held := 0.0
-var progress := MeshInstance3D.new()
-var arc := ImmediateMesh.new()
-var brass := StandardMaterial3D.new()
 
 func _ready() -> void:
+	position = START
 	var capsule := CapsuleShape3D.new()
 	capsule.radius = 0.28
 	capsule.height = 1.7
 	$Body.shape = capsule
-	brass.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	brass.albedo_color = Color("#e5bb71")
-	brass.cull_mode = BaseMaterial3D.CULL_DISABLED
 	var xr := XRServer.find_interface("OpenXR")
 	xr_active = xr != null and xr.is_initialized()
 	if xr_active:
@@ -44,17 +46,7 @@ func _ready() -> void:
 		add_child(origin)
 		camera = XRCamera3D.new()
 		origin.add_child(camera)
-		for tracker: StringName in [&"left_hand",&"right_hand"]:
-			var hand := XRController3D.new()
-			hand.tracker = tracker
-			hand.pose = &"aim"
-			origin.add_child(hand)
-			hands.append(hand)
-			var ray := MeshInstance3D.new()
-			ray.mesh = BoxMesh.new()
-			ray.material_override = brass
-			hand.add_child(ray)
-			rays.append(ray)
+		_build_controller()
 	else:
 		camera = Camera3D.new()
 		add_child(camera)
@@ -69,15 +61,37 @@ func _ready() -> void:
 		reticle.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
 		reticle.draw.connect(_draw_reticle)
 		reticle.hide()
-		get_window().focus_exited.connect(_cancel_mouse)
+		get_window().focus_exited.connect(cancel_interaction)
 	camera.current = true
-	progress.mesh = arc
-	camera.add_child(progress)
-	progress.position = Vector3(0,-0.12,-0.85)
+
+func _build_controller() -> void:
+	right_hand = XRController3D.new()
+	right_hand.tracker = &"right_hand"
+	right_hand.pose = &"aim"
+	origin.add_child(right_hand)
+	var brass := StandardMaterial3D.new()
+	brass.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	brass.albedo_color = Color("#e5bb71")
+	brass.cull_mode = BaseMaterial3D.CULL_DISABLED
+	ray = MeshInstance3D.new()
+	ray.mesh = BoxMesh.new()
+	ray.set_surface_override_material(0, brass)
+	right_hand.add_child(ray)
+	ray.hide()
+	teleport_arc = TeleportArc.new()
+	teleport_arc.material_override = brass
+	add_child(teleport_arc)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if xr_active:
 		return
+	if event is InputEventKey and event.pressed and not event.echo and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED and bounces.at_rings(camera.global_position):
+		if event.keycode == KEY_TAB:
+			bounces.rings.panel.tab(event.shift_pressed)
+			get_viewport().set_input_as_handled()
+		elif event.keycode in [KEY_ENTER, KEY_KP_ENTER] and bounces.rings.panel.focus >= 0:
+			bounces.rings.press(bounces.rings.panel.focus)
+			get_viewport().set_input_as_handled()
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		if skip_capture_motion:
 			skip_capture_motion = false
@@ -92,157 +106,127 @@ func _unhandled_input(event: InputEvent) -> void:
 			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
 func _draw_reticle() -> void:
-	var tint := InstrumentPanel.BRASS if hover_widgets[MOUSE_POINTER] >= 0 else Color.WHITE
-	reticle.draw_circle(Vector2.ZERO, 3.5, Color.BLACK, true, -1, true)
-	reticle.draw_circle(Vector2.ZERO, 2.0, tint, true, -1, true)
-
-func _cancel_mouse() -> void:
-	mouse_down = false
-	mouse_edges.clear()
-	_release_pointer(MOUSE_POINTER)
-	reticle.hide()
+	var tint := InstrumentPanel.BRASS if hovered_widget >= 0 else Color.WHITE
+	reticle.draw_circle(Vector2.ZERO, 7.0, Color.BLACK, true, -1, true)
+	reticle.draw_circle(Vector2.ZERO, 4.0, tint, true, -1, true)
 
 func cancel_interaction() -> void:
-	mouse_down = false
 	mouse_edges.clear()
-	for i in pressed.size():
-		_release_pointer(i)
-	held = 0.0
-	progress.hide()
+	pointer_down = false
+	mirror.release()
+	bounces.rings.clear_focus()
+	_hover(-1)
 	if reticle:
 		reticle.hide()
+	if teleport_arc:
+		teleport_state = Teleport.WAIT_FOR_CENTER
+		teleport_arc.hide()
+		ray.hide()
 
-func _release_pointer(index: int) -> void:
-	if drag_pointer == index:
-		mirror.release()
-		drag_pointer = -1
-	pressed[index] = false
-	_hover(index, -1)
-
-func _hover(index: int, widget: int) -> void:
-	if hover_widgets[index] == widget:
+func _hover(widget: int, rings := false) -> void:
+	if hovered_widget == widget and hovering_rings == rings:
 		return
-	hover_widgets[index] = widget
-	mirror.highlight(mirror.grabbed if drag_pointer >= 0 else hover_widgets.max())
-	if index == MOUSE_POINTER:
+	hovered_widget = widget
+	hovering_rings = rings
+	mirror.highlight(-1 if rings else widget)
+	bounces.rings.point(widget if rings else -1)
+	if reticle:
 		reticle.queue_redraw()
 
-func _physics_process(delta: float) -> void:
+func _physics_process(_delta: float) -> void:
 	var walk := Vector2.ZERO
-	var returning := Input.is_physical_key_pressed(KEY_HOME)
 	if xr_active:
 		# Sweep the capsule through tracked room-scale steps, keeping it beneath the head.
 		var step := camera.global_position-global_position
 		step.y = 0
 		origin.global_position -= step
 		move_and_collide(step)
-		walk = hands[0].get_vector2("primary")
-		if walk.length() < 0.15:
-			walk = Vector2.ZERO
-		var turn := hands[1].get_vector2("primary").x
-		if absf(turn) < 0.35:
-			snap_ready = true
-		elif absf(turn) > 0.75 and snap_ready:
-			rotate_y(-signf(turn)*PI/6)
-			snap_ready = false
-		for i in hands.size():
-			update_pointer(i)
-		returning = hands[0].is_button_pressed("ax_button")
+		update_controller()
 	elif Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
-		walk.x = float(Input.is_physical_key_pressed(KEY_D))-float(Input.is_physical_key_pressed(KEY_A))
-		walk.y = float(Input.is_physical_key_pressed(KEY_W))-float(Input.is_physical_key_pressed(KEY_S))
-		reticle.visible = mirror.contains_visitor(camera.global_position)
+		walk = Input.get_vector(&"walk_left", &"walk_right", &"walk_back", &"walk_forward")
+		reticle.visible = mirror.contains_visitor(camera.global_position) or bounces.contains_visitor(camera.global_position)
 		var aim := -camera.global_basis.z
 		for down in mouse_edges:
-			mouse_down = down
-			aim_pointer(MOUSE_POINTER, camera.global_position, aim, down, false)
+			aim_pointer(camera.global_position, aim, down)
 		mouse_edges.clear()
-		aim_pointer(MOUSE_POINTER, camera.global_position, aim, mouse_down, false)
+		aim_pointer(camera.global_position, aim, pointer_down)
 	var forward := -camera.global_basis.z
 	forward.y = 0
 	forward = forward.normalized()
-	walk = walk.limit_length()
 	var motion := (forward*walk.y+forward.cross(Vector3.UP)*walk.x)*2.4
 	velocity = Vector3(motion.x,-1.0,motion.z)
 	move_and_slide()
-	update_return(returning,delta)
 
-func update_pointer(index: int) -> void:
-	var hand := hands[index]
-	var ray := rays[index]
-	ray.visible = hand.get_is_active()
-	if not ray.visible:
-		_release_pointer(index)
+func trigger_pressed() -> bool:
+	return right_hand.get_float(&"interact") > 0.65
+
+func sync_controller_inputs() -> void:
+	controller_tracked = right_hand.get_has_tracking_data()
+	pointer_down = trigger_pressed()
+	teleport_state = Teleport.READY if right_hand.get_vector2(&"teleport").length() <= STICK_CENTER else Teleport.WAIT_FOR_CENTER
+
+func set_ray_length(length_m: float) -> void:
+	ray.scale = Vector3(0.008, 0.008, maxf(length_m, 0.01))
+	ray.position.z = -length_m / 2
+
+func update_controller() -> void:
+	if not right_hand.get_has_tracking_data():
+		if controller_tracked:
+			cancel_interaction()
+		controller_tracked = false
 		return
-	var length_m := aim_pointer(index, hand.global_position, -hand.global_basis.z, hand.get_float("trigger") > 0.65, true)
-	ray.scale = Vector3(0.008,0.008,maxf(length_m, 0.01))
-	ray.position.z = -length_m/2
+	if not controller_tracked:
+		sync_controller_inputs()
+	var stick := right_hand.get_vector2(&"teleport").length()
+	var trigger := trigger_pressed()
+	var start := right_hand.global_position
+	var direction := -right_hand.global_basis.z
+	if teleport_state == Teleport.WAIT_FOR_CENTER and stick <= STICK_CENTER:
+		teleport_state = Teleport.READY
+	if teleport_state == Teleport.READY and stick > STICK_DEADZONE:
+		teleport_state = Teleport.WAIT_FOR_CENTER if mirror.grabbed >= 0 else Teleport.AIMING
+	if teleport_state == Teleport.AIMING:
+		_hover(-1)
+		pointer_down = trigger
+		ray.hide()
+		var landing := teleport_arc.aim(start, direction, camera.global_position)
+		if stick <= STICK_CENTER:
+			teleport_state = Teleport.READY
+			teleport_arc.hide()
+			if landing.is_finite():
+				global_position = landing + Vector3.UP * TeleportArc.LANDING_LIFT
+		return
+	ray.show()
+	set_ray_length(aim_pointer(start, direction, trigger))
 
-func aim_pointer(index: int, start: Vector3, direction: Vector3, trigger: bool, teleport: bool) -> float:
-	var just_pressed: bool = trigger and not pressed[index]
-	pressed[index] = trigger
+func aim_pointer(start: Vector3, direction: Vector3, down: bool) -> float:
+	var just_pressed := down and not pointer_down
+	pointer_down = down
 	var inside := mirror.contains_visitor(camera.global_position)
-	if index == drag_pointer:
-		if trigger and inside:
+	var in_bounces := bounces.contains_visitor(camera.global_position)
+	if mirror.grabbed >= 0:
+		if down and inside:
 			return start.distance_to(mirror.drag(start, direction))
 		mirror.release()
-		drag_pointer = -1
-	if not teleport and not inside:
-		_hover(index, -1)
-		return 0.18
-	var query := PhysicsRayQueryParameters3D.create(start, start + direction * 20)
-	query.exclude = [get_rid()]
-	var hit := get_world_3d().direct_space_state.intersect_ray(query)
-	var surface: Object = hit.get("collider")
-	if inside and (surface == mirror.touch_surface or surface == mirror.loss_surface):
-		var widget := mirror.widget_at(surface, hit.position)
-		_hover(index, widget)
-		if widget >= 0 and just_pressed and drag_pointer < 0:
-			mirror.press(widget, hit.position)
-			if mirror.grabbed >= 0:
-				drag_pointer = index
-		return start.distance_to(hit.position)
-	_hover(index, -1)
-	if teleport and drag_pointer < 0 and hit.has("position") and absf(hit.position.y) < 0.06:
-		var closest := Vector3.ZERO
-		var distance := 2.5
-		for point: Vector3 in get_parent().viewpoints:
-			var separation := point.distance_to(hit.position)
-			if separation < distance:
-				closest = point
-				distance = separation
-		if distance < 2.5:
-			if just_pressed:
-				global_position = closest + Vector3.UP * 0.01
+	if inside or in_bounces:
+		var query := PhysicsRayQueryParameters3D.create(start, start + direction * 20)
+		query.exclude = [get_rid()]
+		var hit := get_world_3d().direct_space_state.intersect_ray(query)
+		var surface: Object = hit.get("collider")
+		if in_bounces and surface == bounces.rings.touch_surface:
+			var widget := bounces.rings.widget_at(hit.position)
+			_hover(widget, true)
+			if widget >= 0 and just_pressed:
+				bounces.rings.press(widget)
 			return start.distance_to(hit.position)
-	return 0.18
-
-func update_return(active: bool,delta: float) -> void:
-	if not active:
-		held = 0.0
-		progress.hide()
-		return
-	if held >= HOLD_TIME:
-		return
-	held += delta
-	if held >= HOLD_TIME:
-		return_to_foyer()
-		progress.hide()
-		return
-	progress.show()
-	arc.clear_surfaces()
-	arc.surface_begin(Mesh.PRIMITIVE_TRIANGLE_STRIP,brass)
-	for i in 49:
-		var angle := PI/2-TAU*i/48.0*held/HOLD_TIME
-		var radial := Vector3(cos(angle),sin(angle),0)
-		arc.surface_add_vertex(radial*0.025)
-		arc.surface_add_vertex(radial*0.020)
-	arc.surface_end()
-
-func return_to_foyer() -> void:
-	if drag_pointer >= 0:
-		_release_pointer(drag_pointer)
-	face_atrium(START)
+		if inside and (surface == mirror.touch_surface or surface == mirror.loss_surface):
+			var widget := mirror.widget_at(surface, hit.position)
+			_hover(widget)
+			if widget >= 0 and just_pressed:
+				mirror.press(widget, hit.position)
+			return start.distance_to(hit.position)
+	_hover(-1)
+	return POINTER_REST
 
 func face_atrium(floor_position: Vector3) -> void:
 	global_position = floor_position

@@ -1,0 +1,186 @@
+#!/usr/bin/env python3
+"""Build and sideload Mirror Transport Museum for a standalone Quest 3."""
+
+import argparse
+import fcntl
+import os
+import re
+import secrets
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+from tempfile import TemporaryDirectory
+from zipfile import BadZipFile, ZipFile
+
+from tools.quest_project import ROOT, stage_project
+from tools.quest_toolchain import BUILD_TOOLS, ensure_android_sdk, godot_tools, install_vendor, java_home, sdk_path
+
+
+CACHE = ROOT / "build/quest"
+APK = ROOT / "exports/MirrorTransport.apk"
+APP_ID = "org.mirrortransport.museum"
+SIGNING = "GODOT_ANDROID_KEYSTORE_RELEASE_"
+
+
+def signing_environment(java):
+    keys = [SIGNING + name for name in ("PATH", "USER", "PASSWORD")]
+    if any(key in os.environ for key in keys):
+        if not all(os.environ.get(key) for key in keys):
+            raise ValueError("Set all three Godot release signing variables: PATH, USER and PASSWORD.")
+        keystore = Path(os.environ[SIGNING + "PATH"]).expanduser().resolve(strict=True)
+        return {SIGNING + "PATH": str(keystore), SIGNING + "USER": os.environ[SIGNING + "USER"],
+                SIGNING + "PASSWORD": os.environ[SIGNING + "PASSWORD"]}
+
+    directory = ROOT / ".godot_credentials" / "quest"
+    if not directory.exists():
+        directory.parent.mkdir(mode=0o700, exist_ok=True)
+        with TemporaryDirectory(dir=directory.parent) as tmp:
+            identity = Path(tmp) / "identity"
+            identity.mkdir(mode=0o700)
+            password = secrets.token_urlsafe(32)
+            subprocess.run([
+                java / "bin/keytool", "-genkeypair", "-noprompt", "-storetype", "PKCS12",
+                "-keystore", identity / "museum.p12", "-alias", "museum", "-keyalg", "RSA",
+                "-keysize", "3072", "-validity", "10000", "-dname", "CN=Mirror Transport Museum",
+                "-storepass:env", "MUSEUM_KEY_PASSWORD",
+            ], env={**os.environ, "MUSEUM_KEY_PASSWORD": password}, umask=0o077, check=True)
+            (identity / "password").write_text(password, encoding="ascii")
+            (identity / "password").chmod(0o600)
+            identity.rename(directory)
+    if not (directory / "museum.p12").is_file() or not (directory / "password").is_file():
+        raise ValueError(f"Restore the museum signing key and its password in {directory}")
+    password = (directory / "password").read_text(encoding="ascii").strip()
+    if not password:
+        raise ValueError(f"Restore the signing password in {directory}")
+    return {SIGNING + "PATH": str(directory / "museum.p12"), SIGNING + "USER": "museum",
+            SIGNING + "PASSWORD": password}
+
+
+def run_editor(editor, project, args, env, log):
+    result = subprocess.run([editor, "--headless", "--path", project, "--xr-mode", "off", *args],
+                            env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                            text=True, errors="replace")
+    output = re.sub(r"\x1b\[[0-9;]*m", "", result.stdout)
+    output = output.replace(env[SIGNING + "PASSWORD"], "[redacted]")
+    log.write_text(output, encoding="utf-8")
+    errors = [line for line in output.splitlines() if line.startswith(("SCRIPT ERROR:", "ERROR:"))]
+    if result.returncode or errors:
+        details = "\n".join(dict.fromkeys(errors + output.splitlines()[-35:]))
+        raise RuntimeError(f"Godot exited with status {result.returncode}.\n{details}\nGodot log: {log}")
+
+
+def verify_apk(apk, sdk, env, project):
+    tools = sdk / "build-tools" / BUILD_TOOLS
+    subprocess.run([tools / "apksigner", "verify", apk], env=env, check=True)
+    subprocess.run([tools / "zipalign", "-c", "-P", "16", "4", apk], env=env, check=True)
+    badging = subprocess.check_output([tools / "aapt", "dump", "badging", apk], env=env, text=True)
+    manifest = subprocess.check_output([tools / "aapt", "dump", "xmltree", apk, "AndroidManifest.xml"],
+                                       env=env, text=True)
+    if (f"package: name='{APP_ID}'" not in badging or "native-code: 'arm64-v8a'" not in badging.splitlines()
+            or "application-debuggable" in badging):
+        raise ValueError("Expected an ARM64 release APK for " + APP_ID)
+    for value in ("android.hardware.vr.headtracking", "com.oculus.intent.category.VR",
+                  "org.khronos.openxr.intent.category.IMMERSIVE_HMD", "com.oculus.supportedDevices", "quest3"):
+        if value not in manifest:
+            raise ValueError(f"Quest manifest is missing {value}")
+    with ZipFile(apk) as package:
+        damaged = package.testzip()
+        if damaged:
+            raise ValueError(f"Damaged APK entry: {damaged}")
+        for lib in ("libgodot_android.so", "libopenxr_loader.so", "libgodotopenxrvendors.so"):
+            package.getinfo(f"lib/arm64-v8a/{lib}")
+        if b"--xr_mode_openxr" not in package.read("assets/_cl_"):
+            raise ValueError("The APK does not start in OpenXR mode.")
+        index = package.read("assets/assets.sparsepck")
+        for name in ("museum/museum.tscn", "openxr_action_map.tres", "gallery-1/game/magnetic_mirror.tscn",
+                     "gallery-1/game/reference/manifest.json", "gallery-1/game/reference/field-profile.csv",
+                     "gallery-2/game/between_bounces.tscn", "simulation-renders/gallery-2/river.png",
+                     "simulation-renders/gallery-2/transport.json"):
+            if name.encode() not in index:
+                raise ValueError(f"Missing Godot resource in APK: {name}")
+        for path in ("gallery-1/game/reference/manifest.json", "gallery-1/game/reference/field-profile.csv",
+                     "simulation-renders/gallery-2/transport.json",
+                     "simulation-renders/gallery-2/manifest.json"):
+            if package.read(f"assets/{path}") != (project / path).read_bytes():
+                raise ValueError(f"Packaged reference data differs from {path}")
+
+
+def build():
+    java = java_home()
+    sdk = sdk_path(CACHE)
+    editor, vendor = godot_tools(CACHE)
+    APK.parent.mkdir(exist_ok=True)
+    (APK.parent / ".gdignore").touch()
+    with TemporaryDirectory(prefix=".quest-", dir=APK.parent) as tmp:
+        work = Path(tmp)
+        project = work / "project"
+        env = {**os.environ, "JAVA_HOME": str(java), "PATH": f"{java}/bin:{os.environ['PATH']}",
+               "ANDROID_HOME": str(sdk), "ANDROID_SDK_ROOT": str(sdk),
+               "ANDROID_USER_HOME": str(CACHE / "android-user"), "GRADLE_USER_HOME": str(CACHE / "gradle"),
+               "XDG_CONFIG_HOME": str(work / "config"), "XDG_DATA_HOME": str(CACHE / "godot-data"),
+               # A stale Godot editor documentation cache can abort a fresh project import.
+               "XDG_CACHE_HOME": str(work / "cache")}
+        ensure_android_sdk(CACHE, sdk, env)
+        env.update(signing_environment(java))
+        stage_project(ROOT, project, editor_deploy=False)
+        install_vendor(vendor, project)
+        print("Importing the museum and its Meta OpenXR plugin...", flush=True)
+        run_editor(editor, project, ["--import"], env, CACHE / "import.log")
+        candidate = work / APK.name
+        print("Building the signed release APK with Gradle...", flush=True)
+        run_editor(editor, project, ["--install-android-build-template", "--export-release", "Quest 3", candidate],
+                   env, CACHE / "export.log")
+        verify_apk(candidate, sdk, env, project)
+        candidate.replace(APK)
+    print(f"Verified {APK} ({APK.stat().st_size / 1_000_000:.1f} MB)", flush=True)
+
+
+def install():
+    if not APK.is_file():
+        raise ValueError("Build the APK first with ./build_apk.")
+    adb = sdk_path(CACHE) / "platform-tools/adb"
+    if not adb.is_file():
+        adb = shutil.which("adb")
+    if not adb:
+        raise ValueError("Install Android SDK Platform-Tools or run ./build_apk on this laptop first.")
+    devices = subprocess.check_output([adb, "devices", "-l"], text=True)
+    rows = [line.split() for line in devices.splitlines() if line and not line.startswith("List of devices")]
+    serial = os.environ.get("ANDROID_SERIAL")
+    if serial:
+        rows = [row for row in rows if row[0] == serial]
+    if len(rows) != 1 or len(rows[0]) < 2 or rows[0][1] != "device":
+        raise ValueError(f"{devices.strip()}\nConnect the Quest with a USB data cable and approve USB debugging "
+                         "in the headset. For multiple devices, set ANDROID_SERIAL to the Quest serial.")
+    device = [adb, "-s", rows[0][0]]
+    model = subprocess.check_output([*device, "shell", "getprop", "ro.product.model"], text=True).strip()
+    if not serial and "quest" not in model.lower():
+        raise ValueError(f"Found {model!r}. Set ANDROID_SERIAL to explicitly select the intended headset.")
+    print(f"Installing {APK.name} on {model}...", flush=True)
+    subprocess.run([*device, "install", "-r", APK], check=True)
+    print("On the Quest, open Library → Unknown Sources → Mirror Transport Museum.")
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    options = parser.add_mutually_exclusive_group()
+    options.add_argument("--install", action="store_true", help="build, verify, then install on the connected Quest")
+    options.add_argument("--install-only", action="store_true", help="install the existing exports/MirrorTransport.apk")
+    args = parser.parse_args()
+    if args.install_only:
+        install()
+        return
+    CACHE.mkdir(parents=True, exist_ok=True)
+    (CACHE.parent / ".gdignore").touch()
+    with (CACHE / "build.lock").open("a") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        build()
+        if args.install:
+            install()
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except (OSError, ValueError, RuntimeError, BadZipFile, KeyError, subprocess.CalledProcessError) as error:
+        sys.exit(str(error))

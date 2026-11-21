@@ -1,0 +1,8 @@
+{
+  "run": "thesis five-equation uniform and localized source trials",
+  "source": "PhD-thesis-latex/Chapter POA Toy Models/tex-files/{five_equation_toy_model,fiveeq_distS_distL,fiveeq_locS_locL}.tex; short-trial notebook paper_fiveeq_time_evolution_demonstration_distS_distLoss.ipynb; POA-toy-model-paper/figures/module_fiveeq_POA_counterlocLoss.py",
+  "diagnostic": "[O1,O2,O3,P1,P2]/f*, f*=S/nu_c, t in collision times; direct and POA RK4 counts exclude the initial state",
+  "frames": "catch.times holds exact step times, catch.stops phase boundaries. Other rows [t, completed phase, POA state, direct state, POA steps, direct steps]. Source keys are zero-based feed site, tenfold alpha flag, explicit projection flag.",
+  "transform": "Short case uses original RK4 steps, with linear display interpolation. Long cases use powers of the RK4 affine step matrix, shortening the last step at every phase boundary. Direct reference evolves from t=0 uninterrupted to the same time. Explicit averaging projects intermediate stages and completed OAP steps.",
+  "settings": "gallery-2/studies/five-sample/README.md"
+}

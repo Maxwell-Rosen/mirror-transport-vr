@@ -12,7 +12,7 @@ const DUCK_DB := -6.0
 const DUCK_SECONDS := 0.85
 const TITLE_VIEWPOINT := Vector3(-3.8, 0.0, -15.5)
 const TITLE_WATER_DB := -27.0
-enum Screen { TITLE, ENTERING, VISIT, PAUSE }
+enum Screen { TITLE, ENTERING, VISIT, PAUSE, EXITING }
 
 @onready var visitor: Visitor = $"../Visitor"
 @onready var music: AudioStreamPlayer = $TitleMusic
@@ -24,15 +24,16 @@ var scrim: ColorRect
 var title_camera: Camera3D
 var spring: Spring
 var panel: MeshInstance3D
+var pointer_ring: MeshInstance3D
 var surface: SubViewport
 var pause_down := false
-var triggers := [false, false]
+var trigger_down := false
 var placed_for_head := false
 var curtain: ColorRect
 var xr_curtain: MeshInstance3D
 var xr_black := StandardMaterial3D.new()
 var music_fade: Tween
-var pointer_hand := -1
+var pointer_captured := false
 var pointer_pixel := Vector2(-1, -1)
 
 func _ready() -> void:
@@ -58,6 +59,7 @@ func _ready() -> void:
 		title_camera.look_at(Vector3(-3.5, 1.52, -25.0))
 	face.continue_visit.connect(enter_or_resume)
 	face.restart_visit.connect(reset_to_title)
+	face.exit_requested.connect(_exit_game)
 
 func _build_xr_panel() -> void:
 	surface = SubViewport.new()
@@ -65,8 +67,8 @@ func _build_xr_panel() -> void:
 	surface.size_2d_override_stretch = true
 	add_child(surface)
 	surface.add_child(face)
-	face.primary.action_mode = BaseButton.ACTION_MODE_BUTTON_PRESS
-	face.restart.action_mode = BaseButton.ACTION_MODE_BUTTON_PRESS
+	for button: Button in [face.primary, face.restart, face.exit_button]:
+		button.action_mode = BaseButton.ACTION_MODE_BUTTON_PRESS
 	panel = MeshInstance3D.new()
 	panel.mesh = QuadMesh.new()
 	var material := StandardMaterial3D.new()
@@ -78,8 +80,25 @@ func _build_xr_panel() -> void:
 	panel.material_override = material
 	panel.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(panel)
+	# Draw the beam and its contact ring after the panel in the transparent pass.
+	var pointer_material := visitor.ray.get_active_material(0).duplicate() as StandardMaterial3D
+	pointer_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	pointer_material.no_depth_test = true
+	pointer_material.render_priority = material.render_priority + 1
+	var ring := TorusMesh.new()
+	ring.inner_radius = 0.006
+	ring.outer_radius = 0.012
+	ring.rings = 24
+	ring.ring_segments = 6
+	pointer_ring = MeshInstance3D.new()
+	pointer_ring.mesh = ring
+	pointer_ring.material_override = pointer_material
+	pointer_ring.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	pointer_ring.rotation.x = PI / 2
+	pointer_ring.hide()
+	panel.add_child(pointer_ring)
 	# Reuse the texture between changes to the menu, including button hover and focus.
-	for item: Control in [face, face.primary, face.restart, face.volume, face.mute]:
+	for item: Control in [face, face.primary, face.restart, face.exit_button, face.volume, face.mute]:
 		item.draw.connect(_refresh_xr_panel)
 	# An inward-facing sphere covers both eyes, including during a head turn.
 	xr_curtain = MeshInstance3D.new()
@@ -141,8 +160,7 @@ func _open(next: Screen) -> void:
 		_refresh_xr_panel()
 		_place_xr_panel()
 		placed_for_head = false
-		for i in triggers.size():
-			triggers[i] = visitor.hands[i].get_float("trigger") > 0.65
+		trigger_down = visitor.trigger_pressed()
 	else:
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 		if screen == Screen.TITLE:
@@ -177,6 +195,8 @@ func _place_xr_panel() -> void:
 func enter_or_resume() -> void:
 	if screen == Screen.TITLE:
 		screen = Screen.ENTERING
+		if visitor.xr_active:
+			_hide_xr_pointer()
 		var fade := create_tween().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 		fade.tween_method(_blackout, 0.0, 1.0, FADE_OUT)
 		fade.parallel().tween_property(music, "volume_linear", 0.0, FADE_OUT)
@@ -195,22 +215,22 @@ func _enter_foyer() -> void:
 	# Change viewpoints at full black, while the visitor is still paused.
 	music.stop()
 	_hide_menu()
-	visitor.return_to_foyer()
+	visitor.face_atrium(Visitor.START)
 	promenade.volume_linear = 0.0
 	promenade.play()
 
 func _continue_visit() -> void:
 	screen = Screen.VISIT
 	if visitor.xr_active:
-		for i in triggers.size():
-			visitor.pressed[i] = visitor.hands[i].get_float("trigger") > 0.65
+		visitor.sync_controller_inputs()
 	get_tree().paused = false
 	spring.process_mode = Node.PROCESS_MODE_INHERIT
 
 func _hide_menu() -> void:
 	if visitor.xr_active:
-		if pointer_hand >= 0:
-			pointer_hand = -1
+		_hide_xr_pointer()
+		if pointer_captured:
+			pointer_captured = false
 			_pointer_button(Vector2(-1, -1), false)
 		surface.notify_mouse_exited()
 		panel.hide()
@@ -221,9 +241,29 @@ func _hide_menu() -> void:
 		visitor.skip_capture_motion = true
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
+func _hide_xr_pointer() -> void:
+	pointer_ring.hide()
+	visitor.ray.hide()
+	visitor.ray.material_override = null
+
 func reset_to_title() -> void:
 	if screen == Screen.PAUSE:
 		get_tree().reload_current_scene.call_deferred()
+
+func _exit_game() -> void:
+	if screen != Screen.TITLE:
+		return
+	screen = Screen.EXITING
+	if visitor.xr_active:
+		_hide_xr_pointer()
+	# Give the mixer time to release the two title streams as the view goes black.
+	music.stop()
+	spring.sound.stop()
+	# A frame that just reloaded the title can already be longer than the fade.
+	await get_tree().process_frame
+	var fade := create_tween()
+	fade.tween_method(_blackout, 0.0, 1.0, 0.2)
+	fade.tween_callback(get_tree().quit)
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.keycode == KEY_ESCAPE and event.pressed and not event.echo:
@@ -236,14 +276,15 @@ func _input(event: InputEvent) -> void:
 func _process(_delta: float) -> void:
 	if not visitor.xr_active:
 		return
-	var down := visitor.hands[1].is_button_pressed("ax_button")
+	var hand := visitor.right_hand
+	var down := hand.is_button_pressed(&"pause_menu")
 	if down and not pause_down:
 		if screen == Screen.VISIT:
 			pause_visit()
 		elif screen == Screen.PAUSE:
 			enter_or_resume()
 	pause_down = down
-	if screen == Screen.VISIT or screen == Screen.ENTERING:
+	if screen != Screen.TITLE and screen != Screen.PAUSE:
 		return
 	if not placed_for_head:
 		var head := XRServer.get_tracker(&"head") as XRPositionalTracker
@@ -251,42 +292,41 @@ func _process(_delta: float) -> void:
 		if pose and pose.has_tracking_data:
 			_place_xr_panel()
 			placed_for_head = true
-	var hover_pixel := Vector2(-1, -1)
+	var tracked := hand.get_has_tracking_data()
+	visitor.ray.visible = tracked
+	var pressed := visitor.trigger_pressed()
+	var clicked := tracked and pressed and not trigger_down
+	trigger_down = pressed
 	var plane := Plane(panel.global_basis.z, panel.global_position)
-	for i in visitor.hands.size():
-		var hand := visitor.hands[i]
-		var ray := visitor.rays[i]
-		ray.visible = hand.get_is_active()
-		var pressed := ray.visible and hand.get_float("trigger") > 0.65
-		var clicked: bool = pressed and not triggers[i]
-		triggers[i] = pressed
-		var hit = plane.intersects_ray(hand.global_position, -hand.global_basis.z) if ray.visible else null
-		var pixel := Vector2(-1, -1)
-		var length_m := 0.18
+	var hit = plane.intersects_ray(hand.global_position, -hand.global_basis.z) if tracked else null
+	var pixel := Vector2(-1, -1)
+	var length_m := Visitor.POINTER_REST
+	var on_panel := false
+	if hit != null:
+		var local := panel.to_local(hit)
+		pixel = Vector2(local.x, -local.y) / METRES_PER_PIXEL + face.size / 2
+		on_panel = Rect2(Vector2.ZERO, face.size).has_point(pixel)
+		if on_panel:
+			pointer_ring.position = local
+		if on_panel or pointer_captured:
+			length_m = hand.global_position.distance_to(hit)
+	if pointer_ring.visible != on_panel:
+		pointer_ring.visible = on_panel
+		visitor.ray.material_override = pointer_ring.material_override if on_panel else null
+	visitor.set_ray_length(length_m)
+	if pointer_captured:
 		if hit != null:
-			var local := panel.to_local(hit)
-			pixel = Vector2(local.x, -local.y) / METRES_PER_PIXEL + face.size / 2
-			if Rect2(Vector2.ZERO, face.size).has_point(pixel) or pointer_hand == i:
-				length_m = hand.global_position.distance_to(hit)
-		ray.scale = Vector3(0.008, 0.008, length_m)
-		ray.position.z = -length_m / 2
-		if pointer_hand == i:
-			if hit != null:
-				_pointer_motion(pixel)
-			if not pressed:
-				pointer_hand = -1
-				_pointer_button(pixel, false)
-				return
-		elif pointer_hand < 0 and face.control_at(pixel):
-			hover_pixel = pixel
-			if clicked:
-				_pointer_motion(pixel)
-				pointer_hand = i
-				_pointer_button(pixel, true)
-				if screen == Screen.VISIT or screen == Screen.ENTERING:
-					return
-	if pointer_hand < 0:
-		_pointer_motion(hover_pixel)
+			_pointer_motion(pixel)
+		if not pressed or not tracked:
+			pointer_captured = false
+			_pointer_button(pixel, false)
+	elif face.control_at(pixel):
+		_pointer_motion(pixel)
+		if clicked:
+			pointer_captured = true
+			_pointer_button(pixel, true)
+	else:
+		_pointer_motion(Vector2(-1, -1))
 
 func _pointer_motion(pixel: Vector2) -> void:
 	if pixel == pointer_pixel:
@@ -295,7 +335,7 @@ func _pointer_motion(pixel: Vector2) -> void:
 	event.position = pixel
 	event.global_position = pixel
 	event.relative = pixel - pointer_pixel
-	event.button_mask = MOUSE_BUTTON_MASK_LEFT if pointer_hand >= 0 else 0
+	event.button_mask = MOUSE_BUTTON_MASK_LEFT if pointer_captured else 0
 	pointer_pixel = pixel
 	surface.push_input(event, true)
 
