@@ -2,6 +2,7 @@ extends "res://museum/architecture.gd"
 
 # Metres. The foyer looks down -Z. Each bay owns a full gallery outside the aisle.
 const HALL_WIDTH := 16.0
+const ATRIUM_FLOOR := Rect2(-HALL_WIDTH / 2, -46, HALL_WIDTH, 46)
 const FIRST_GALLERY_Z := -7.5
 const BAY := 10.0
 const DEPTH := 16.0
@@ -82,7 +83,7 @@ func lighting() -> void:
 
 func hall() -> void:
 	zone = "Atrium"
-	pavement(16,-46,46)
+	pavement(ATRIUM_FLOOR, ATRIUM_FLOOR.position)
 	box(Vector3(0,3.6,END),Vector3(16,7.2,0.42),"plaster",true)
 	# The gable ends extend above the eaves behind the sloping roof.
 	for z: float in [END,0.0]:
@@ -163,12 +164,14 @@ func gallery(s: float, z: float, number: int) -> void:
 		3: depth = $TimeDilation.ROOM_DEPTH
 	var mid := s*(HALL_WIDTH/2+depth/2)
 	var is_open := GALLERY_TITLES.has(number)
-	var has_exhibit_lamps := number in [2, 3]
-	box(Vector3(mid,-0.10,z),Vector3(depth,0.20,BAY),"floor",is_open)
-	box(Vector3(mid,5.1,z),Vector3(depth,0.20,BAY),"gallery_ceiling" if has_exhibit_lamps else "stone")
-	box(Vector3(s*(8+depth),2.5,z),Vector3(0.2,5,BAY),"stone",is_open)
+	if is_open:
+		pavement(Rect2(mid - depth / 2, z - BAY / 2, depth, BAY), ATRIUM_FLOOR.position)
+	else:
+		box(Vector3(mid,-0.10,z),Vector3(depth,0.20,BAY),"floor")
+	box(Vector3(mid,5.1,z),Vector3(depth,0.20,BAY),"gallery_ceiling" if is_open else "stone")
+	box(Vector3(s*(8+depth),2.5,z),Vector3(0.2,5,BAY),"sculpture_wall" if number == 1 else "stone",is_open)
 	for edge in [-1.0,1.0]:
-		var surface := "sculpture_wall" if has_exhibit_lamps and edge == s else "stone"
+		var surface := "sculpture_wall" if is_open and edge == s else "stone"
 		box(Vector3(mid,2.5,z+edge*(BAY/2-0.06)),Vector3(depth,5,0.12),surface,is_open)
 	if not is_open:
 		barrier(Vector3(s*8,2,z),Vector3(0.38,4,OPENING))
@@ -189,6 +192,8 @@ func gallery(s: float, z: float, number: int) -> void:
 		for edge in [-1.0, 1.0]:
 			box(Vector3(mid, 0.14, z + edge * (BAY / 2 - 0.16)), Vector3(depth, 0.26, 0.13), "stone")
 			box(Vector3(mid, 0.29, z + edge * (BAY / 2 - 0.17)), Vector3(depth, 0.05, 0.15), "trim")
+			# Tuck the planters along the side walls, clear of the end-wall prints.
+			plant(s * (HALL_WIDTH / 2 + depth - 2.0), z + edge * (BAY / 2 - 0.86))
 		box(Vector3(s * (8 + depth - 0.16), 0.14, z), Vector3(0.13, 0.26, BAY), "stone")
 		box(Vector3(s * (8 + depth - 0.17), 0.29, z), Vector3(0.15, 0.05, BAY), "trim")
 	else:

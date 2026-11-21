@@ -15,7 +15,8 @@ func build(palette: Dictionary, shapes: Dictionary, xr: bool) -> void:
 	prototypes = shapes
 	add_child(structure)
 	prepare_materials()
-	pavement(ROOM_WIDTH, 0, ROOM_DEPTH)
+	var floor_bounds := Rect2(-ROOM_WIDTH * 0.5, 0, ROOM_WIDTH, ROOM_DEPTH)
+	pavement(floor_bounds, floor_bounds.position)
 	garden_doors()
 	var mid_z := ROOM_DEPTH * 0.5
 	var side_wall := ROOM_WIDTH * 0.5
@@ -59,6 +60,8 @@ func build(palette: Dictionary, shapes: Dictionary, xr: bool) -> void:
 		emblem.scale.x = 0.52
 	panel(-4.0, "W E L C O M E", "Welcome to Maxwell Rosen’s\nPhD thesis. Explore how magnetic\nmirrors confine plasma through\nsimulations.", 1.49)
 	# The advisers look down the hall from the reverse of the foyer arch.
+	box(Vector3(0, 6.27, -0.15), Vector3(2.60, 0.40, 0.05), "board")
+	lettering("Thesis Advisors", Vector3(0, 6.27, -0.18), 0.26, PI, true)
 	photograph(preload("res://museum/photographs/ammar-hakim.webp"), "Ammar Hakim",
 		Vector3(1.14, 4.96, -0.25), PI, 1.62, 1.62)
 	photograph(preload("res://museum/photographs/greg-hammett.webp"), "Greg Hammett",

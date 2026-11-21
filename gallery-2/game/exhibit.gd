@@ -33,7 +33,7 @@ func _ready() -> void:
 
 func blackboard(station: Node3D, ink: Texture2D) -> void:
 	var centre := Vector3(station.position.x, 1.57, -4.855)
-	GalleryLighting.reading(self, Vector3(centre.x, 0, centre.z - 0.016), 0.0, BLACKBOARD_SIZE.x)
+	GalleryLighting.reading(self, centre + Vector3.FORWARD * 0.016, 0.0, BLACKBOARD_SIZE)
 	box(centre, Vector3(BLACKBOARD_SIZE.x + 0.05, BLACKBOARD_SIZE.y + 0.05, 0.05), "brass")
 	var material := ShaderMaterial.new()
 	material.shader = BLACKBOARD_SHADER

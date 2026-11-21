@@ -1,5 +1,5 @@
 extends RefCounted
-## Soft wall washes are static. Only the four sculpture lamps in each room use live lights.
+## Soft wall washes are static. Exhibit accents use live spotlights.
 
 const Architecture := preload("res://museum/architecture.gd")
 const CEILING := 5.0
@@ -7,10 +7,20 @@ const HEAD_Y := CEILING - 0.24
 const WALL_WASH := preload("res://museum/wall_wash.tres")
 
 static func exhibit(room: Architecture, target: Vector3, wall_floor: Vector3, width: float) -> void:
-	# Light the front and one shoulder so the rim, pedestal and controls read as separate forms.
+	# Keep the ceiling head on the centreline of its exhibit.
 	var toward_aisle := wall_floor.direction_to(Vector3(target.x, 0, target.z))
-	var lamp := target + toward_aisle * 2.65 + toward_aisle.cross(Vector3.UP) * 0.85
+	var lamp := target + toward_aisle * 2.65
 	lamp.y = HEAD_Y
+	spotlight(room, lamp, target)
+	# Broad, dim spill on the backing plaster gives each silhouette a place along the wall.
+	if not room.finishes.has("sculpture_spill"):
+		var spill := WALL_WASH.duplicate() as StandardMaterial3D
+		spill.albedo_color = Color(0.7, 0.65, 0.54, 0.54)
+		room.finishes["sculpture_spill"] = spill
+	_pool(room, wall_floor + Vector3.UP * 2.35, atan2(toward_aisle.x, toward_aisle.z),
+		Vector2(width + 1.8, 4.5), "sculpture_spill")
+
+static func spotlight(room: Architecture, lamp: Vector3, target: Vector3) -> void:
 	_fixture(room, lamp, target)
 	var spot := SpotLight3D.new()
 	room.add_child(spot)
@@ -26,26 +36,19 @@ static func exhibit(room: Architecture, target: Vector3, wall_floor: Vector3, wi
 	spot.distance_fade_begin = 12.0
 	spot.distance_fade_length = 6.0
 	spot.shadow_enabled = false
-	# Broad, dim spill on the backing plaster gives each silhouette a place along the wall.
-	if not room.finishes.has("sculpture_spill"):
-		var spill := WALL_WASH.duplicate() as StandardMaterial3D
-		spill.albedo_color = Color(0.7, 0.65, 0.54, 0.54)
-		room.finishes["sculpture_spill"] = spill
-	_pool(room, wall_floor + Vector3.UP * 2.35, atan2(toward_aisle.x, toward_aisle.z),
-		Vector2(width + 1.8, 4.5), "sculpture_spill")
 
 static func print_lamp(room: Architecture, plate: Node3D) -> void:
 	var mount := room.global_transform.affine_inverse() * plate.global_transform
-	var floor_at := Vector3(mount.origin.x, 0, mount.origin.z) - mount.basis.z * 0.04
-	reading(room, floor_at, mount.basis.get_euler().y, plate.print_width)
+	var height: float = plate.print_width * plate.artwork.get_height() / plate.artwork.get_width()
+	var centre := mount * Vector3(0, height / 2, -0.04)
+	reading(room, centre, atan2(mount.basis.z.x, mount.basis.z.z), Vector2(plate.print_width, height))
 
-static func reading(room: Architecture, wall_floor: Vector3, yaw: float, width: float) -> void:
-	var forward := Basis(Vector3.UP, yaw).z
-	var lamp := wall_floor + forward * 1.2 + Vector3.UP * HEAD_Y
-	_fixture(room, lamp, wall_floor + Vector3.UP * 2.05)
-	# Batch one feathered pool per frame directly on the stone, behind the frame and caption.
+static func reading(room: Architecture, centre: Vector3, yaw: float, size: Vector2) -> void:
+	var lamp := centre + Basis(Vector3.UP, yaw).z * 1.2
+	lamp.y = HEAD_Y
+	_fixture(room, lamp, centre)
 	room.finishes["wall_wash"] = WALL_WASH
-	_pool(room, wall_floor + Vector3.UP * 2.55, yaw, Vector2(width + 1.9, 4.8), "wall_wash")
+	_pool(room, centre, yaw, size + Vector2(1.2, 1.2), "wall_wash")
 
 static func _pool(room: Architecture, centre: Vector3, yaw: float, size: Vector2, finish: String) -> void:
 	if not room.prototypes.has("wall_wash"):

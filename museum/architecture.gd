@@ -149,12 +149,18 @@ func photograph(texture: Texture2D, caption: String, wall: Vector3, yaw: float, 
 	box(mount * Vector3(0, plate_y, 0.010), Vector3(plate_size.x, plate_size.y, 0.020),
 		"board", false, rotation_y)
 
-func pavement(width: int, start: int, length_m: int) -> void:
-	box(Vector3(0,-0.12,start + length_m * 0.5), Vector3(width,0.24,length_m),"joint",true)
-	for j in range(length_m / 2):
-		for i in range(width / 2):
-			var tone := "floor2" if (i*7+j*3)%5 < 2 else "floor"
-			box(Vector3(-width*0.5+1+i*2,0.001,start+1+j*2),Vector3(1.989,0.004,1.989),tone)
+# Clip perimeter tiles to the room while keeping joints and stone tones on one grid.
+func pavement(bounds: Rect2, grid_origin: Vector2) -> void:
+	var centre := bounds.get_center()
+	box(Vector3(centre.x, -0.12, centre.y), Vector3(bounds.size.x, 0.24, bounds.size.y), "joint", true)
+	var first := ((bounds.position - grid_origin) / 2).floor()
+	var end := ((bounds.end - grid_origin) / 2).ceil()
+	for j in range(int(first.y), int(end.y)):
+		for i in range(int(first.x), int(end.x)):
+			var tile := Rect2(grid_origin + Vector2(i, j) * 2, Vector2(2, 2)).intersection(bounds)
+			var at := tile.get_center()
+			var tone := "floor2" if posmod(i * 7 + j * 3, 5) < 2 else "floor"
+			box(Vector3(at.x, 0.001, at.y), Vector3(tile.size.x - 0.011, 0.004, tile.size.y - 0.011), tone)
 
 func bench(x: float,z: float) -> void:
 	for dz in [-0.50,0.50]:

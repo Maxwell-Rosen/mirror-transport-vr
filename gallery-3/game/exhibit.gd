@@ -78,6 +78,7 @@ func _reading_boards() -> void:
 	reading_wall.finish_board()
 	reading_wall.finish("brass", "bea06e", 0.48, 0.36)
 	var guide := Vector3(desk.position.x, 2.83, 0.06)
+	GalleryLighting.reading(wall, Vector3(guide.x, guide.y, -0.016), 0.0, Vector2(2.59, 1.24))
 	wall.box(guide, Vector3(2.59,1.24,0.042), "brass")
 	wall.box(guide + Vector3.BACK * 0.025, Vector3(2.56,1.21,0.016), "board")
 	wall.lettering("Follow the outer crest", guide + Vector3(-1.15,0.46,0.042), 0.116, 0, true, true)
@@ -113,7 +114,7 @@ func _reading_boards() -> void:
 
 func _reading_board(x: float, title: String, body: String) -> void:
 	var centre := Vector3(x, 1.58, 0.03)
-	GalleryLighting.reading(reading_wall, Vector3(x, 0, -0.016), 0.0, 3.6)
+	GalleryLighting.reading(reading_wall, Vector3(x, centre.y, -0.016), 0.0, Vector2(3.60, 1.54))
 	reading_wall.box(centre, Vector3(3.60, 1.54, 0.045), "brass")
 	reading_wall.box(centre + Vector3.BACK * 0.026, Vector3(3.56, 1.50, 0.018), "board")
 	reading_wall.lettering(title, centre + Vector3(-1.62, 0.56, 0.041), 0.141, 0, true, true)

@@ -1,9 +1,8 @@
-[gd_resource type="OpenXRActionMap" load_steps=11 format=3]
+[gd_resource type="OpenXRActionMap" format=3 uid="uid://wn4rnb2ud5um"]
 
 [sub_resource type="OpenXRAction" id="Interact"]
 resource_name = "interact"
 localized_name = "Interact"
-action_type = 1
 toplevel_paths = PackedStringArray("/user/hand/right")
 
 [sub_resource type="OpenXRAction" id="Teleport"]

@@ -1,5 +1,6 @@
 extends "res://museum/architecture.gd"
 
+const GalleryLighting := preload("res://museum/gallery_lighting.gd")
 const Field := preload("res://gallery-1/game/field.gd")
 const Apparatus := preload("res://gallery-1/game/apparatus.gd")
 const InstrumentPanel := preload("res://gallery-1/game/panel.gd")
@@ -121,22 +122,10 @@ func _label(value: String, at: Vector3, height: float, tint := Board.TEXT, serif
 	return label
 
 func _gallery_light() -> void:
-	var spot := SpotLight3D.new()
-	spot.position = Vector3(-1.25, 4.86, 1.66)
-	add_child(spot)
-	spot.look_at(to_global(Vector3(0, 0.88, -0.08)))
-	spot.light_color = Color("#ffe9d0")
-	spot.light_energy = 0.70
-	spot.spot_range = 8.0
-	spot.spot_angle = 54.0
-	spot.spot_attenuation = 0.65
-	spot.shadow_enabled = true
-	spot.shadow_opacity = 0.55
-	spot.shadow_bias = 0.12
-	spot.distance_fade_enabled = true
-	spot.distance_fade_begin = 12.0
-	spot.distance_fade_shadow = 7.0
-	spot.distance_fade_length = 3.0
+	# A matched pair frames the title and picks out the copper at each mirror throat.
+	for side: float in [-1, 1]:
+		var x := side * Field.A * Apparatus.SCALE.x
+		GalleryLighting.spotlight(self, Vector3(x, GalleryLighting.HEAD_Y, 2.1), Vector3(x, 1.84, 0))
 
 func _touch_face(face: MeshInstance3D, body: StaticBody3D, metres: Vector2) -> void:
 	body.collision_layer = 2
