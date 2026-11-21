@@ -16,6 +16,6 @@ func rule(a: Vector2, b: Vector2, color := Board.RULE, weight := 1.5) -> void:
 
 func refresh() -> void:
 	queue_redraw()
-	var viewport := get_viewport() as SubViewport
+	var viewport := get_viewport() as Board.InstrumentViewport
 	if viewport:
-		viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
+		viewport.request_print()

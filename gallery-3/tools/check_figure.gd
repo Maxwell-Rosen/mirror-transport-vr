@@ -59,6 +59,10 @@ func _run() -> void:
 	await process_frame
 	check(room.figure == null and not ResourceLoader.has_cached(MODEL) and not ResourceLoader.has_cached(TIME_MODEL) and not ResourceLoader.has_cached(RELIEF),
 		"The foyer starts without the contour models")
+	var podiums: Node3D = room.get_node("RightWall/Podiums")
+	var bases := podiums.find_children("*", "MultiMeshInstance3D", false, false)
+	check(bases.size() > 0 and bases.all(func(base: Node3D) -> bool: return base.is_visible_in_tree()),
+		"The three podiums are present while the heavy geometry is unloaded")
 	# Enter and teleport out before the background load has a chance to finish.
 	_place(Vector3(0, 0.01, 7.65))
 	room._process(0)
@@ -78,6 +82,11 @@ func _run() -> void:
 	for item: Node3D in [room.mobile, room.desk, room.figure.contours, room.figure.cfl, room.figure.volume]:
 		check(room.to_local(item.global_position).x > 2.0, "The installation follows the incoming visitor's right wall")
 		check(room.global_basis.x.dot(item.global_basis.z.normalized()) < -0.9, "The exhibit faces into the aisle")
+	check(room.mobile.basis.is_equal_approx(Basis.IDENTITY), "The lamp disc sits square to its wall")
+	var priorities := {}
+	for layer in room.figure.layers:
+		priorities[layer.material_override.render_priority] = true
+	check(priorities.size() == room.figure.layers.size(), "Overlapping alpha shells have a stable draw order in both eyes")
 	check(room.figure.contours.scale.is_equal_approx(Vector3.ONE * 1.25), "All three model axes are enlarged equally")
 	check(room.figure.cfl.to_local(room.figure.time_panel.global_position).z > room.figure.cfl.FRONT, "The controls sit on the aisle-facing edge of the relief")
 	check(absf(room.to_local(room.figure.print_mount.global_position).z - room.to_local(room.figure.contours.global_position).z) < 0.1,
@@ -138,10 +147,7 @@ func _check_floor_plan() -> void:
 	var space := room.get_world_3d().direct_space_state
 	var masks := space.intersect_ray(PhysicsRayQueryParameters3D.create(room.to_global(middle), room.to_global(Vector3(middle.x,middle.y,mask_z)), 1))
 	var rates := space.intersect_ray(PhysicsRayQueryParameters3D.create(room.to_global(middle), room.to_global(Vector3(middle.x,middle.y,cfl_z)), 1))
-	check(not masks.is_empty() and not rates.is_empty(), "The gap lies between two solid plinths")
-	if not masks.is_empty() and not rates.is_empty():
-		var edge: Vector3 = masks.position
-		check(edge.distance_to(rates.position) > 3.65, "More than 3.65 m of floor separates the plinths")
+	check(masks.is_empty() and rates.is_empty(), "The visitor can walk into both plinths")
 	_place(Vector3(0,0.02,Room.ENTRANCE_Z - 1.0))
 	check(visitor.move_and_collide(room.global_basis * Vector3.FORWARD * (Room.ROOM_DEPTH - 2)) == null,
 		"The entire extended room has a continuous central aisle")

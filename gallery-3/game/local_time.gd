@@ -37,13 +37,14 @@ func _ready() -> void:
 	for ink: String in ["rule", "white"]:
 		finishes[ink].shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	var face := Vector2(5.34, 0.93) if role == Role.RELIEF else Vector2(2.48, 1.61)
-	box(Vector3(0,0,-0.058), Vector3(face.x + 0.04, face.y + 0.04, 0.105), "wood", true)
+	box(Vector3(0,0,-0.058), Vector3(face.x + 0.04, face.y + 0.04, 0.105), "wood")
 	box(Vector3.ZERO, Vector3(face.x + 0.02, face.y + 0.02, 0.014), "brass")
 	box(Vector3.BACK * 0.011, Vector3(face.x, face.y, 0.012), "board")
 	var data: Dictionary = manifest.data
 	if role == Role.RELIEF:
 		# The calibrated ruler shares the upper edge of the rail with the relief.
 		lettering("Axial Z (m)", Vector3(-2.53,0.369,0.025), 0.081, 0, false, true)
+		lettering("Parallel velocity\nv∥ (10⁶ m/s)", Vector3(2.30,0.343,0.026), 0.073)
 		var half_span := float(data.domain[0][1]) * float(data.z_m_per_m)
 		box(Vector3(0,0.432,0.022), Vector3(2 * half_span,0.007,0.004), "rule")
 		for z: int in [-2, -1, 0, 1, 2]:
@@ -66,10 +67,11 @@ func _ready() -> void:
 		times = lettering("", Vector3(1.62,-0.264,0.024), 0.075)
 	else:
 		_label("Which cells qualify?", 0.70, 0.115, true)
-		_label("%s  ·  ion frame %d  ·  t = %.6f s" % [data.run, data.frame, data.saved_time_s], 0.547, 0.068)
+		_label("%s  ·  frame %d  ·  t = %.6f s\nSaved step floor τ = %.4f ns (unit Courant factor)" % [
+			data.run, data.frame, data.saved_time_s, data.floor_ns], 0.526, 0.067)
 		track = data.shortest_track
 		site = data.shortest_site
-		_label("Include cells with step τ at or below this many ns", 0.405, 0.080)
+		_label("Include cells with step τ at or below this many ns", 0.380, 0.080)
 		for i in data.contours.size():
 			var entry: Dictionary = data.contours[i]
 			_button(Action.LEVEL_1 + i, String.num(entry.upper_ns, 2), Vector2((i - 2.5) * 0.39,0.247), 0.36)

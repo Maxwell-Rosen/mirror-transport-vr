@@ -1,8 +1,14 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://gallery-3/game/exhibit.gd" id="1"]
 [ext_resource type="Script" path="res://gallery-3/game/mobile.gd" id="2"]
 [ext_resource type="Script" path="res://museum/architecture.gd" id="3"]
+
+[ext_resource type="Script" path="res://gallery-3/game/podiums.gd" id="podiums"]
+
+[ext_resource type="Script" path="res://museum/thesis_print.gd" id="thesis_print"]
+[ext_resource type="Texture2D" path="res://simulation-renders/gallery-3/dilation-occupancy.png" id="dilation-occupancy"]
+[ext_resource type="Texture2D" path="res://simulation-renders/gallery-3/dilation-comparison.png" id="dilation-comparison"]
 
 [node name="TimeDilation" type="Node3D"]
 script = ExtResource("1")
@@ -14,14 +20,35 @@ script = ExtResource("3")
 
 [node name="Mobile" type="Node3D" parent="RightWall"]
 position = Vector3(5.53, 2.12, 0.83)
-rotation = Vector3(-0.10, 0.12, 0)
 script = ExtResource("2")
 
 [node name="Desk" type="Node3D" parent="RightWall"]
 position = Vector3(2.15, 1.30, 0.47)
 rotation = Vector3(-0.18, 0, 0)
 
+[node name="Podiums" type="Node3D" parent="RightWall"]
+position = Vector3(-2.7, 0, 0)
+script = ExtResource("podiums")
+
 [node name="ReadingWall" type="Node3D" parent="."]
 position = Vector3(-4.85, 0, 0)
 rotation = Vector3(0, 1.5707963, 0)
 script = ExtResource("3")
+
+[node name="DilationOccupancy" type="Node3D" parent="."]
+position = Vector3(-2.4, 1.67, -25.83)
+script = ExtResource("thesis_print")
+artwork = ExtResource("dilation-occupancy")
+print_width = 3.25
+title = "Which ions feel the slower clock?"
+caption = "Blue cells in panel a advance at a reduced rate (β < 1). Orange marks cells where the ion distribution reaches 10% or more of its peak at that axial position. At the mirror throats, compare the share of cells slowed (b) with the share of absolute ion content they hold (c). Across the whole grid, 44.7% of cells slow. They hold just 0.00555% of that content."
+credit = "Maxwell Rosen  ·  Thesis figure 5.23  ·  Beam runs, frame 75 at 0.500150 s"
+
+[node name="DilationComparison" type="Node3D" parent="."]
+position = Vector3(2.05, 1.67, -25.83)
+script = ExtResource("thesis_print")
+artwork = ExtResource("dilation-comparison")
+print_width = 3.25
+title = "What changes when the clocks slow?"
+caption = "During full dynamics, one Gkeyll beam run slows the fastest cells (blue dashes). The other keeps every clock at full rate (orange). Compare density, parallel flow and the two ion temperatures after five cycles. Each left half uses a linear scale, each right half a log scale. The median step grew from 0.0526 to 0.526 ns. The ion totals differ by 0.00107%. The runs also used different solver revisions."
+credit = "Maxwell Rosen  ·  Thesis figure 5.25  ·  Beam runs, frame 75 at 0.500150 s"

@@ -13,26 +13,21 @@
 [ext_resource type="Script" path="res://gallery-3/game/contour_sculpture.gd" id="11"]
 
 [node name="PhaseSpaceFigure" type="Node3D"]
-position = Vector3(-2.7, 0, 0)
 script = ExtResource("1")
 print_texture = ExtResource("3")
 manifest = ExtResource("4")
 
 [node name="Contours" parent="." instance=ExtResource("2")]
-position = Vector3(0, 0.86, 1.42)
-scale = Vector3(1.25, 1.25, 1.25)
 
 [node name="Print" type="Node3D" parent="."]
 position = Vector3(0, 1.86, 9.64)
 rotation = Vector3(0, 3.1415927, 0)
 
 [node name="CFLStand" type="Node3D" parent="."]
-position = Vector3(-8.7, 0, 1.32)
 script = ExtResource("8")
 manifest = ExtResource("10")
 
 [node name="Reliefs" parent="CFLStand" instance=ExtResource("9")]
-position = Vector3(0, 0.58, 0)
 
 [node name="Console" type="Node3D" parent="CFLStand"]
 position = Vector3(0, 0, 1.48)
@@ -44,7 +39,6 @@ script = ExtResource("6")
 manifest = ExtResource("10")
 
 [node name="ContourStand" type="Node3D" parent="."]
-position = Vector3(-17.85, 0, 1.32)
 script = ExtResource("11")
 manifest = ExtResource("7")
 phase_manifest = ExtResource("4")

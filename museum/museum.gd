@@ -16,15 +16,17 @@ const PHOTO_OFFSET := (OPENING / 2 + JAMB_WIDTH + BAY / 2) / 2
 const END := -45.0
 const BAY_COUNT := 4
 const FOUNTAIN_RADIUS := 2.15
+const THANKSGIVING_PRINT := preload("res://museum/photographs/thanksgiving-at-ammars.webp")
+const THANKSGIVING_CAPTION := "Thanksgiving at Ammar’s house"
 const GALLERY_TITLES := {1: "The Magnetic\nMirror", 2: "Between\nBounces", 3: "Time\nDilation"}
 const GALLERY_PHOTOS := {
 	1: [preload("res://museum/photographs/graduate-students.webp"), "Princeton program in plasma physics graduate students"],
 	2: [preload("res://museum/photographs/poster-session.webp"), "Poster session"],
-	3: [preload("res://museum/photographs/string-players.webp"), "Sinfonia cello section"],
+	3: [preload("res://museum/photographs/gkeyll-group-dinner.webp"), "Dinner with the Gkeyll group"],
 	4: [preload("res://museum/photographs/around-the-table.webp"), "Around the table"],
 	5: [preload("res://museum/photographs/orchestra-rehearsal.webp"), "In rehearsal"],
-	6: [preload("res://museum/photographs/evening-with-friends.webp"), "An evening with friends"],
-	7: [preload("res://museum/photographs/campfire.webp"), "By the fire"],
+	6: [preload("res://museum/photographs/evening-with-friends.webp"), "Princeton Reunions with my roommates"],
+	7: [THANKSGIVING_PRINT, THANKSGIVING_CAPTION],
 	8: [preload("res://museum/photographs/autumn-lawn.webp"), "Autumn on campus"],
 }
 var spring := preload("res://museum/spring.gd").new()
@@ -107,6 +109,13 @@ func hall() -> void:
 	box(Vector3(0,3.55,END+0.24),Vector3(7,5.9,0.18),"stone")
 	for i in range(-11,12):
 		box(Vector3(i*0.27,3.55,END+0.36),Vector3(0.05,5.55,0.10),"bronze")
+	var back_wall_z := END + 0.21
+	photograph(preload("res://museum/photographs/campfire.webp"), "By the fire",
+		Vector3(-6.58, SIGN_CENTER_Y, back_wall_z), 0.0, 1.00)
+	photograph(THANKSGIVING_PRINT, THANKSGIVING_CAPTION,
+		Vector3(-4.64, SIGN_CENTER_Y, back_wall_z), 0.0, 1.00)
+	photograph(preload("res://museum/photographs/improv-group.webp"), "My improvisational comedy group",
+		Vector3(5.33, SIGN_CENTER_Y, back_wall_z), 0.0, SIGN_HEIGHT / PHOTO_FRAME_SCALE)
 	fountain()
 
 func hang_gallery_photo(side: float, entrance_z: float, number: int) -> void:

@@ -41,7 +41,8 @@ static func plot_point(t: float, degrees: float) -> Vector2:
 	)
 
 func show_time(t: float) -> void:
-	if t == elapsed:
+	# Keep the chart and its filtered sizes at 30 Hz while the pendulums move every frame.
+	if floori(t * 30.0) == floori(elapsed * 30.0):
 		return
 	elapsed = t
 	for i in Motion.PERIODS.size():
@@ -49,7 +50,7 @@ func show_time(t: float) -> void:
 	reveal.size = Vector2(tips[0].x - GRAPH.position.x, PIXELS.y)
 	reveal.visible = t > 0.0
 	pens.queue_redraw()
-	(get_viewport() as SubViewport).render_target_update_mode = SubViewport.UPDATE_ONCE
+	(get_viewport() as Board.InstrumentViewport).request_print()
 
 func _draw() -> void:
 	draw_rect(Rect2(Vector2.ZERO, size), Board.FACE)

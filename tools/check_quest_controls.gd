@@ -73,6 +73,7 @@ func _run() -> void:
 	hand.set_input(&"interact", 0.0)
 	visitor.update_controller()
 	_check_teleport()
+	_check_walkthrough()
 	_check_exhibit_trigger()
 	_check_bead_trigger()
 	await _check_lamp_trigger()
@@ -182,6 +183,19 @@ func _check_teleport() -> void:
 		check(arc.visible and not arc.ring.is_visible_in_tree(), "The arc stops at a barrier and the circle requires capsule clearance")
 		_stick(Vector2.ZERO)
 		check(visitor.position == approach, "Releasing over an invalid spot cancels the previous landing")
+
+func _check_walkthrough() -> void:
+	for stand: Node3D in [visitor.mirror, visitor.bounces.rings]:
+		var start := stand.to_global(Vector3(0, 0.01, 2.0))
+		var inside := stand.to_global(Vector3(0, 0.01, 0))
+		visitor.face_atrium(start)
+		check(visitor.move_and_collide(inside - start) == null, "Visitor capsule can cross the " + stand.name + " podium")
+		visitor.face_atrium(start)
+		_point_at(inside)
+		_stick(Vector2.RIGHT)
+		check(visitor.teleport_arc.ring.is_visible_in_tree(), "Podium controls leave the landing visible")
+		_stick(Vector2.ZERO)
+		check(visitor.position.distance_to(inside) < 0.06, "Teleport reaches the floor inside " + stand.name)
 
 func _check_exhibit_trigger() -> void:
 	var mirror := visitor.mirror

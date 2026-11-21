@@ -19,6 +19,8 @@ Watch the halo reach orange in full dynamics. Choose **Next phase**. The solver 
 
 The four stands occupy the right side of a 16 × 10 m room. Turn across the aisle from any stand to find its blackboard. The pendulum board relates the bounce period to the collision time. The river board gives the orbit-averaged equation. The whirlpool board plots one lap of both water sculptures at release. The bead board shows when a passing ion can reach a wall. The animations keep playing as you move between stands. Leaving the room or pausing the visit holds their clocks until you return. [The equations on the wall](exhibit-2-POA.md#the-blackboards) · [Dimensions and placement](exhibit-2-POA.md#the-walk-from-the-atrium)
 
+At the far wall, thesis figure 3.5 traces the closed and open paths that inspired the beads. Figure 3.6 compares full dynamics with pseudo-orbit averaging in that five-equation model. The label below each print gives visitors a feature to follow. [Print sources and conversion](../simulation-renders/gallery-2/thesis-prints.json)
+
 ## Reproduce the exhibit
 
 Run these commands from the museum root with Python, NumPy, Matplotlib, Pillow and Godot 4.7. The check exercises the gallery entrance, pendulum and water references, the whirlpool's rim, exhaust and two probes, continuous bead transfers, wall arrivals, playback controls and seated and standing blackboard sightlines. On a desktop display, omit `--headless` and append `-- --pictures` to the Godot command to save room, station and blackboard views. [Model notes](model-notes.md) · [Packaged data and provenance](../simulation-renders/gallery-2/manifest.json)

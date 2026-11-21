@@ -1,10 +1,14 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://gallery-2/game/exhibit.gd" id="1"]
 [ext_resource type="Script" path="res://gallery-2/game/pendulums.gd" id="2"]
 [ext_resource type="Script" path="res://gallery-2/game/river.gd" id="3"]
 [ext_resource type="Script" path="res://gallery-2/game/transport.gd" id="4"]
 [ext_resource type="Script" path="res://gallery-2/game/whirlpool.gd" id="5"]
+
+[ext_resource type="Script" path="res://museum/thesis_print.gd" id="thesis_print"]
+[ext_resource type="Texture2D" path="res://simulation-renders/gallery-2/orbit-paths.png" id="orbit-paths"]
+[ext_resource type="Texture2D" path="res://simulation-renders/gallery-2/orbit-phases.png" id="orbit-phases"]
 
 [node name="BetweenBounces" type="Node3D"]
 script = ExtResource("1")
@@ -28,3 +32,23 @@ script = ExtResource("5")
 position = Vector3(13.35, 0, 2.3)
 rotation = Vector3(0, 3.14159265, 0)
 script = ExtResource("4")
+
+[node name="OrbitPaths" type="Node3D" parent="."]
+position = Vector3(15.84, 1.65, -2.43)
+rotation = Vector3(0, -1.5707963, 0)
+script = ExtResource("thesis_print")
+artwork = ExtResource("orbit-paths")
+print_width = 3.6
+title = "Which paths reach the wall?"
+caption = "Trace the closed loop in position z and parallel velocity v∥. The three o marks sample the same ion at different stages of a bounce. Above the dividing curve, the two t marks follow an ion on its way out. At the bead stand, watch a collision move a bead from a closed ring onto an open path."
+credit = "Maxwell Rosen  ·  Thesis figure 3.5  ·  Five-equation model"
+
+[node name="OrbitPhases" type="Node3D" parent="."]
+position = Vector3(15.84, 1.65, 2.3)
+rotation = Vector3(0, -1.5707963, 0)
+script = ExtResource("thesis_print")
+artwork = ExtResource("orbit-phases")
+print_width = 3.6
+title = "When can the calculation skip a bounce?"
+caption = "Read the upper pair as trapped ions and the lower pair as escaping ions. The left column follows every bounce. On the right, pseudo-orbit averaging alternates full motion (gray) with intervals that slow the orbit and hold the passing population (white). Follow the flat steps in panel d. Where does escape resume?"
+credit = "Maxwell Rosen  ·  Thesis figure 3.6  ·  Five-equation model"

@@ -27,6 +27,7 @@ func _ready() -> void:
 	ring.material_override = material_override
 	ring.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(ring)
+	ray_query.collision_mask = visitor.collision_mask
 	ray_query.exclude = [visitor.get_rid()]
 	ray_query.hit_from_inside = true
 	clearance.shape = body.shape

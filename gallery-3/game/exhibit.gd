@@ -44,7 +44,6 @@ func _ready() -> void:
 	wall.piece("64", base + Vector3.UP * 0.10, Vector3(3.63,0.20,1.18), "wood")
 	wall.piece("64", base + Vector3.UP * 0.207, Vector3(3.59,0.014,1.14), "brass")
 	wall.piece("64", base + Vector3.UP * 0.225, Vector3(3.57,0.024,1.13), "enamel")
-	wall.barrier(base + Vector3.UP * 1.04, Vector3(3.45,2.08,1.02))
 	for side: float in [-1, 1]:
 		var joint := mobile.transform * Vector3(side * Mobile.RIM * 0.6, Mobile.RIM * 0.8, -0.02)
 		var ceiling := Vector3(joint.x + side * 0.16, 4.96, joint.z)
@@ -101,6 +100,12 @@ func _reading_boards() -> void:
 		"of each shared tick. The grid can take ten times longer steps,\n" +
 		"so following slow collisions takes about a tenth as many updates.\n" +
 		"In a fixed field, ions trace the same paths at a different pace.")
+	_reading_board(20.55, "Why is one box empty?",
+		"Set the contour limit to 0.1 ns. Each blue shape encloses cells\n" +
+		"whose local step limit is at or below your chosen value.\n" +
+		"Before dilation the throat slopes light up. With dilation even\n" +
+		"the shortest limit is 0.5256 ns, so that box is empty. Raise the\n" +
+		"contour to 1 ns. Which cells now appear in both boxes?")
 	reading_wall.assemble()
 
 func _reading_board(x: float, title: String, body: String) -> void:
@@ -111,8 +116,8 @@ func _reading_board(x: float, title: String, body: String) -> void:
 	var label := reading_wall.lettering(body, centre + Vector3(-1.62, 0.32, 0.041), 0.092, 0, false, true)
 	label.vertical_alignment = VERTICAL_ALIGNMENT_TOP
 
-func _desk_box(at: Vector3, size: Vector3, surface: String, solid := false) -> void:
-	wall.box(desk.transform * at, size, surface, solid, desk.rotation)
+func _desk_box(at: Vector3, size: Vector3, surface: String) -> void:
+	wall.box(desk.transform * at, size, surface, false, desk.rotation)
 
 func _desk_text(words: String, at: Vector3, height: float, title := false, left := true) -> Label3D:
 	var label := wall.lettering(words, at, height, 0, title, left)
@@ -120,13 +125,13 @@ func _desk_text(words: String, at: Vector3, height: float, title := false, left 
 	return label
 
 func _build_desk() -> void:
-	_desk_box(Vector3(0,0,-0.045), Vector3(2.56,1.52,0.11), "wood", true)
+	_desk_box(Vector3(0,0,-0.045), Vector3(2.56,1.52,0.11), "wood")
 	_desk_box(Vector3(0,0,0.014), Vector3(2.54,1.50,0.018), "brass")
 	_desk_box(Vector3(0,0,0.030), Vector3(2.515,1.475,0.016), "board")
 	for x: float in [-0.86,0.86]:
 		var mount := desk.transform * Vector3(x,-0.38,-0.075)
 		wall.box(Vector3(mount.x,mount.y / 2,mount.z), Vector3(0.088,mount.y,0.088), "wood")
-	wall.box(Vector3(desk.position.x,0.06,desk.position.z - 0.08), Vector3(2.44,0.12,0.56), "enamel", true)
+	wall.box(Vector3(desk.position.x,0.06,desk.position.z - 0.08), Vector3(2.44,0.12,0.56), "enamel")
 	var data: Dictionary = Mobile.Data.data
 	location_label = _desk_text("", Vector3(-1.16,0.628,0.043), 0.104, true)
 	_desk_text("%s   ·   frame %d   ·   saved t = %.6f s" % [data.run, data.frame, data.saved_time_s],
@@ -332,7 +337,7 @@ func _update_figure(inside: bool) -> void:
 			figure_requested = false
 			if inside:
 				figure = scene.instantiate() as PhaseFigure
-				wall.add_child(figure)
+				$RightWall/Podiums.add_child(figure)
 				_sync_lamp_probe()
 		ResourceLoader.THREAD_LOAD_FAILED, ResourceLoader.THREAD_LOAD_INVALID_RESOURCE:
 			figure_requested = false

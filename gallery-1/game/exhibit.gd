@@ -27,6 +27,8 @@ var grabbed := InstrumentPanel.Widget.NONE
 var gallery_bounds := Rect2()  # Floor coordinates (local X, local Z).
 
 func _ready() -> void:
+	structure.collision_layer = 4
+	structure.collision_mask = 0
 	add_child(structure)
 	finish("oak", "785b42")
 	finish("base", "404c47")
@@ -100,9 +102,9 @@ func _signage() -> void:
 	box(Vector3(0, 2.73, -1.44), Vector3(5.0, 3.38, 0.10), "lip", true)
 	box(Vector3(0, 2.73, -1.38), Vector3(4.96, 3.34, 0.035), "board")
 	var face_z := -1.35
-	_label("The Magnetic Mirror", Vector3(0, 4.19, face_z), 0.25, Board.TEXT, true)
+	_label("The Magnetic Mirror", Vector3(0, 4.19, face_z), 0.32, Board.TEXT, true)
 	box(Vector3(0, 3.98, face_z), Vector3(4.48, 0.012, 0.01), "lip")
-	_label("Which particles turn back,\nand which escape through the ends?", Vector3(0, 3.70, face_z), 0.185)
+	_label("Which particles turn back,\nand which escape through the ends?", Vector3(0, 3.685, face_z), 0.225)
 	_label("━━", Vector3(-1.44, 3.36, face_z), 0.16, InstrumentPanel.TURN_LINE)
 	_label("Confined particles", Vector3(-0.77, 3.36, face_z), 0.114)
 	_label("━━", Vector3(0.23, 3.36, face_z), 0.16, InstrumentPanel.ESCAPE_LINE)
@@ -114,17 +116,8 @@ func _signage() -> void:
 	_label(InstrumentPanel.clock_label(), Vector3(0, 2.83, face_z), 0.115).name = "ApparatusClock"
 
 func _label(value: String, at: Vector3, height: float, tint := Board.TEXT, serif := false) -> Label3D:
-	var label := Label3D.new()
-	label.text = value
-	label.font = InstrumentPanel.SERIF if serif else InstrumentPanel.SANS
-	label.font_size = 64
-	label.pixel_size = height / 64
-	label.outline_size = 0
+	var label := lettering(value, at, height, 0.0, serif)
 	label.modulate = tint
-	label.double_sided = false
-	label.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC
-	label.position = at
-	add_child(label)
 	return label
 
 func _gallery_light() -> void:
@@ -157,14 +150,11 @@ func _touch_face(face: MeshInstance3D, body: StaticBody3D, metres: Vector2) -> v
 	body.add_child(collider)
 
 func _add_panel(kind: InstrumentPanel.Face) -> void:
-	var viewport := SubViewport.new()
+	var viewport := Board.InstrumentViewport.new()
 	match kind:
 		InstrumentPanel.Face.CONTROLS: viewport.size = InstrumentPanel.CONTROL_SIZE
 		InstrumentPanel.Face.ENERGY: viewport.size = EnergyPanel.PIXELS
 		_: viewport.size = InstrumentPanel.PLOT_SIZE
-	viewport.disable_3d = true
-	viewport.gui_disable_input = true
-	viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
 	add_child(viewport)
 	var panel := energy_panel if kind == InstrumentPanel.Face.ENERGY else InstrumentPanel.new()
 	panel.size = viewport.size
@@ -179,15 +169,12 @@ func _make_face(kind: InstrumentPanel.Face, at: Vector3, angles: Vector3, metres
 	box(at - basis.z * 0.03, backing, "lip", false, angles)
 	# Recess the solid back so the touch surface is the first hit from the front.
 	barrier(at - basis.z * 0.05, Vector3(backing.x, backing.y, 0.05), angles)
-	var material := StandardMaterial3D.new()
-	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	material.albedo_texture = panels[kind].get_viewport().get_texture()
-	material.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR
+	var viewport := panels[kind].get_viewport() as Board.InstrumentViewport
 	var quad := QuadMesh.new()
 	quad.size = metres
 	var surface := MeshInstance3D.new()
 	surface.mesh = quad
-	surface.material_override = material
+	surface.material_override = viewport.paper
 	surface.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	surface.transform = Transform3D(basis, at)
 	add_child(surface)

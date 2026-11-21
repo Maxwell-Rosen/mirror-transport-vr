@@ -1,6 +1,8 @@
 extends "res://museum/architecture.gd"
 ## The mask and CFL sculptures are independent stations with one room-gated load.
 
+const Podiums := preload("res://gallery-3/game/podiums.gd")
+const Axes := preload("res://gallery-3/game/phase_axes.gd")
 const LocalTime := preload("res://gallery-3/game/local_time.gd")
 const ContourStand := preload("res://gallery-3/game/contour_sculpture.gd")
 const CFLStand := preload("res://gallery-3/game/cfl_sculpture.gd")
@@ -28,13 +30,20 @@ var key_marks: Array[MeshInstance3D] = []
 var key_cursor: MeshInstance3D
 const KEY_WIDTH := 0.272
 
+func _enter_tree() -> void:
+	$Contours.position = Podiums.MASK
+	$Contours.scale = Vector3.ONE * Podiums.MASK_SCALE
+	$CFLStand.position = Vector3(Podiums.RELIEF.x, 0, Podiums.RELIEF.z)
+	$CFLStand/Reliefs.position.y = Podiums.RELIEF.y
+	$ContourStand.position = Vector3(Podiums.COMPARISON.x, 0, Podiums.COMPARISON.z)
+
 func _ready() -> void:
 	zone = "PhaseSpaceFigure"
 	add_child(structure)
 	finish_board()
 	finish("brass", "bea06e", 0.48, 0.36)
-	finish("wood", "70533e", 0.04, 0.59)
-	finish("ticks", "ffffff")
+	finish("white", "ffffff")
+	finishes.white.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	_plinth()
 	_print_and_keys()
 	assemble()
@@ -43,20 +52,15 @@ func _ready() -> void:
 func _plinth() -> void:
 	var base := contours.position
 	var s := contours.scale.x
-	box(base + Vector3.DOWN * 0.47, Vector3(3.67 * s, 0.78, 1.88 * s), "wood", true)
-	box(base + Vector3.DOWN * 0.061, Vector3(3.72 * s, 0.038, 1.93 * s), "brass")
-	box(base + Vector3.DOWN * 0.024, Vector3(3.70 * s, 0.036, 1.91 * s), "board")
 	var scale_factors: Array = manifest.data.exhibit_metres_per_axis_unit_Z_vparallel_mu
 	# Three calibrated rulers follow the imported +X, -Z and +Y axes.
-	var tilt := -1.13
-	var lip := Transform3D(Basis(Vector3.RIGHT, tilt), base + Vector3(0, -0.012, 0.96 * s))
+	var tilt := Podiums.LIP_TILT
+	var lip := Podiums.mask_lip()
 	key_mount.transform = lip
 	add_child(key_mount)
-	box(lip * Vector3(0, -0.465, 0), Vector3(3.70 * s, 0.93, 0.044), "wood", true, Vector3(tilt, 0, 0))
-	box(lip * Vector3(0, -0.465, 0.025), Vector3(3.68 * s, 0.915, 0.012), "board", false, Vector3(tilt, 0, 0))
 	for z_m: int in [-2, -1, 0, 1, 2]:
 		var x := z_m * float(scale_factors[0]) * s
-		box(base + Vector3(x, -0.003, 0.90 * s), Vector3(0.009, 0.008, 0.11), "ticks")
+		box(base + Vector3(x, -0.003, 0.90 * s), Vector3(0.009, 0.008, 0.11), "white")
 		lettering(str(z_m), lip * Vector3(x, -0.068, 0.034), 0.079).rotation.x = tilt
 	var axial_span: float = manifest.data.domain_max_xyz_m[0] - manifest.data.domain_min_xyz_m[0]
 	var ruler := "Axial position Z (m)    ·    %.0f m along the mirror spans %.2f m here" % [
@@ -64,27 +68,23 @@ func _plinth() -> void:
 	lettering(ruler, lip * Vector3(0, -0.203, 0.034), 0.086).rotation.x = tilt
 	for group in 2:
 		var y := -0.337 - 0.205 * group
-		var title := "Ion distribution |fᵢ|" if group == 0 else "Time-dilation mask β"
-		var units := "Minimum % of peak at Z" if group == 0 else "Below each value · unitless"
+		var title := "Ion distribution threshold" if group == 0 else "Time-dilation mask β"
+		var units := "|⟨fᵢ⟩| / peak at this Z (%)" if group == 0 else "Below each value · unitless"
 		lettering(title, lip * Vector3(-2.14, y, 0.038), 0.091, 0, true, true).rotation.x = tilt
 		lettering(units, lip * Vector3(-2.14, y - 0.087, 0.038), 0.074, 0, false, true).rotation.x = tilt
-	plinth_key = lettering("", lip * Vector3(0, -0.804, 0.034), 0.073)
+	plinth_key = lettering("", lip * Vector3(0, -0.797, 0.038), 0.063)
 	plinth_key.rotation.x = tilt
-	for velocity: int in [-10, 0, 10]:
-		var depth := -velocity * float(scale_factors[1]) * s
-		box(base + Vector3(1.76 * s, -0.003, depth), Vector3(0.11, 0.008, 0.009), "ticks")
-		lettering(str(velocity), base + Vector3(1.852 * s, -0.118, depth), 0.080, PI/2)
-	box(base + Vector3(1.84 * s, -0.24, 0), Vector3(0.010, 0.42, 1.87 * s), "board")
-	lettering("Parallel velocity v∥ (10⁶ m/s)", base + Vector3(1.852 * s, -0.28, 0), 0.097, PI/2)
-	var post := base + Vector3(-1.79, 0, -0.86) * s
+	Axes.velocity(self, base + Vector3(2.12,0.012,0), float(scale_factors[1]) * s)
+	var post := base + Vector3(-1.73, 0, 0.72) * s
 	box(post + Vector3.UP * 0.64 * s, Vector3(0.026, 1.28 * s, 0.026), "brass")
 	for moment: int in [0, 30, 60]:
 		var tick := post + Vector3.UP * moment * float(scale_factors[2]) * s
-		box(tick, Vector3(0.11, 0.008, 0.026), "ticks")
-		box(tick + Vector3.LEFT * 0.15, Vector3(0.17, 0.11, 0.024), "board")
-		lettering(str(moment), tick + Vector3(-0.15, 0, 0.018), 0.077)
-	box(base + Vector3(-1.84 * s, -0.24, 0), Vector3(0.010, 0.42, 1.87 * s), "board")
-	lettering("Magnetic moment μ (keV/T)", base + Vector3(-1.852 * s, -0.28, 0), 0.097, -PI/2)
+		box(tick, Vector3(0.11, 0.008, 0.026), "white")
+		var tag := tick + Vector3(-0.15, 0.072 if moment == 0 else 0.0, 0)
+		box(tag, Vector3(0.17, 0.11, 0.024), "board")
+		lettering(str(moment), tag + Vector3.BACK * 0.023, 0.077)
+	Axes.moment_title(self, post + Vector3(-0.38,0.70,0))
+
 func _print_and_keys() -> void:
 	var size := Vector2(PRINT_WIDTH, PRINT_WIDTH * print_texture.get_height() / print_texture.get_width())
 	var mount := print_mount.transform
@@ -111,7 +111,10 @@ func _print_and_keys() -> void:
 		for i in family_entries.size():
 			var entry: Dictionary = family_entries[i]
 			var layer := contours.get_node("%s/%s" % [family, entry.node]) as MeshInstance3D
-			_set_ink(layer, (layer.mesh.surface_get_material(0) as StandardMaterial3D).albedo_color)
+			# Concentric translucent meshes share centres and some cell faces.
+			# A fixed outer-to-inner order prevents head motion from swapping their colours.
+			var priority := -48 + (i if group == 0 else 2 * family_entries.size() - 1 - i)
+			_set_ink(layer, (layer.mesh.surface_get_material(0) as StandardMaterial3D).albedo_color, priority)
 			if group == 0 and is_equal_approx(entry.level, 0.1):
 				volume.add_overlay(layer, false)
 			if group == 1 and is_equal_approx(entry.level, 1.0):
@@ -155,7 +158,7 @@ func _colour_bar(entry: Dictionary, group: int, index: int) -> void:
 	lettering(number, key_mount.transform * (at + Vector3(0,-0.087,0.005)), 0.066).rotation = key_mount.rotation
 	key_buttons.append(_hit(key_mount, at + Vector3(0,-0.035,0.012), Vector2(KEY_WIDTH, 0.173)))
 
-func _set_ink(layer: MeshInstance3D, color: Color, outline := false) -> void:
+func _set_ink(layer: MeshInstance3D, color: Color, priority: int) -> void:
 	var low: Array = manifest.data.domain_min_xyz_m
 	var high: Array = manifest.data.domain_max_xyz_m
 	var ink := ShaderMaterial.new()
@@ -163,7 +166,7 @@ func _set_ink(layer: MeshInstance3D, color: Color, outline := false) -> void:
 	ink.set_shader_parameter("ink", color)
 	ink.set_shader_parameter("domain_min", Vector3(low[0], low[1], low[2]))
 	ink.set_shader_parameter("domain_max", Vector3(high[0], high[1], high[2]))
-	ink.set_shader_parameter("outline", outline)
+	ink.render_priority = priority
 	layer.material_override = ink
 	layer.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 
@@ -211,9 +214,10 @@ func _refresh() -> void:
 			values[group] = "all levels"
 		mark_at(selection_marks[group], selected[group], 0.055)
 		mark_at(key_marks[group], selected[group], 0.082)
-	readout.text = "Ion distribution   %s       Time factor β   %s" % [values[0], values[1]]
+	readout.text = "|⟨fᵢ⟩| / peak at this Z   %s       Time factor β   %s" % [values[0], values[1]]
 	var stats: Dictionary = manifest.data.statistics
-	plinth_key.text = ("Blue shells enclose %.1f%% of the cells. They hold %.5f%% of the ion content by magnitude.\n" +
+	plinth_key.text = ("|⟨fᵢ⟩| is the magnitude of the cell mean. Its peak is the largest value over velocity at this Z.\n" +
+		"Blue shells enclose %.1f%% of the cells. They hold %.5f%% of the ion content by magnitude.\n" +
 		"Select a colour to isolate a shell. Select it again for all levels.     %s · frame %d · %.6f s") % [
 		100 * float(stats.slowed_cell_fraction), 100 * float(stats.slowed_absolute_ion_fraction),
 		manifest.data.run, manifest.data.frame, manifest.data.saved_time_s]

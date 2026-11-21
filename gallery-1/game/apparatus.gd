@@ -90,6 +90,7 @@ func build(model: Field, copper: Material, brass: Material, bed_top: float) -> v
 		var label := Label3D.new()
 		label.font = InstrumentPanel.SANS
 		label.font_size = 56
+		label.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC
 		label.pixel_size = 0.00095
 		label.outline_size = 6
 		label.modulate = Board.TEXT

@@ -69,6 +69,9 @@ func _ready() -> void:
 		reticle.draw.connect(_draw_reticle)
 		reticle.hide()
 		get_window().focus_exited.connect(cancel_interaction)
+	# The whole museum fits inside 80 m. Keep enough depth precision for layered prints.
+	camera.near = 0.10
+	camera.far = 80.0
 	camera.current = true
 
 func _build_controller() -> void:

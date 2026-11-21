@@ -19,10 +19,10 @@ func _ready() -> void:
 	zone = "TimeContours"
 	var data: Dictionary = manifest.data
 	var native: Array = data.exhibit_metres_per_axis_unit_Z_vparallel_mu
-	build_plinth(0.88)
+	prepare_materials()
 	for side: float in [-1, 1]:
 		box(console.transform * Vector3(side * 0.91,0.49,-0.15), Vector3(0.08,0.98,0.09), "wood", false, console.rotation)
-	box(console.transform * Vector3(0,0.07,-0.10), Vector3(2.34,0.14,0.56), "wood", true, console.rotation)
+	box(console.transform * Vector3(0,0.07,-0.10), Vector3(2.34,0.14,0.56), "wood", false, console.rotation)
 
 	box(Vector3(0,2.13,-1.05), Vector3(6.45,2.60,0.034), "board")
 	for side: float in [-1, 1]:
@@ -42,7 +42,7 @@ func _ready() -> void:
 	for i in 2:
 		var volume := volumes[i]
 		var centre: float = CENTRES[i]
-		volume.position = Vector3(centre,0.90,0)
+		volume.position = Vector3(centre,Podiums.COMPARISON.y + 0.02,0)
 		volume.scale = Vector3(AXIS_SCALE.x/float(native[0]),AXIS_SCALE.y/float(native[2]),AXIS_SCALE.z/float(native[1]))
 		var title := "Without a rate cap" if i == 0 else "With the saved rate cap"
 		lettering(title, Vector3(centre,2.825,1.008), 0.125, 0, true)
@@ -73,15 +73,13 @@ func _ready() -> void:
 			surface.material_override = clay
 			surface.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 			layers[i].append(surface)
-	empty = lettering("", Vector3(float(CENTRES[1]),1.62,0.04), 0.114, 0, true)
-	lettering("Each box is the whole sampled grid. Up is magnetic moment μ (keV/T). Into the box is positive v∥ (10⁶ m/s).",
-		Vector3(0,0.472,FRONT), 0.084)
+	empty = lettering("", Vector3(float(CENTRES[1]) - 0.10,1.62,0.08), 0.114, 0, true)
+	lettering("Up · magnetic moment μ (keV/T)", Vector3(CENTRES[0],0.472,FRONT), 0.098)
+	lettering("Depth · parallel velocity v∥ (10⁶ m/s)", Vector3(CENTRES[1],0.472,FRONT), 0.098)
 	lettering("The white dot marks the same cell in both boxes. Use the time floor or ion core controls to add a reference.", Vector3(0,0.325,FRONT), 0.084)
 	lettering("%s   ·   frame %d   ·   t = %.6f s   ·   local step at unit Courant factor" % [data.run,data.frame,data.saved_time_s],
 		Vector3(0,0.175,FRONT), 0.082)
-	for speed: int in [-10,0,10]:
-		lettering(str(speed), Vector3(WIDTH/2 + 0.005,0.76,-speed * AXIS_SCALE.z), 0.077, PI/2)
-	lettering("Parallel v∥ (10⁶ m/s)", Vector3(WIDTH/2 + 0.005,0.60,0), 0.082, PI/2)
+	Axes.velocity(self, Vector3(2.63,Podiums.COMPARISON.y + 0.025,0), AXIS_SCALE.z, 0.0, false)
 	assemble()
 	panel.changed.connect(refresh)
 	refresh()
@@ -125,6 +123,6 @@ func refresh() -> void:
 	for item in ion_overlays:
 		item.visible = panel.show_population
 	empty.visible = entry.with_cells == 0
-	empty.text = "No cells qualify\nSaved steps start at %.3f ns" % data.floor_ns
+	empty.text = "No cells qualify\nSaved τ ≥ %.4f ns" % data.floor_ns
 	explanation.text = ("The cap raises every short step to at least %.3f ns." % data.floor_ns if empty.visible
 		else "Both shells enclose the same cells at this limit. Only steps below %.3f ns were raised." % data.floor_ns)

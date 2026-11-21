@@ -19,8 +19,14 @@ void fragment() {
 		discard;
 	}
 	// A 3 mm band on the first positive velocity bin traces the section marked on the print.
-	bool trace = phase_position.z <= 0.0 && phase_position.z > -0.003 && fwidth(phase_position.z) > 0.0000001;
+	// Integrate the band over a pixel footprint so it fades continuously when subpixel.
+	float footprint = max(fwidth(phase_position.z), 0.0001);
+	float low = phase_position.z - 0.5 * footprint;
+	float high = phase_position.z + 0.5 * footprint;
+	float coverage = max(0.0, min(high, 0.0) - max(low, -0.003)) / footprint;
+	// Faces on a constant velocity plane never cross the section.
+	coverage *= smoothstep(0.0001, 0.0002, footprint);
 	ALBEDO = ink.rgb;
 	float opacity = outline ? mix(0.045, 0.80, pow(1.0 - abs(dot(NORMAL, VIEW)), 2.0)) : ink.a;
-	ALPHA = trace ? 0.95 : opacity;
+	ALPHA = mix(opacity, 0.95, clamp(coverage, 0.0, 1.0));
 }

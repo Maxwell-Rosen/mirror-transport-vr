@@ -34,6 +34,8 @@ func _run() -> void:
 	_foyer_checks()
 	_walking_checks()
 	_visit_checks()
+	if DisplayServer.get_name() != "headless":
+		await _check_printed_controls()
 	if "--pictures" in OS.get_cmdline_user_args():
 		await _desktop_pictures()
 	if errors == 0:
@@ -495,6 +497,24 @@ func _visit_checks() -> void:
 	_set_slider(3, 0, eye)
 	_check_displayed_relaunch(eye)
 	_check_energy_trace(eye)
+
+func _check_printed_controls() -> void:
+	# Read the actual 3D material after two control states. This catches stale or flipped prints.
+	var material := exhibit.desk.material_override as StandardMaterial3D
+	var print_texture := material.albedo_texture as DrawableTexture2D
+	check(print_texture != null and print_texture.get_use_mipmaps(), "The desk has filtered sizes for distant viewing")
+	if not print_texture:
+		return
+	# Sample the solid centre of the three-pixel stroke, clear of its antialiased edges.
+	var border := Vector2i(Face.RESET_RECT.position.x - 1, Face.RESET_RECT.get_center().y)
+	for widget: int in [Face.Widget.RESET, Face.Widget.NONE]:
+		exhibit.highlight(widget)
+		await process_frame
+		await RenderingServer.frame_post_draw
+		var actual := print_texture.get_image().get_pixelv(border)
+		var expected := Face.BRASS if widget == Face.Widget.RESET else Face.GRID
+		check(absf(actual.get_luminance() - expected.get_luminance()) < 0.01,
+			"The visible Reset border follows the pointer")
 
 func _check_energy_view() -> void:
 	var face := exhibit.get_node("EnergyPlot") as MeshInstance3D

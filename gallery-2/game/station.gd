@@ -7,6 +7,8 @@ const WATER := Color("#87bff2")
 const LILAC := Color("#c6acf0")
 
 func furnish(width: float, depth: float, height: float) -> void:
+	structure.collision_layer = 4
+	structure.collision_mask = 0
 	add_child(structure)
 	finish("wood", "71503d", 0.03, 0.57)
 	finish("green", "304740", 0.14, 0.49)
@@ -60,21 +62,14 @@ func hoop(radius: float, thickness: float) -> TorusMesh:
 	return mesh
 
 func face(panel: Control, pixels: Vector2i, centre: Vector3, metres: Vector2, tilt: float) -> MeshInstance3D:
-	var viewport := SubViewport.new()
+	var viewport := Board.InstrumentViewport.new()
 	viewport.size = pixels
-	viewport.disable_3d = true
-	viewport.gui_disable_input = true
-	viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
 	add_child(viewport)
 	panel.size = pixels
 	viewport.add_child(panel)
 	var quad := QuadMesh.new()
 	quad.size = metres
-	var ink := StandardMaterial3D.new()
-	ink.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	ink.albedo_texture = viewport.get_texture()
-	ink.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR
-	var display := instance(self, quad, ink, centre)
+	var display := instance(self, quad, viewport.paper, centre)
 	display.rotation.x = tilt
 	display.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	box(centre - display.basis.z * 0.017, Vector3(metres.x + 0.018, metres.y + 0.018, 0.026), "brass", false, display.rotation)

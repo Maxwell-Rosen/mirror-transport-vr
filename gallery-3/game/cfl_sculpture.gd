@@ -19,7 +19,7 @@ const BAR_WIDTH := 0.72
 func _ready() -> void:
 	zone = "TimeStepRelief"
 	var data: Dictionary = manifest.data
-	build_plinth(reliefs.position.y)
+	prepare_materials()
 	ink("shelf", data.plateau_color)
 	ink("track", "#41494b")
 	_mount_reliefs(data)
@@ -80,8 +80,8 @@ func _build_pin() -> void:
 
 func _build_board(data: Dictionary) -> void:
 	var board_size := Vector3(WIDTH, 2.49, 0.035)
-	box(Vector3(0,1.79,WALL_Z - 0.030), board_size + Vector3(0.034,0.034,0.004), "brass")
-	box(Vector3(0,1.79,WALL_Z - 0.018), board_size, "board")
+	box(Vector3(0,1.79,WALL_Z - 0.041), board_size + Vector3(0.034,0.034,0.004), "brass")
+	box(Vector3(0,1.79,WALL_Z - 0.029), board_size, "board")
 	lettering("How long is one tick inside a cell?", Vector3(-2.52,2.83,WALL_Z), 0.171, 0, true, true)
 	lettering("Height shows the grid step each cell permits. The lowest limit anywhere sets the grid tick.",
 		Vector3(-2.51,2.59,WALL_Z), 0.098, 0, false, true)
@@ -108,10 +108,10 @@ func _build_board(data: Dictionary) -> void:
 
 func _build_axes(data: Dictionary) -> void:
 	var base := reliefs.position.y
-	var half_depth := float(data.domain[1][1]) * float(data.depth_m_per_Mm_s)
-	var axis_x := -2.12
-	var time_axis_z := 1.30
-	# The time scale is on the near edge so the relief cannot hide its graduations.
+	var axis_x := -2.96
+	var time_axis_z := 0.98
+	# The bracket carries the ruler beyond the console's left edge.
+	box(Vector3((axis_x - WIDTH/2)/2,base - 0.04,time_axis_z - 0.03), Vector3(-axis_x - WIDTH/2 + 0.03,0.10,0.09), "brass")
 	box(Vector3(axis_x - 0.16,base + 0.50,time_axis_z), Vector3(0.36,1.08,0.026), "board")
 	box(Vector3(axis_x,base + 0.49,time_axis_z + 0.020), Vector3(0.012,1.00,0.009), "rule")
 	for ns: float in [0.1, 1, 10, 100]:
@@ -123,24 +123,11 @@ func _build_axes(data: Dictionary) -> void:
 	# Both rulers stand clear of the shared control rail, visible above its rear edge.
 	box(Vector3(axis_x - 0.115,base + 1.09,time_axis_z), Vector3(0.73,0.24,0.025), "board")
 	lettering("Step limit τ (ns)\nlog scale", Vector3(axis_x - 0.115,base + 1.09,time_axis_z + 0.020), 0.076)
-	lettering("Axial position Z (m)    ·    Depth is parallel velocity v∥ (10⁶ m/s), increasing away from you.",
+	lettering("Depth axis   ·   Parallel velocity v∥ (10⁶ m/s) increases away from you.",
 		Vector3(-2.50,1.63,WALL_Z), 0.090, 0, false, true)
 	for x: float in [-2.12, 2.12]:
 		box(Vector3(x,0.22,1.37), Vector3(0.072,0.44,0.11), "wood")
-	var ruler_y := base + 0.22
-	box(Vector3(2.12,ruler_y,0), Vector3(0.016,0.016,2 * half_depth), "rule")
-	for direction: float in [-1, 1]:
-		box(Vector3(2.12,(ruler_y + base)/2,direction * half_depth), Vector3(0.018,ruler_y - base,0.018), "brass")
-	for speed: int in [-10, -5, 0, 5, 10]:
-		var depth := -speed * float(data.depth_m_per_Mm_s)
-		box(Vector3(2.17,ruler_y,depth), Vector3(0.105,0.012,0.016), "white")
-		if speed % 10 == 0:
-			# Stagger the three flags so a seated visitor can read near, middle and far head-on.
-			var rise := 0.10 + 0.025 * (speed + 10)
-			box(Vector3(2.22,ruler_y + rise/2,depth), Vector3(0.009,rise,0.011), "rule")
-			box(Vector3(2.36,ruler_y + rise,depth), Vector3(0.31,0.132,0.020), "board")
-			var words := "%+d" % speed if speed != 0 else "0"
-			lettering(words, Vector3(2.36,ruler_y + rise,depth + 0.016), 0.087)
+	Axes.velocity(self, Vector3(2.50,base + 0.025,0), float(data.depth_m_per_Mm_s), 0.22, false)
 
 func height_for(ns: float) -> float:
 	var data: Dictionary = manifest.data

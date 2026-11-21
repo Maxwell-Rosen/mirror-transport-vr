@@ -22,7 +22,7 @@ The Postgkyl exporter checks the twenty cell integrals directly against the save
 
 ## Phase-space sculpture
 
-The plinth projects from the right wall. Its sloping front edge has two selectable, ten-band colour bars. The warm bar gives the minimum ion distribution as a percentage of the peak at each axial position. The blue bar gives the upper threshold of the dimensionless time factor β. Select a colour with the mouse or right trigger to isolate the corresponding shell. Select it again to restore that family. The companion print faces the mask sculpture across the aisle and has the same selectors. Tab, Shift+Tab and Enter operate the bars at either location. A nearby reading board explains the mirror force near a throat.
+The plinth projects from the right wall. Its sloping front edge has two selectable, ten-band colour bars. Each warm shell encloses cells whose distribution magnitude |fᵢ| reaches the selected percentage of the largest |fᵢ| over velocity at that same Z. The blue bar gives the upper threshold of the dimensionless time factor β. Select a colour with the mouse or right trigger to isolate the corresponding shell. Select it again to restore that family. The companion print faces the mask sculpture across the aisle and has the same selectors. Tab, Shift+Tab and Enter operate the bars at either location. A nearby reading board explains the mirror force near a throat.
 
 **How much of the ion distribution sits in cells whose update Gkeyll slows?** In frame 75, the local time factor β is below one in 366,226 of 819,200 cells (44.7%). These cells carry 0.00555% of the total absolute ion content. The largest distribution magnitude in a slowed cell is 6.52% of the velocity-space peak at the same axial position. The velocity slice at Z = −0.866 m shows where the slowed fraction of local absolute ion content is largest (5.86%). [Full-size sketch](sketches/time-dilation.png)
 
@@ -57,9 +57,13 @@ The next plinth has two equal boxes. Each shows the entire sampled position and 
 
 At 0.1 ns, 38,037 cells qualify on the left and zero on the right. At 1 ns both shapes coincide because the cap only raises steps below 0.526 ns. **Time floor** outlines the saved β < 1 region in violet and **10% ion core** adds the population reference in gold. **Use lamp cell** follows the selected ring and slice at the entrance station. The magnetic-moment slice, contour threshold and mask colour bars can be changed independently. [Local time contours and probe manifest](../simulation-renders/gallery-3/local-cfl.json) · [Contour exporter](tools/export_cfl.py)
 
+## Two beam runs on the far wall
+
+Thesis figure 5.23 compares the share of velocity cells slowed near each throat with the ion content they carry. Figure 5.25 follows the density, flow and temperature profiles after five cycles with and without full-dynamics time dilation. Both wall prints reproduce the original PDF artwork at its published aspect ratio, with a caption at the lower right. The reading board opposite the two-box plinth connects its adjustable contour to the saved time floor. [Print sources and conversion](../simulation-renders/gallery-3/thesis-prints.json) · [Print exporter](../tools/print_thesis_figures.py)
+
 ### Rendering cost in the museum
 
-Gallery 3 requests the installation in the background when the visitor enters. Crossing into the atrium releases the relief, both contour volumes, the mask, print, controls and plinths. A load that finishes after the visitor has left is discarded. The mask sculpture shader opens the display at the limits of the sampled domain and brightens a 3.75 mm band on the positive-velocity side of the zero interface. The source meshes retain the complete closed cell unions.
+The three plinths are visible from the atrium. Entering Gallery 3 starts the lamp clock and requests the scientific figures in the background. Crossing back into the atrium pauses the clock and releases the relief, both contour volumes, the mask, its companion print and their controls. Visitors can walk through the installations. A load that finishes after the visitor has left is discarded. The mask sculpture shader opens the display at the limits of the sampled domain and brightens a 3.75 mm band on the positive-velocity side of the zero interface. The trace uses pixel coverage and the nested translucent shells use a fixed outer-to-inner order within each family. The source meshes retain the complete closed cell unions.
 
 The five relief slices share one 8.0 MB glTF. At any instant Godot draws the selected slice’s fixed terrain and either the undilated valleys or their flat shelves. All geometry is precomputed from the saved frame. The clock bars, white probe and labels update when a control changes.
 

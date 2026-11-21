@@ -17,11 +17,13 @@ Look back at the foyer arch from the fountain to see Ammar Hakim and Greg Hammet
 | Left side of the atrium | Right side of the atrium |
 | --- | --- |
 | 1 · Princeton program in plasma physics graduate students | 2 · Poster session |
-| 3 · Sinfonia cello section | 4 · Around the table |
-| 5 · In rehearsal | 6 · An evening with friends |
-| 7 · By the fire | 8 · Autumn on campus |
+| 3 · Dinner with the Gkeyll group | 4 · Around the table |
+| 5 · In rehearsal | 6 · Princeton Reunions with my roommates |
+| 7 · Thanksgiving at Ammar’s house | 8 · Autumn on campus |
 
-For the first layout, try an atrium 16 m wide with gallery openings 4 m wide. Keep a level, clear path at least 3 m wide past the fountain on either side. The space should feel quite large. Arrange the wall between entrances in thirds. Centre the column and put a low bench directly in front of the gallery sign on one side. Set the planter toward the column to give visitors a clear view of the photograph and its caption. A bench sits beneath the Sinfonia cello section opposite the fountain. Leave a visible margin of wall between each sign and its doorframe. Check these provisional dimensions from both seated and standing height in the headset.
+For the first layout, try an atrium 16 m wide with gallery openings 4 m wide. Keep a level, clear path at least 3 m wide past the fountain on either side. The space should feel quite large. Arrange the wall between entrances in thirds. Centre the column and put a low bench directly in front of the gallery sign on one side. Set the planter toward the column to give visitors a clear view of the photograph and its caption. A bench sits beneath the Gkeyll group dinner photograph opposite the fountain. Leave a visible margin of wall between each sign and its doorframe. Check these provisional dimensions from both seated and standing height in the headset.
+
+On the far wall, By the Fire and Thanksgiving at Ammar’s House hang to the left of the central brass fins. The improvisational comedy group hangs to their right.
 
 ## Exhibit entrances
 

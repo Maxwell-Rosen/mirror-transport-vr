@@ -11,7 +11,7 @@ In the entry foyer, place a controls graphic beside the doorway, opposite the we
 | Sprint | — | Hold **Shift** while moving. Release it to walk again. |
 | Teleport | Tilt the right thumbstick in any direction and point the right controller. Release the stick to land at the floor circle. | — |
 
-While you hold the stick off-centre, an arc from the right controller follows your aim. A circle marks clear floor within a four-metre horizontal radius of your feet. To cancel, aim at a wall so the circle disappears, then release. The headset also tracks leaning and physical steps, so you can lean toward a label or step back to see the whole exhibit. You can reach each exhibit from a chair using the right controller.
+While you hold the stick off-centre, an arc from the right controller follows your aim. A circle marks clear floor within a four-metre horizontal radius of your feet. To cancel, aim at a wall so the circle disappears, then release. The headset also tracks leaning and physical steps. You can lean toward a label, walk or teleport into a sculpture, and step back for the full view. Gallery walls and closed entrances stop movement. You can reach each exhibit from a chair using the right controller.
 
 The broader exhibit plan also includes optional flight for viewing the taller displays, with ascent, descent, a level horizon and a control to return to the floor beneath you. [Exhibit plan](PLAN.md)
 
