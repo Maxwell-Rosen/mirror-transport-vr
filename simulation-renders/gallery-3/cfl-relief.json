@@ -14,45 +14,287 @@
     "geometry_jacobian": "zzim-geo_int_jacobgeo.gkyl",
     "saved_rate": "zzim-ion_cflrate_75.gkyl"
   },
-  "v_cell": 34,
-  "v_parallel_Mm_s": 0.1911952727853155,
-  "ridge_mu_cell": 31,
-  "ridge_mu_keV_T": 67.76672638944206,
-  "mu_faces_keV_T": [
-    -9.616567379734916e-18,
-    70.99154687029005
+  "axes": "Local +X is axial Z, +Y magnetic moment, -Z parallel velocity. Positions use mapped cell faces. Slice depth is the native velocity-bin centre.",
+  "metres_per_axis_unit": [
+    0.43,
+    0.093,
+    0.0185
   ],
-  "z_range_m": [
-    -2.4999999999999987,
-    2.4999999999999987
+  "centres": [
+    -1.3,
+    1.3
   ],
-  "grid_Z_mu": [
-    400,
-    32
+  "domain": [
+    [
+      -2.4999999999999987,
+      2.4999999999999987
+    ],
+    [
+      -10.089777487685838,
+      10.089777487685838
+    ],
+    [
+      -9.616567379734916e-18,
+      70.99154687029005
+    ]
   ],
-  "masked_cells_in_cut": 4031,
   "floor_ns": 0.5255648418821391,
   "cap_1e9_per_s": 1.9027147942751004,
-  "x_scale": 0.28,
-  "depth_m": 1.0,
-  "rate_centre_x": -0.81,
-  "time_centre_x": 0.81,
-  "m_per_decade": 0.32,
-  "rate_axis_min_1e9_per_s": 0.01,
-  "time_axis_min_ns": 0.04,
-  "quantities": "Two reliefs at the parallel velocity of the globally shortest uncapped cell. Each top covers the mapped Z and mu faces of one native cell. Depth increases with mu toward the aisle. Height is m_per_decade * log10(quantity / axis_min). A 28 mm lip hangs below the front cell tops. The saved rate is cflrate/1e9 in 10^9 s^-1. The unit-Courant step in ns is its reciprocal. The violet tops use the saved beta < 1 mask.",
-  "ridge": "At the centre of the highest mu bin, reconstruct the uncapped rate as saved rate / beta. The amber ribbon reproduces that rate and its reciprocal cell by cell along Z at the same saved instant. It is offset 42 to 75 mm toward the aisle for visibility.",
-  "colors_sRGB": {
-    "Surface": "#64b4be",
-    "Step": "#396779",
-    "Plateau": "#c4a0ee",
-    "PlateauEdge": "#896ba2",
-    "Uncapped": "#ffba5c"
-  },
-  "verification": "Recover the input rate and reciprocal from every height; check all violet tops against the saved cap. Reload the GLB and compare every triangle with the native-face coordinates and height to 1e-7 exhibit m.",
+  "rate_edges": [
+    0.05,
+    0.2,
+    0.5,
+    1.0
+  ],
+  "step_edges": [
+    1.0,
+    2.0,
+    5.0,
+    20.0
+  ],
+  "colors": [
+    "#234856",
+    "#326a79",
+    "#488e9c",
+    "#74b4be",
+    "#b4e5df"
+  ],
+  "plateau_color": "#c4a0ee",
+  "uncapped_color": "#ffba5c",
+  "saved_color": "#e2f4f5",
+  "cuts": [
+    {
+      "node": "Cut1",
+      "v_cell": 1,
+      "v_parallel_Mm_s": -7.286695524164321,
+      "v_faces_Mm_s": [
+        -7.986471621027808,
+        -6.586919427300834
+      ],
+      "masked_cells": 8413,
+      "cells": 12800,
+      "probes": [
+        {
+          "name": "Shortest on this slice",
+          "z_cell": 70,
+          "z_m": -1.0623446027728543,
+          "mu_cell": 31,
+          "mu_keV_T": 67.76672638944206,
+          "before_ns": 0.09468989738255863,
+          "with_ns": 0.5255648418821393,
+          "beta": 0.18016786861818537
+        },
+        {
+          "name": "Near midplane",
+          "z_cell": 200,
+          "z_m": 0.014864655941957568,
+          "mu_cell": 31,
+          "mu_keV_T": 67.76672638944206,
+          "before_ns": 1.2645319440354246,
+          "with_ns": 1.2645319440354246,
+          "beta": 1.0
+        },
+        {
+          "name": "Left throat crest",
+          "z_cell": 101,
+          "z_m": -0.9791294092454716,
+          "mu_cell": 31,
+          "mu_keV_T": 67.76672638944206,
+          "before_ns": 0.12322513694211308,
+          "with_ns": 0.5255648418821393,
+          "beta": 0.23446229108633368
+        }
+      ]
+    },
+    {
+      "node": "Cut2",
+      "v_cell": 10,
+      "v_parallel_Mm_s": -2.3892340600373347,
+      "v_faces_Mm_s": [
+        -2.498975908351178,
+        -2.2794922117234915
+      ],
+      "masked_cells": 6799,
+      "cells": 12800,
+      "probes": [
+        {
+          "name": "Shortest on this slice",
+          "z_cell": 75,
+          "z_m": -1.0500034979004118,
+          "mu_cell": 31,
+          "mu_keV_T": 67.76672638944206,
+          "before_ns": 0.10515418623820487,
+          "with_ns": 0.5255648418821393,
+          "beta": 0.2000784258353915
+        },
+        {
+          "name": "Near midplane",
+          "z_cell": 200,
+          "z_m": 0.014864655941957568,
+          "mu_cell": 31,
+          "mu_keV_T": 67.76672638944206,
+          "before_ns": 3.9435678206232345,
+          "with_ns": 3.9435678206232345,
+          "beta": 1.0
+        },
+        {
+          "name": "Left throat crest",
+          "z_cell": 101,
+          "z_m": -0.9791294092454716,
+          "mu_cell": 31,
+          "mu_keV_T": 67.76672638944206,
+          "before_ns": 0.38446543335455197,
+          "with_ns": 0.5255648418821393,
+          "beta": 0.7315280679310934
+        }
+      ]
+    },
+    {
+      "node": "Cut3",
+      "v_cell": 34,
+      "v_parallel_Mm_s": 0.1911952727853155,
+      "v_faces_Mm_s": [
+        0.15266183596021343,
+        0.22972870961041755
+      ],
+      "masked_cells": 4031,
+      "cells": 12800,
+      "probes": [
+        {
+          "name": "Shortest on this slice",
+          "z_cell": 76,
+          "z_m": -1.0475026537774768,
+          "mu_cell": 31,
+          "mu_keV_T": 67.76672638944206,
+          "before_ns": 0.05255648418821394,
+          "with_ns": 0.5255648418821393,
+          "beta": 0.1
+        },
+        {
+          "name": "Near midplane",
+          "z_cell": 200,
+          "z_m": 0.014864655941957568,
+          "mu_cell": 31,
+          "mu_keV_T": 67.76672638944206,
+          "before_ns": 30.19119835234249,
+          "with_ns": 30.19119835234249,
+          "beta": 1.0
+        },
+        {
+          "name": "Left throat crest",
+          "z_cell": 101,
+          "z_m": -0.9791294092454716,
+          "mu_cell": 31,
+          "mu_keV_T": 67.76672638944206,
+          "before_ns": 2.9572825089146266,
+          "with_ns": 2.9572825089146266,
+          "beta": 1.0
+        }
+      ]
+    },
+    {
+      "node": "Cut4",
+      "v_cell": 53,
+      "v_parallel_Mm_s": 2.389234060037335,
+      "v_faces_Mm_s": [
+        2.279492211723492,
+        2.4989759083511784
+      ],
+      "masked_cells": 6853,
+      "cells": 12800,
+      "probes": [
+        {
+          "name": "Shortest on this slice",
+          "z_cell": 75,
+          "z_m": -1.0500034979004118,
+          "mu_cell": 31,
+          "mu_keV_T": 67.76672638944206,
+          "before_ns": 0.09704259583387337,
+          "with_ns": 0.5255648418821393,
+          "beta": 0.18464438276797002
+        },
+        {
+          "name": "Near midplane",
+          "z_cell": 200,
+          "z_m": 0.014864655941957568,
+          "mu_cell": 31,
+          "mu_keV_T": 67.76672638944206,
+          "before_ns": 3.936655544036046,
+          "with_ns": 3.936655544036046,
+          "beta": 1.0
+        },
+        {
+          "name": "Left throat crest",
+          "z_cell": 101,
+          "z_m": -0.9791294092454716,
+          "mu_cell": 31,
+          "mu_keV_T": 67.76672638944206,
+          "before_ns": 0.3837836949985423,
+          "with_ns": 0.5255648418821393,
+          "beta": 0.7302309142752891
+        }
+      ]
+    },
+    {
+      "node": "Cut5",
+      "v_cell": 62,
+      "v_parallel_Mm_s": 7.286695524164321,
+      "v_faces_Mm_s": [
+        6.586919427300834,
+        7.986471621027807
+      ],
+      "masked_cells": 8444,
+      "cells": 12800,
+      "probes": [
+        {
+          "name": "Shortest on this slice",
+          "z_cell": 70,
+          "z_m": -1.0623446027728543,
+          "mu_cell": 31,
+          "mu_keV_T": 67.76672638944206,
+          "before_ns": 0.09123886079291657,
+          "with_ns": 0.5255648418821393,
+          "beta": 0.1736015302434887
+        },
+        {
+          "name": "Near midplane",
+          "z_cell": 200,
+          "z_m": 0.014864655941957568,
+          "mu_cell": 31,
+          "mu_keV_T": 67.76672638944206,
+          "before_ns": 1.2641675022129872,
+          "with_ns": 1.2641675022129872,
+          "beta": 1.0
+        },
+        {
+          "name": "Left throat crest",
+          "z_cell": 101,
+          "z_m": -0.9791294092454716,
+          "mu_cell": 31,
+          "mu_keV_T": 67.76672638944206,
+          "before_ns": 0.12318922529249406,
+          "with_ns": 0.5255648418821393,
+          "beta": 0.23439396145931676
+        }
+      ]
+    }
+  ],
+  "default_cut": 2,
+  "profile_mu_keV_T": 67.76672638944206,
+  "profile_minima": [
+    0.01,
+    0.04
+  ],
+  "profile_base": -0.76,
+  "profile_m_per_decade": 0.158,
+  "profile_z": 1.052,
+  "profile": "Separate front charts at the marked highest magnetic-moment bin. The vertical axis there is logarithmic rate or step. Amber marks the distinct uncapped curve. Outside the slowed cells both curves coincide.",
+  "encoding": "Half-open color intervals separated by the ordered edges, increasing dark to light. Violet overrides the band exactly where the saved beta < 1. Merged rectangles cover only adjacent cells of the same class. In the five-slice comparison each colour traces its lower numerical band edge on the native cell faces. Violet outlines the exact slowed region, including its edges at the domain boundary.",
+  "method": "Saved step [ns] = 1e9/cflrate; uncapped step = saved step * beta; rate [1e9/s] = 1/step [ns]. Unit Courant factor. Same snapshot for both.",
+  "verification": "Checked all 819200 rate caps, all 64000 displayed cell classifications, exact native rectangle coverage, profile heights and every serialized triangle. Ion density checked in all 400 axial cells.",
   "asset": {
     "file": "cfl-relief.glb",
-    "bytes": 4175832,
-    "sha256": "a3ede43f2562f497f3283ae0b5fb065b7f0260aed03010fcbbf77c27fd8a27f9"
+    "bytes": 1571220,
+    "sha256": "8ec6eea26e82c3884682b2405d14af30766e42bfa973d59640fc1504878b93e9"
   }
 }

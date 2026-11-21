@@ -254,14 +254,16 @@ func _check_lamp_trigger() -> void:
 	check(figure.selected[0] == 8, "Right trigger selects the 10% bar on the mask plinth")
 	var panel := figure.time_panel
 	_stand_in_front(panel)
-	_trigger_at(panel.buttons[LocalTime.ControlID.CONTOURS])
-	await physics_frame
-	_trigger_at(panel.buttons[LocalTime.ControlID.SHORTEST])
-	_trigger_at(panel.buttons[LocalTime.ControlID.CAPPED])
-	check(panel.active and panel.count_label.text.begins_with("0 cells at or below 0.1 ns")
-		and figure.selected[0] == 8, "The controller compares the capped CFL cells independently of the mask statue")
-	_trigger_at(panel.buttons[LocalTime.ControlID.RELIEFS])
-	check(figure.cfl.reliefs.is_visible_in_tree(), "The paired rate and step return together")
+	_trigger_at(panel.buttons[panel.actions.find(LocalTime.Action.CUT_5)])
+	_trigger_at(panel.buttons[panel.actions.find(LocalTime.Action.STACK)])
+	check(panel.slice_index == 4 and panel.stacked, "The seated controller selects a signed velocity and places the other cap outlines")
+	var volumes := figure.contour_panel
+	_stand_in_front(volumes)
+	_trigger_at(volumes.buttons[volumes.actions.find(LocalTime.Action.LEVEL_4)])
+	check(figure.volume.layers[0][3].visible and figure.volume.layers[1][3].visible, "One threshold changes both independent contour boxes")
+	_trigger_at(volumes.buttons[volumes.actions.find(LocalTime.Action.LEVEL_1)])
+	check(figure.volume.empty.visible and panel.slice_index == 4 and figure.selected[0] == 8,
+		"The empty saved case is explained while the other sculptures retain their selections")
 
 func _stand_in_front(mount: Node3D) -> void:
 	var direction := mount.global_basis.z

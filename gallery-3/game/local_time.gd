@@ -1,31 +1,30 @@
 extends "res://museum/architecture.gd"
-## The aisle-side controls use the same pinned phase cell in both time views.
+## One independent console per sculpture. Both use the museum pointer and keyboard.
 
 signal changed
 
-enum ControlID { RELIEFS, CONTOURS, UNCAPPED, CAPPED, FLOOR, POPULATION, SHORTEST, MIDPLANE, CREST, LAMP, FIRST_LEVEL }
+enum Role { MAPS, CONTOURS }
+enum Action { SHORTEST, MIDPLANE, CREST, LAMP, STACK, FLOOR, CORE, CUT_1, CUT_2, CUT_3, CUT_4, CUT_5, LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4, LEVEL_5, LEVEL_6 }
+@export var role: Role = Role.MAPS
 @export var manifest: JSON
+var actions: Array[int] = []
 var buttons: Array[StaticBody3D] = []
-var captions: Array[Label3D] = []
 var marks: Array[MeshInstance3D] = []
-var active := false
-var with_dilation := false
-var show_floor := false
-var show_population := false
+var cursors: Array[MeshInstance3D] = []
+var slice_index := 0
+var site := 0
 var level := 0
 var track := 0
-var site := 0
 var lamp_track := 0
 var lamp_site := 0
-var pointed := -1
-var cursors: Array[MeshInstance3D] = []
-var heading: Label3D
-var notes: Label3D
-var key: Label3D
-var count_label: Label3D
-var overlay_key: Label3D
+var follow_lamp := false
+var stacked := false
+var show_floor := false
+var show_population := false
 var coordinates: Label3D
 var times: Label3D
+var result: Label3D
+var pointed := -1
 
 func _ready() -> void:
 	zone = "LocalTime"
@@ -37,34 +36,39 @@ func _ready() -> void:
 	finish("white", "ffffff")
 	for ink: String in ["rule", "white"]:
 		finishes[ink].shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	box(Vector3(0, 0, -0.058), Vector3(2.52, 1.65, 0.105), "wood", true)
-	box(Vector3.ZERO, Vector3(2.50, 1.63, 0.014), "brass")
-	box(Vector3.BACK * 0.011, Vector3(2.48, 1.61, 0.012), "board")
+	box(Vector3(0,0,-0.058), Vector3(2.52,1.65,0.105), "wood", true)
+	box(Vector3.ZERO, Vector3(2.50,1.63,0.014), "brass")
+	box(Vector3.BACK * 0.011, Vector3(2.48,1.61,0.012), "board")
 	var data: Dictionary = manifest.data
-	track = data.shortest_track
-	site = data.shortest_site
-	heading = _label("", 0.692, 0.104, true)
-	_label("%s   ·   ion frame %d   ·   t = %.6f s" % [data.run, data.frame, data.saved_time_s], 0.550, 0.071)
-	_button("Rate & step reliefs", Vector2(-0.585, 0.405), 1.12)
-	_button("Phase-space contours", Vector2(0.585, 0.405), 1.12)
-	_button("Uncapped estimate", Vector2(-0.585, 0.248), 1.12)
-	_button("Saved rate cap", Vector2(0.585, 0.248), 1.12)
-	_button("Time floor", Vector2(-0.585, -0.541), 1.12, "#ba9ce4")
-	_button("Ion population", Vector2(0.585, -0.541), 1.12, "#f9cb35")
-	_button("Find shortest step", Vector2(-0.815, -0.692), 0.65)
-	_button("Midplane", Vector2(-0.222, -0.692), 0.47)
-	_button("Left crest", Vector2(0.294, -0.692), 0.49)
-	_button("Use lamp cell", Vector2(0.859, -0.692), 0.55)
-	for i in data.contours.size():
-		var entry: Dictionary = data.contours[i]
-		_button(String.num(entry.upper_ns, 2), Vector2((i - 2.5) * 0.388, -0.012), 0.35, entry.sRGB)
-	notes = _label("Teal surfaces show the saved run. Violet marks the plateau.\n" +
-		"The amber ridge shows the same cells without the rate cap.", 0.206, 0.072)
-	key = _label("Local step limit τ (ns)   ·   unit Courant factor", 0.114, 0.074)
-	count_label = _label("", -0.136, 0.073)
-	coordinates = _label("", -0.275, 0.069)
-	times = _label("", -0.414, 0.066)
-	overlay_key = _label("", -0.549, 0.067)
+	_label("Choose a velocity slice" if role == Role.MAPS else "Which cells qualify?", 0.70, 0.115, true)
+	_label("%s  ·  ion frame %d  ·  t = %.6f s" % [data.run, data.frame, data.saved_time_s], 0.547, 0.068)
+	if role == Role.MAPS:
+		slice_index = data.default_cut
+		_label("Parallel velocity v∥ (10⁶ m/s)", 0.405, 0.082)
+		for i in data.cuts.size():
+			_button(Action.CUT_1 + i, "%+.3f" % data.cuts[i].v_parallel_Mm_s, Vector2((i - 2) * 0.465,0.247), 0.44)
+		_button(Action.STACK, "Compare all five cuts", Vector2(0,0.075), 1.55, data.plateau_color)
+	else:
+		track = data.shortest_track
+		site = data.shortest_site
+		_label("Include cells with step τ at or below this many ns", 0.405, 0.080)
+		for i in data.contours.size():
+			var entry: Dictionary = data.contours[i]
+			_button(Action.LEVEL_1 + i, String.num(entry.upper_ns, 2), Vector2((i - 2.5) * 0.39,0.247), 0.36)
+		_button(Action.FLOOR, "Time floor", Vector2(-0.59,0.075), 1.12, "#c4a0ee")
+		_button(Action.CORE, "10% ion core", Vector2(0.59,0.075), 1.12, "#f9cb35")
+	result = _label("", -0.083, 0.071)
+	coordinates = _label("", -0.241, 0.071)
+	times = _label("", -0.447, 0.070)
+	if role == Role.MAPS:
+		_button(Action.SHORTEST, "Shortest on slice", Vector2(-0.77,-0.679), 0.79)
+		_button(Action.MIDPLANE, "Midplane", Vector2(0.06,-0.679), 0.73)
+		_button(Action.CREST, "Left crest", Vector2(0.83,-0.679), 0.69)
+	else:
+		_button(Action.SHORTEST, "Shortest cell", Vector2(-0.87,-0.679), 0.58)
+		_button(Action.MIDPLANE, "Midplane", Vector2(-0.26,-0.679), 0.53)
+		_button(Action.CREST, "Left crest", Vector2(0.28,-0.679), 0.50)
+		_button(Action.LAMP, "Use lamp cell", Vector2(0.88,-0.679), 0.59)
 	assemble()
 	_refresh()
 
@@ -82,7 +86,7 @@ func _tile(parent: Node3D, at: Vector3, size: Vector3, material: Material) -> Me
 	parent.add_child(face)
 	return face
 
-func _button(words: String, at: Vector2, width: float, swatch := "") -> void:
+func _button(action: int, words: String, at: Vector2, width: float, swatch := "") -> void:
 	var body := StaticBody3D.new()
 	body.collision_layer = 2
 	body.collision_mask = 0
@@ -100,12 +104,12 @@ func _button(words: String, at: Vector2, width: float, swatch := "") -> void:
 		color.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 		color.albedo_color = Color(swatch)
 		_tile(body, Vector3(0, 0.045, 0.011), Vector3(width - 0.026, 0.013, 0.003), color)
-	var caption := lettering(words, Vector3(0, 0, 0.016), 0.060 if width < 0.74 else 0.071)
+	var caption := lettering(words, Vector3(0, 0, 0.016), 0.060 if width < 0.79 else 0.069)
 	caption.reparent(body, false)
-	captions.append(caption)
 	marks.append(_tile(body, Vector3(0, -0.045, 0.013), Vector3(width - 0.030, 0.010, 0.003), finishes.white))
 	cursors.append(_tile(body, Vector3(-width / 2 + 0.012, 0, 0.014), Vector3(0.014, 0.092, 0.003), finishes.white))
 	buttons.append(body)
+	actions.append(action)
 
 func set_lamp(z_cell: int, v_cell: int, mu_cell: int) -> void:
 	var data: Dictionary = manifest.data
@@ -118,81 +122,70 @@ func set_lamp(z_cell: int, v_cell: int, mu_cell: int) -> void:
 		if data.sites[i].z_cell == z_cell:
 			lamp_site = i
 			break
-	if active:
+	if follow_lamp:
 		track = lamp_track
 		site = lamp_site
-	_refresh()
+		_refresh()
 
-func press(widget: int) -> void:
-	if widget < 0 or widget >= buttons.size() or not buttons[widget].visible:
+func press(index: int) -> void:
+	if index < 0 or index >= actions.size():
 		return
-	match widget:
-		ControlID.RELIEFS:
-			active = false
-			track = manifest.data.shortest_track
-		ControlID.CONTOURS:
-			if not active:
-				track = lamp_track
-				site = lamp_site
-			active = true
-		ControlID.UNCAPPED:
-			with_dilation = false
-		ControlID.CAPPED:
-			with_dilation = true
-		ControlID.FLOOR:
-			show_floor = not show_floor
-		ControlID.POPULATION:
-			show_population = not show_population
-		ControlID.SHORTEST:
-			track = manifest.data.shortest_track
-			site = manifest.data.shortest_site
-		ControlID.MIDPLANE:
-			site = manifest.data.midplane_site
-		ControlID.CREST:
-			site = manifest.data.left_crest_site
-		ControlID.LAMP:
-			active = true
+	var data: Dictionary = manifest.data
+	var action := actions[index]
+	match action:
+		Action.STACK: stacked = not stacked
+		Action.FLOOR: show_floor = not show_floor
+		Action.CORE: show_population = not show_population
+		Action.SHORTEST, Action.MIDPLANE, Action.CREST:
+			follow_lamp = false
+			if role == Role.MAPS:
+				site = action  # Same order as the three exported probes on every slice.
+			else:
+				if action == Action.SHORTEST:
+					track = data.shortest_track
+				site = [data.shortest_site, data.midplane_site, data.left_crest_site][action]
+		Action.LAMP:
+			follow_lamp = true
 			track = lamp_track
 			site = lamp_site
 		_:
-			level = widget - ControlID.FIRST_LEVEL
+			if role == Role.MAPS:
+				slice_index = action - Action.CUT_1
+			else:
+				level = action - Action.LEVEL_1
 	_refresh()
+
+func probe() -> Dictionary:
+	var data: Dictionary = manifest.data
+	if role == Role.MAPS:
+		return data.cuts[slice_index].probes[site]
+	var cut: Dictionary = data.probe_tracks[track]
+	var sample: Dictionary = cut.samples[site].duplicate()
+	sample.merge(data.sites[site])
+	sample["mu_keV_T"] = cut.mu_keV_T
+	return sample
 
 func _refresh() -> void:
 	var data: Dictionary = manifest.data
-	var entry: Dictionary = data.contours[level]
-	var cut: Dictionary = data.probe_tracks[track]
-	var station: Dictionary = data.sites[site]
-	var cell: Dictionary = cut.samples[site]
-	heading.text = "Which cells set the step?" if active else "CFL rate and permitted step"
-	notes.visible = not active
-	key.visible = active
-	count_label.visible = active
-	overlay_key.visible = not active
-	var count: int = entry.with_cells if with_dilation else entry.before_cells
-	count_label.text = "%d cells at or below %s ns   ·   %s" % [count, String.num(entry.upper_ns, 2),
-		"saved cap" if with_dilation else "uncapped estimate"]
-	coordinates.position.y = -0.254 if active else -0.018
-	coordinates.text = "White probe   ·   %s   ·   Z = %+.6f m\nv∥ = %+.6f × 10⁶ m/s     μ = %.5f keV/T" % [
-		station.name, station.z_m, cut.v_parallel_Mm_s, cut.mu_keV_T]
-	if active:
-		coordinates.text += "    β = %.3f" % cell.beta
-	times.position.y = -0.408 if active else -0.270
-	times.text = ("Uncapped estimate     ω = %.3f × 10⁹ s⁻¹     τ = %.4f ns\n" +
-		"Saved with rate cap     ω = %.3f × 10⁹ s⁻¹     τ = %.4f ns") % [
-		1.0 / float(cell.before_ns), cell.before_ns, 1.0 / float(cell.with_ns), cell.with_ns]
-	overlay_key.text = "β = %.3f (unitless)    ·    τ = 1/ω at unit Courant factor" % cell.beta
-	captions[ControlID.FLOOR].text = "Time floor · %.3f ns" % data.floor_ns
-	captions[ControlID.POPULATION].text = "Ion population · 10% core"
-	for i in buttons.size():
-		var common := i <= ControlID.CONTOURS or (i >= ControlID.SHORTEST and i <= ControlID.LAMP)
-		buttons[i].visible = common or active
-		buttons[i].collision_layer = 2 if buttons[i].visible else 0
-		marks[i].visible = (i == (ControlID.CONTOURS if active else ControlID.RELIEFS)
-			or (active and i == (ControlID.CAPPED if with_dilation else ControlID.UNCAPPED))
-			or (active and i == ControlID.FIRST_LEVEL + level)
-			or (active and i == ControlID.FLOOR and show_floor)
-			or (active and i == ControlID.POPULATION and show_population))
+	var sample := probe()
+	var velocity: float
+	if role == Role.MAPS:
+		var cut: Dictionary = data.cuts[slice_index]
+		velocity = cut.v_parallel_Mm_s
+		result.text = "%d of %d cells on this slice reach the cap.\nAt unit Courant factor, the step is the reciprocal of the rate." % [cut.masked_cells,cut.cells]
+	else:
+		velocity = data.probe_tracks[track].v_parallel_Mm_s
+		var entry: Dictionary = data.contours[level]
+		result.text = "At or below %s ns     Uncapped %d     Saved %d" % [String.num(entry.upper_ns,2),entry.before_cells,entry.with_cells]
+	coordinates.text = "%s  ·  Z = %+.6f m  ·  β = %.3f\nv∥ = %+.6f × 10⁶ m/s     μ = %.5f keV/T" % [sample.name,sample.z_m,sample.beta,velocity,sample.mu_keV_T]
+	times.text = "Uncapped estimate    ω = %.3f × 10⁹ s⁻¹    τ = %.4f ns\nSaved with rate cap    ω = %.3f × 10⁹ s⁻¹    τ = %.4f ns" % [
+		1.0 / float(sample.before_ns),sample.before_ns,1.0 / float(sample.with_ns),sample.with_ns]
+	for i in actions.size():
+		var a := actions[i]
+		marks[i].visible = ((role == Role.MAPS and a == Action.CUT_1 + slice_index)
+			or (role == Role.CONTOURS and a == Action.LEVEL_1 + level)
+			or (a == Action.STACK and stacked) or (a == Action.FLOOR and show_floor)
+			or (a == Action.CORE and show_population) or (a == Action.LAMP and follow_lamp))
 	point(pointed)
 	changed.emit()
 
@@ -200,16 +193,6 @@ func point(widget: int) -> void:
 	pointed = widget
 	for i in cursors.size():
 		cursors[i].visible = i == widget
-
-func tab_index(current: int, backward: bool) -> int:
-	var visible_buttons: Array[int] = []
-	for i in buttons.size():
-		if buttons[i].visible:
-			visible_buttons.append(i)
-	var index := visible_buttons.find(current)
-	if index < 0:
-		return visible_buttons.back() if backward else visible_buttons.front()
-	return visible_buttons[wrapi(index + (-1 if backward else 1), 0, visible_buttons.size())]
 
 func at_panel(eye: Vector3) -> bool:
 	var aisle := get_parent_node_3d().to_local(eye) - position

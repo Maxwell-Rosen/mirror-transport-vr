@@ -1,4 +1,4 @@
-"""Build the two stepped CFL reliefs from one native velocity cut of the ion run."""
+"""Export five upright native CFL cuts and their high-moment axial profile charts."""
 
 import argparse
 import hashlib
@@ -9,138 +9,178 @@ from pathlib import Path
 import numpy as np
 import trimesh
 from ion_frame import FILES, FRAME, ROOT, RUN, load_frame
+from phase_mesh import TRIANGLES, rectangles
 from plot_cfl_times import CFL_FILE, cfl_times
 from scipy.constants import elementary_charge
 
 OUTPUT = ROOT / "simulation-renders/gallery-3/cfl-relief.glb"
-X_SCALE, DEPTH, HEIGHT_PER_DECADE = 0.28, 1.0, 0.32
-TRIANGLES = [[0, 1, 2], [0, 2, 3]]
+SCALE = (0.43, 0.093, 0.0185)  # Z [m], parallel velocity [10^6 m/s], magnetic moment [keV/T].
+CENTRES = (-1.30, 1.30)
+RATE_EDGES, STEP_EDGES = [0.05, 0.2, 0.5, 1.0], [1.0, 2.0, 5.0, 20.0]
+BANDS = ["#234856", "#326a79", "#488e9c", "#74b4be", "#b4e5df"]
+VIOLET, AMBER, SAVED = "#c4a0ee", "#ffba5c", "#e2f4f5"
+PROFILE_BASE, PROFILE_DECADE, PROFILE_Z = -0.76, 0.158, 1.052
+MINIMA = (0.01, 0.04)
+
+
+def rect(x0, x1, y0, y1, depth):
+    return ((x0, y0, depth), (x1, y0, depth), (x1, y1, depth), (x0, y1, depth))
+
+
+def profile_quads(x, values, selected, minimum, depth, thickness):
+    """A horizontal segment fills each native axial bin. The joins follow its shared faces."""
+    height = PROFILE_BASE + PROFILE_DECADE * np.log10(values / minimum)
+    np.testing.assert_allclose(minimum * 10 ** ((height - PROFILE_BASE) / PROFILE_DECADE), values)
+    quads = []
+    for i in np.flatnonzero(selected):
+        quads.append(rect(x[i], x[i + 1], height[i] - thickness / 2, height[i] + thickness / 2, depth))
+        if i and selected[i - 1] and abs(height[i] - height[i - 1]) > 1e-8:
+            half = min(thickness / 3, (x[i + 1] - x[i]) / 2, (x[i] - x[i - 1]) / 2)
+            quads.append(
+                rect(x[i] - half, x[i] + half, min(height[i - 1 : i + 1]), max(height[i - 1 : i + 1]), depth)
+            )
+    return quads
+
+
+def mask_outline(x, y, mask, depth, perimeter=True):
+    """Trace native faces; an isovalue ends at the domain boundary."""
+    h = 0.004
+    quads = []
+    padded = np.pad(mask, 1, mode="constant" if perimeter else "edge")
+    for i, j in zip(*np.nonzero(np.diff(padded[:, 1:-1], axis=0)), strict=True):
+        quads.append(rect(x[i] - h, x[i] + h, y[j], y[j + 1], depth))
+    for i, j in zip(*np.nonzero(np.diff(padded[1:-1, :], axis=1)), strict=True):
+        quads.append(rect(x[i], x[i + 1], y[j] - h, y[j] + h, depth))
+    return quads
 
 
 def export():
     frame = load_frame()
-    before, saved = cfl_times(frame)
-    _, iv, im = map(int, np.unravel_index(before.argmin(), before.shape))
-    mask = frame.beta[:, iv, :] < 1
-    floor = float(saved.min())
-    np.testing.assert_allclose(saved[:, iv, :][mask], floor, rtol=1e-13)
+    before, after = cfl_times(frame)
     z, v, mu = [
-        np.r_[lo, hi[-1]] / unit for (lo, hi), unit in zip(frame.faces, (1, 1e6, 1e3 * elementary_charge))
+        np.r_[lo, hi[-1]] / unit
+        for (lo, hi), unit in zip(frame.faces, (1, 1e6, 1e3 * elementary_charge), strict=True)
     ]
-    x = z * X_SCALE
-    d = DEPTH * (mu - mu[0]) / (mu[-1] - mu[0]) - DEPTH / 2
-    i, j = np.indices(mask.shape)
+    zc, vc, mc = [(e[:-1] + e[1:]) / 2 for e in (z, v, mu)]
+    shortest = np.unravel_index(before.argmin(), before.shape)
+    velocities = [int(np.abs(vc - target).argmin()) for target in (-7.5, -2.5, vc[shortest[1]], 2.5, 7.5)]
+    assert len(set(velocities)) == 5
+    mid = int(np.flatnonzero(zc > 0)[0])
+    left = np.flatnonzero(zc < 0)
+    crest = int(left[frame.bmag[left].argmax()])
+    floor = float(after.min())
     scene = trimesh.Scene()
-    references = {}
-    colors = {}
-    inks = {
-        "Surface": "#64b4be",
-        "Step": "#396779",
-        "Plateau": "#c4a0ee",
-        "PlateauEdge": "#896ba2",
-        "Uncapped": "#ffba5c",
-    }
+    colors, references, cuts = {}, {}, []
 
-    def add(name, corners, ink):
-        if not len(corners):
+    def add(group, name, quads, color):
+        if not quads:
             return
-        triangles = np.asarray(corners, dtype=np.float32)[:, TRIANGLES].reshape(-1, 3, 3)
-        vertices, faces = np.unique(triangles.reshape(-1, 3), axis=0, return_inverse=True)
-        rgb = np.frombuffer(bytes.fromhex(inks[ink][1:]), dtype=np.uint8) / 255
-        linear = np.where(rgb <= 0.04045, rgb / 12.92, ((rgb + 0.055) / 1.055) ** 2.4)
-        colors[ink] = [*linear, 1.0]
+        triangles = np.asarray(quads, dtype=np.float32)[:, TRIANGLES].reshape(-1, 3, 3)
+        vertices, indices = np.unique(triangles.reshape(-1, 3), axis=0, return_inverse=True)
+        rgb = np.frombuffer(bytes.fromhex(color[1:]), dtype=np.uint8) / 255
+        rgb = np.where(rgb <= 0.04045, rgb / 12.92, ((rgb + 0.055) / 1.055) ** 2.4)
+        colors[color] = [*rgb, 1]
         material = trimesh.visual.material.PBRMaterial(
-            name=ink, baseColorFactor=[*linear, 1], doubleSided=True, metallicFactor=0, roughnessFactor=1
+            name=color, baseColorFactor=[*rgb, 1], doubleSided=True, metallicFactor=0, roughnessFactor=1
         )
         mesh = trimesh.Trimesh(
             vertices=vertices,
-            faces=faces.reshape(-1, 3),
+            faces=indices.reshape(-1, 3),
             visual=trimesh.visual.TextureVisuals(material=material),
             process=False,
         )
-        scene.add_geometry(mesh, node_name=name, geom_name=name)
+        if group not in scene.graph.nodes:
+            scene.graph.update(frame_from=scene.graph.base_frame, frame_to=group)
+        scene.add_geometry(mesh, node_name=name, geom_name=name, parent_node_name=group)
         references[name] = triangles
 
-    def pts(xx, yy, dd):
-        return np.stack(np.broadcast_arrays(xx, yy, dd), axis=-1)
-
-    for name, offset, unit_floor in [("Rate", -0.81, 0.01), ("Time", 0.81, 0.04)]:
-        capped = saved[:, iv, :].copy()
-        capped[mask] = floor  # Remove roundoff at the common cap.
-        raw = before[:, iv, im]
-        if name == "Rate":
-            capped, raw = 1 / capped, 1 / raw  # 10^9 s^-1 and ns are reciprocal.
-        h = HEIGHT_PER_DECADE * np.log10(capped / unit_floor)
-        raw_h = HEIGHT_PER_DECADE * np.log10(raw / unit_floor)
-        xx = x + offset
-        tops = np.stack(
-            [
-                pts(xx[i], h, d[j]),
-                pts(xx[i], h, d[j + 1]),
-                pts(xx[i + 1], h, d[j + 1]),
-                pts(xx[i + 1], h, d[j]),
-            ],
-            axis=-2,
+    for n, iv in enumerate(velocities):
+        prefix = f"Cut{n + 1}"
+        saved, raw = after[:, iv, :], before[:, iv, :]
+        mask = frame.beta[:, iv, :] < 1
+        np.testing.assert_allclose(saved[mask], floor, rtol=1e-13)
+        depth = -float(vc[iv]) * SCALE[1]
+        iz, im = map(int, np.unravel_index(raw.argmin(), raw.shape))
+        assert im == len(mc) - 1  # All three marked cells lie on the drawn profile.
+        probes = []
+        for title, index in [
+            ("Shortest on this slice", iz),
+            ("Near midplane", mid),
+            ("Left throat crest", crest),
+        ]:
+            probes.append(
+                {
+                    "name": title,
+                    "z_cell": index,
+                    "z_m": float(zc[index]),
+                    "mu_cell": im,
+                    "mu_keV_T": float(mc[im]),
+                    "before_ns": float(raw[index, im]),
+                    "with_ns": float(saved[index, im]),
+                    "beta": float(frame.beta[index, iv, im]),
+                }
+            )
+        cuts.append(
+            {
+                "node": prefix,
+                "v_cell": iv,
+                "v_parallel_Mm_s": float(vc[iv]),
+                "v_faces_Mm_s": v[iv : iv + 2].tolist(),
+                "masked_cells": int(mask.sum()),
+                "cells": int(mask.size),
+                "probes": probes,
+            }
         )
-        add(name + "Surface", tops[~mask], "Surface")
-        add(name + "Plateau", tops[mask], "Plateau")
-        # A narrow lip makes the saved top readable edge-on from a seated position.
-        front = h[:, -1]
-        edge = np.stack(
-            [
-                pts(xx[:-1], front, d[-1]),
-                pts(xx[1:], front, d[-1]),
-                pts(xx[1:], front - 0.028, d[-1]),
-                pts(xx[:-1], front - 0.028, d[-1]),
-            ],
-            axis=-2,
-        )
-        add(name + "SavedRim", edge[~mask[:, -1]], "Surface")
-        add(name + "CappedRim", edge[mask[:, -1]], "Plateau")
-        for axis in (0, 1):
-            ii, jj = (i[1:], j[1:]) if axis == 0 else (i[:, 1:], j[:, 1:])
-            h0 = h[ii - (axis == 0), jj - (axis == 1)]
-            h1 = h[ii, jj]
-            side = mask[ii, jj] | mask[ii - (axis == 0), jj - (axis == 1)]
-            x0, x1 = xx[ii], xx[ii + (axis == 1)]
-            d0, d1 = d[jj], d[jj + (axis == 0)]
-            faces = np.stack([pts(x0, h0, d0), pts(x0, h1, d0), pts(x1, h1, d1), pts(x1, h0, d1)], axis=-2)
-            changed = np.abs(h1 - h0) > 1e-12
-            add(name + str(axis) + "Risers", faces[changed & ~side], "Step")
-            add(name + str(axis) + "PlateauRisers", faces[changed & side], "PlateauEdge")
-        # The free-standing amber ribbon traces the native high-mu cells, just in front
-        # of their face. Its top is the actual uncapped value, including at discontinuities.
-        z0, z1, thick = DEPTH / 2 + 0.042, DEPTH / 2 + 0.075, 0.014
-        x0, x1 = xx[:-1], xx[1:]
-        strip = [
-            np.stack([pts(x0, raw_h, z0), pts(x0, raw_h, z1), pts(x1, raw_h, z1), pts(x1, raw_h, z0)], axis=-2)
-        ]
-        for depth in (z0, z1):
-            strip.append(
-                np.stack(
-                    [
-                        pts(x0, raw_h, depth),
-                        pts(x1, raw_h, depth),
-                        pts(x1, raw_h - thick, depth),
-                        pts(x0, raw_h - thick, depth),
-                    ],
-                    axis=-2,
+        for plot, centre, edges, minimum in zip(
+            ("Rate", "Step"), CENTRES, (RATE_EDGES, STEP_EDGES), MINIMA, strict=True
+        ):
+            values = 1 / saved if plot == "Rate" else saved
+            uncapped = 1 / raw if plot == "Rate" else raw
+            band = np.searchsorted(edges, values, side="right")
+            band[mask] = len(BANDS)
+            x, y = centre + z * SCALE[0], mu * SCALE[2]
+            reconstructed = np.full_like(band, -1)
+            for index, color in enumerate([*BANDS, VIOLET]):
+                quads = []
+                for a, b, c, d in rectangles(band == index):
+                    assert np.all(reconstructed[a:b, c:d] == -1)
+                    reconstructed[a:b, c:d] = index
+                    quads.append(rect(x[a], x[b], y[c], y[d], depth))
+                add(prefix + "Maps", f"{prefix}{plot}Band{index}", quads, color)
+            np.testing.assert_array_equal(reconstructed, band)
+            np.testing.assert_array_equal(reconstructed == len(BANDS), mask)
+            for index, edge in enumerate(edges):
+                add(
+                    prefix + "Outlines",
+                    f"{prefix}{plot}Edge{index + 1}",
+                    mask_outline(x, y, values >= edge, depth, perimeter=False),
+                    BANDS[index + 1],
                 )
+            add(
+                prefix + "Outlines", prefix + plot + "Boundary", mask_outline(x, y, mask, depth + 0.001), VIOLET
             )
-        strip.append(
-            np.stack(
-                [
-                    pts(x1[:-1], raw_h[:-1], z0),
-                    pts(x1[:-1], raw_h[1:], z0),
-                    pts(x1[:-1], raw_h[1:], z1),
-                    pts(x1[:-1], raw_h[:-1], z1),
-                ],
-                axis=-2,
+            group = prefix + "Profiles"
+            all_z = np.ones(len(zc), dtype=bool)
+            add(
+                group,
+                prefix + plot + "Saved",
+                profile_quads(x, values[:, im], all_z, minimum, PROFILE_Z, 0.014),
+                SAVED,
             )
-        )
-        add(name + "Uncapped", np.concatenate(strip), "Uncapped")
-        np.testing.assert_allclose(unit_floor * 10 ** (h / HEIGHT_PER_DECADE), capped, rtol=1e-14)
-        np.testing.assert_allclose(unit_floor * 10 ** (raw_h / HEIGHT_PER_DECADE), raw, rtol=1e-14)
+            add(
+                group,
+                prefix + plot + "Floor",
+                profile_quads(x, values[:, im], mask[:, im], minimum, PROFILE_Z + 0.002, 0.019),
+                VIOLET,
+            )
+            # The uncapped curve coincides exactly with the saved curve outside the mask.
+            # Only draw its distinct segments, keeping the coincident line legible.
+            add(
+                group,
+                prefix + plot + "Uncapped",
+                profile_quads(x, uncapped[:, im], mask[:, im], minimum, PROFILE_Z + 0.004, 0.014),
+                AMBER,
+            )
 
     def unlit(tree):
         tree.setdefault("extensionsUsed", []).append("KHR_materials_unlit")
@@ -151,47 +191,39 @@ def export():
     payload = trimesh.exchange.gltf.export_glb(scene, include_normals=False, tree_postprocessor=unlit)
     restored = trimesh.load_scene(BytesIO(payload), file_type="glb", process=False)
     for name, triangles in references.items():
-        np.testing.assert_allclose(restored.geometry[name].triangles, triangles, atol=1e-7, rtol=0)
+        np.testing.assert_array_equal(restored.geometry[name].triangles, triangles)
     assert len(payload) < 100_000_000
-    return payload, {
+    meta = {
         "run": RUN.name,
         "frame": FRAME,
         "saved_time_s": frame.time,
         "files": {**FILES, "saved_rate": CFL_FILE},
-        "v_cell": iv,
-        "v_parallel_Mm_s": (v[iv] + v[iv + 1]) / 2,
-        "ridge_mu_cell": im,
-        "ridge_mu_keV_T": (mu[im] + mu[im + 1]) / 2,
-        "mu_faces_keV_T": [mu[0], mu[-1]],
-        "z_range_m": [z[0], z[-1]],
-        "grid_Z_mu": list(mask.shape),
-        "masked_cells_in_cut": int(mask.sum()),
+        "axes": "Local +X is axial Z, +Y magnetic moment, -Z parallel velocity. Positions use mapped cell faces. Slice depth is the native velocity-bin centre.",
+        "metres_per_axis_unit": list(SCALE),
+        "centres": list(CENTRES),
+        "domain": [[float(e[0]), float(e[-1])] for e in (z, v, mu)],
         "floor_ns": floor,
         "cap_1e9_per_s": 1 / floor,
-        "x_scale": X_SCALE,
-        "depth_m": DEPTH,
-        "rate_centre_x": -0.81,
-        "time_centre_x": 0.81,
-        "m_per_decade": HEIGHT_PER_DECADE,
-        "rate_axis_min_1e9_per_s": 0.01,
-        "time_axis_min_ns": 0.04,
-        "quantities": "Two reliefs at the parallel velocity of the globally shortest uncapped cell. "
-        "Each top covers the mapped Z and mu faces of one native cell. Depth increases with mu toward the aisle. "
-        "Height is m_per_decade * log10(quantity / axis_min). A 28 mm lip hangs below the front cell tops. "
-        "The saved rate is cflrate/1e9 in 10^9 s^-1. "
-        "The unit-Courant step in ns is its reciprocal. The violet tops use the saved beta < 1 mask.",
-        "ridge": "At the centre of the highest mu bin, reconstruct the uncapped rate as saved rate / beta. "
-        "The amber ribbon reproduces that rate and its reciprocal cell by cell along Z at the same saved instant. "
-        "It is offset 42 to 75 mm toward the aisle for visibility.",
-        "colors_sRGB": inks,
-        "verification": "Recover the input rate and reciprocal from every height; check all violet tops against the saved cap. "
-        "Reload the GLB and compare every triangle with the native-face coordinates and height to 1e-7 exhibit m.",
-        "asset": {
-            "file": "cfl-relief.glb",
-            "bytes": len(payload),
-            "sha256": hashlib.sha256(payload).hexdigest(),
-        },
+        "rate_edges": RATE_EDGES,
+        "step_edges": STEP_EDGES,
+        "colors": BANDS,
+        "plateau_color": VIOLET,
+        "uncapped_color": AMBER,
+        "saved_color": SAVED,
+        "cuts": cuts,
+        "default_cut": velocities.index(shortest[1]),
+        "profile_mu_keV_T": float(mc[-1]),
+        "profile_minima": list(MINIMA),
+        "profile_base": PROFILE_BASE,
+        "profile_m_per_decade": PROFILE_DECADE,
+        "profile_z": PROFILE_Z,
+        "profile": "Separate front charts at the marked highest magnetic-moment bin. The vertical axis there is logarithmic rate or step. Amber marks the distinct uncapped curve. Outside the slowed cells both curves coincide.",
+        "encoding": "Half-open color intervals separated by the ordered edges, increasing dark to light. Violet overrides the band exactly where the saved beta < 1. Merged rectangles cover only adjacent cells of the same class. In the five-slice comparison each colour traces its lower numerical band edge on the native cell faces. Violet outlines the exact slowed region, including its edges at the domain boundary.",
+        "method": "Saved step [ns] = 1e9/cflrate; uncapped step = saved step * beta; rate [1e9/s] = 1/step [ns]. Unit Courant factor. Same snapshot for both.",
+        "verification": "Checked all 819200 rate caps, all 64000 displayed cell classifications, exact native rectangle coverage, profile heights and every serialized triangle. Ion density checked in all 400 axial cells.",
+        "asset": {"file": OUTPUT.name, "bytes": len(payload), "sha256": hashlib.sha256(payload).hexdigest()},
     }
+    return payload, meta
 
 
 if __name__ == "__main__":
@@ -209,6 +241,4 @@ if __name__ == "__main__":
         args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_bytes(mesh)
         args.output.with_suffix(".json").write_text(json.dumps(meta, indent=2, allow_nan=False) + "\n")
-    print(
-        f"{meta['masked_cells_in_cut']} native cells on the {meta['floor_ns']:.6f} ns plateau; {len(mesh):,} bytes"
-    )
+    print(f"{len(meta['cuts'])} native velocity cuts, {meta['floor_ns']:.6f} ns floor, {len(mesh):,} bytes")

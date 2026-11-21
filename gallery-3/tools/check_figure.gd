@@ -75,18 +75,19 @@ func _run() -> void:
 		quit(1)
 		return
 	check(room.figure.layers.size() == 20 and room.figure.buttons.size() == 20, "Both families have ten swatches and meshes")
-	for item: Node3D in [room.mobile, room.desk, room.figure.contours, room.figure.cfl]:
+	for item: Node3D in [room.mobile, room.desk, room.figure.contours, room.figure.cfl, room.figure.volume]:
 		check(room.to_local(item.global_position).x > 2.0, "The installation follows the incoming visitor's right wall")
 		check(room.global_basis.x.dot(item.global_basis.z.normalized()) < -0.9, "The exhibit faces into the aisle")
 	check(room.figure.contours.scale.is_equal_approx(Vector3.ONE * 1.25), "All three model axes are enlarged equally")
-	check(room.to_local(room.figure.time_panel.global_position).x > 1.8, "The time console finishes the run at the far-right corner")
+	check(room.figure.cfl.to_local(room.figure.time_panel.global_position).x < -3.0, "The console is beside both reliefs")
+	check(absf(room.to_local(room.figure.print_mount.global_position).z - room.to_local(room.figure.contours.global_position).z) < 0.1,
+		"The mask print faces its own sculpture across the aisle")
 	check(room.figure.plinth_key.text.contains("Blue shells") and room.figure.key_buttons.size() == 20, "The visitor can read the mask key on the plinth")
 	for entry: Dictionary in room.figure.manifest.data.contours:
 		var colour: Color = room.figure.finishes[str(entry.node)].albedo_color
 		check(colour.is_equal_approx(Color(entry.sRGB)), "The plinth swatch matches the exported colour for " + str(entry.node))
 	await physics_frame
-	_place(Vector3(0, 0.02, 7.00))
-	check(visitor.move_and_collide(room.global_basis * Vector3.FORWARD * 13.4) == null, "The aisle is clear from the doorway to the far end")
+	_check_floor_plan()
 	_approach(room.figure.key_mount, 1.45)
 	for eye_y: float in [1.18, 1.71]:
 		visitor.camera.position.y = eye_y
@@ -126,74 +127,129 @@ func _run() -> void:
 	unload_current_scene()
 	await create_timer(0.12).timeout
 	if failures == 0:
-		print("PASS Gallery 3 right wall, calibrated mask, local time contours, mobile probe, seated and standing controls, and resource release")
+		print("PASS extended Gallery 3, plinth clearance, linked rate and step probes, local contours, seated and standing controls, and resource release")
 	quit(int(failures != 0))
+
+func _check_floor_plan() -> void:
+	var cfl := room.figure.cfl
+	var mask_z := room.to_local(room.figure.contours.global_position).z
+	var cfl_z := room.to_local(cfl.global_position).z
+	var middle := Vector3(3.45,0.40,(mask_z + cfl_z) * 0.5)
+	var space := room.get_world_3d().direct_space_state
+	var masks := space.intersect_ray(PhysicsRayQueryParameters3D.create(room.to_global(middle), room.to_global(Vector3(middle.x,middle.y,mask_z)), 1))
+	var rates := space.intersect_ray(PhysicsRayQueryParameters3D.create(room.to_global(middle), room.to_global(Vector3(middle.x,middle.y,cfl_z)), 1))
+	check(not masks.is_empty() and not rates.is_empty(), "The gap lies between two solid plinths")
+	if not masks.is_empty() and not rates.is_empty():
+		var edge: Vector3 = masks.position
+		check(edge.distance_to(rates.position) > 3.65, "More than 3.65 m of floor separates the plinths")
+	_place(Vector3(0,0.02,Room.ENTRANCE_Z - 1.0))
+	check(visitor.move_and_collide(room.global_basis * Vector3.FORWARD * (Room.ROOM_DEPTH - 2)) == null,
+		"The entire extended room has a continuous central aisle")
+	check(visitor.move_and_collide(room.global_basis * Vector3.FORWARD * 2) != null, "The new end wall stops the visitor")
+	var floor_target := Vector3(-0.65,0,cfl_z)
+	_place(floor_target + Vector3.BACK * 3.5)
+	var hand: Vector3 = visitor.global_position + Vector3.UP
+	var arc := preload("res://museum/teleport.gd").new()
+	visitor.add_child(arc)
+	var landing := arc.aim(hand, hand.direction_to(room.to_global(floor_target)), visitor.camera.global_position)
+	check(landing.is_finite() and landing.distance_to(room.to_global(floor_target)) < 0.08 and room.contains_visitor(landing),
+		"The extended floor accepts a normal teleport to the CFL station")
+	arc.queue_free()
+	check(not room.contains_visitor(room.to_global(Vector3(0,1,Room.FAR_WALL_Z - 0.1))), "Gallery activation ends at its new back wall")
+
+func _press(panel: LocalTime, action: int) -> void:
+	var index := panel.actions.find(action)
+	check(index >= 0, "Action exists on its own console")
+	if index >= 0:
+		_aim(panel.buttons[index], true)
 
 func _check_local_time() -> void:
 	var figure := room.figure
+	var maps := figure.cfl
 	var panel := figure.time_panel
-	var cfl := figure.cfl
-	_approach(panel, 1.34)
-	_check_panel_text(panel)
-	check(cfl.reliefs.visible and not cfl.limits.visible and not panel.active, "The separate relief sculpture opens on both rate and step")
-	check(panel.coordinates.text.contains("-1.047503") and panel.times.text.contains("0.0526 ns") and panel.times.text.contains("0.5256 ns"),
-		"The initial ridge and probe compare the same shortest-step cell")
-	var info: Dictionary = cfl.manifest.data
-	for plot: String in ["Rate", "Time"]:
-		var mesh := (cfl.reliefs.get_node(plot + "Plateau") as MeshInstance3D).mesh
-		var value: float = info.cap_1e9_per_s if plot == "Rate" else info.floor_ns
-		var minimum: float = info.rate_axis_min_1e9_per_s if plot == "Rate" else info.time_axis_min_ns
-		var height := float(info.m_per_decade) * log(value/minimum) / log(10.0)
-		var vertices: PackedVector3Array = mesh.surface_get_arrays(0)[Mesh.ARRAY_VERTEX]
-		var maximum_error := 0.0
-		for vertex in vertices:
-			maximum_error = maxf(maximum_error, absf(vertex.y - height))
-		check(vertices.size() > 4000 and maximum_error < 1e-6, "Every imported " + plot + " plateau vertex has the source cap height")
-	room.clear_focus()
-	room.tab(false)
-	check(room.focus == room.widget_at(panel.buttons[LocalTime.ControlID.RELIEFS]), "Forward Tab starts on the current relief view")
-	room.tab(true)
-	check(room.focus == room.widget_at(panel.buttons[LocalTime.ControlID.LAMP]), "Reverse Tab skips hidden contour controls")
-	_aim(panel.buttons[LocalTime.ControlID.MIDPLANE], true)
-	check(panel.times.text.count("30.1912 ns") == 2, "Both rate and step figures move together to the midplane")
-	_aim(panel.buttons[LocalTime.ControlID.CONTOURS], true)
-	await physics_frame
-	check(cfl.limits.visible and not cfl.reliefs.visible and panel.coordinates.text.contains("+0.979129"), "The contour view starts on the selected mobile cell")
-	for eye_y: float in [1.18, 1.71]:
-		visitor.camera.position.y = eye_y
+	var volume := figure.volume
+	var controls := figure.contour_panel
+	var data: Dictionary = maps.manifest.data
+	_approach(panel, 1.48)
+	check(maps.maps.size() == 5 and panel.coordinates.text.contains("-1.047503") and panel.times.text.contains("0.0526 ns")
+		and panel.times.text.contains("0.5256 ns"), "The two maps start at the global shortest-step slice and probe")
+	for eye: float in [1.18,1.71]:
+		visitor.camera.position.y = eye
 		for button in panel.buttons:
 			_aim(button)
-	_aim(panel.buttons[LocalTime.ControlID.SHORTEST], true)
 	_check_panel_text(panel)
-	var pin := figure.probe.global_position
-	var expected := Vector3(-1.047503 * 0.60, 67.7667 * 0.018, -0.191195 * 0.070)
-	check(cfl.limits.to_local(pin).distance_to(expected) < 0.00001, "The contour probe uses the native phase axes")
-	_aim(panel.buttons[LocalTime.ControlID.CAPPED], true)
-	check(panel.count_label.text.begins_with("0 cells at or below 0.1 ns") and figure.probe.global_position.is_equal_approx(pin),
-		"The saved cap clears the 0.1 ns shell and keeps the probe pinned")
-	for i in figure.time_layers.size():
-		panel.press(LocalTime.ControlID.FIRST_LEVEL + i)
-		check(figure.time_layers[i].visible == (i >= 3), "Saved contour shows exactly the nonempty time levels")
-	_aim(panel.buttons[LocalTime.ControlID.UNCAPPED], true)
-	for i in figure.time_layers.size():
-		panel.press(LocalTime.ControlID.FIRST_LEVEL + i)
-		check(figure.time_layers[i].visible, "Uncapped contour at every time limit")
-	_aim(panel.buttons[LocalTime.ControlID.CREST], true)
-	check(panel.coordinates.text.contains("-0.979129") and panel.times.text.count("2.9573 ns") == 2, "The crest is distinct from the slope")
-	_aim(panel.buttons[LocalTime.ControlID.FLOOR], true)
-	_aim(panel.buttons[LocalTime.ControlID.POPULATION], true)
-	check(figure.floor_outline.is_visible_in_tree() and figure.ion_core.is_visible_in_tree(), "Both overlays appear on the CFL stand")
-	check(figure.layers.all(func(m: MeshInstance3D) -> bool: return m.is_visible_in_tree()), "The mask statue keeps its own colours and selections")
-	figure.press(8)
-	check(panel.active and figure.selected[0] == 8, "Selecting a distribution colour leaves the CFL controls in their current mode")
-	figure.press(8)
+	room.clear_focus()
+	room.tab(false)
+	check(room.focus == room.widget_at(panel.buttons[0]), "Map console keyboard focus")
+	room.tab(true)
+	check(room.focus == room.widget_at(panel.buttons.back()), "Map console reverse focus")
+	_press(panel, LocalTime.Action.STACK)
+	for i in 5:
+		_press(panel, LocalTime.Action.CUT_1 + i)
+		var cut: Dictionary = data.cuts[i]
+		check(maps.maps.filter(func(n: Node3D) -> bool: return n.visible).size() == 1 and maps.maps[i].visible and maps.profiles[i].visible,
+			"Only the chosen filled slice and its two profiles are displayed")
+		check(maps.outlines.filter(func(n: Node3D) -> bool: return n.visible).size() == 4, "Four other native cap outlines accompany the selected plane")
+		for plot: String in ["Rate","Step"]:
+			var prefix: String = cut.node + plot
+			var edge := "Edge4" if plot == "Rate" else "Edge1"
+			check(maps.outlines[i].has_node(prefix + "Boundary") and maps.outlines[i].has_node(prefix + edge),
+				"Each comparison plane carries the rate and step bands as well as the time-dilation boundary")
+		for part: MeshInstance3D in maps.maps[i].get_children():
+			var vertices: PackedVector3Array = part.mesh.surface_get_arrays(0)[Mesh.ARRAY_VERTEX]
+			var max_error := 0.0
+			for vertex in vertices:
+				max_error = maxf(max_error, absf(vertex.z + float(cut.v_parallel_Mm_s) * float(data.metres_per_axis_unit[1])))
+			check(max_error < 0.000001, "Every coloured face is upright at its true signed velocity depth")
+		for site in 3:
+			_press(panel, LocalTime.Action.SHORTEST + site)
+			var sample: Dictionary = cut.probes[site]
+			for k in 2:
+				var expected := maps.reliefs.position + Vector3(float(data.centres[k]) + float(sample.z_m)*float(data.metres_per_axis_unit[0]),
+					maps.MAP_LIFT + float(sample.mu_keV_T)*float(data.metres_per_axis_unit[2]),-float(cut.v_parallel_Mm_s)*float(data.metres_per_axis_unit[1]))
+				check(maps.dots[k].position.distance_to(expected) < 0.000001, "The corresponding cell has the same native Z, μ and v∥ on both maps")
+				var before := 1.0/float(sample.before_ns) if k == 0 else float(sample.before_ns)
+				var saved := 1.0/float(sample.with_ns) if k == 0 else float(sample.with_ns)
+				var expected_change := float(data.profile_m_per_decade) * log(saved/before) / log(10.0)
+				check(absf(maps.saved_points[k].position.y - maps.uncapped_points[k].position.y - expected_change) < 0.000001, "The separate profile chart reproduces the source change")
+	_press(panel, LocalTime.Action.STACK)
+	_press(panel, LocalTime.Action.CUT_1 + int(data.default_cut))
+	_press(panel, LocalTime.Action.SHORTEST)
+	check(maps.outlines.all(func(n: Node3D) -> bool: return not n.visible), "A single velocity cut can be read without the other outlines")
+	_approach(controls, 1.5)
+	check(absf(room.to_local(volume.global_position).z - room.to_local(maps.global_position).z) > 9,
+		"The two experiments are separate, simultaneously visible stations")
+	for eye: float in [1.18,1.71]:
+		visitor.camera.position.y = eye
+		for button in controls.buttons:
+			_aim(button)
+	_check_panel_text(controls)
+	check(volume.counts[0].text.begins_with("38037") and volume.counts[1].text.begins_with("0 ") and volume.empty.visible,
+		"The default comparison explicitly explains the empty saved volume")
+	var held := maps.dots[0].global_position
+	for i in 6:
+		_press(controls, LocalTime.Action.LEVEL_1 + i)
+		for side in 2:
+			for j in 6:
+				check(volume.layers[side][j].visible == (j == i and (side == 0 or i >= 3)), "Both complete volumes apply the same numerical threshold")
+		check(volume.empty.visible == (i < 3), "The empty-state label follows the saved floor")
+	_press(controls, LocalTime.Action.MIDPLANE)
+	check(controls.times.text.count("30.1912 ns") == 2 and maps.dots[0].global_position.is_equal_approx(held), "Each station keeps its own probe")
+	_press(controls, LocalTime.Action.FLOOR)
+	_press(controls, LocalTime.Action.CORE)
+	check(volume.floor_overlays.all(func(n: MeshInstance3D) -> bool: return n.visible) and volume.ion_overlays.all(func(n: MeshInstance3D) -> bool: return n.visible), "Both volumes show the requested reference overlays")
 	room.press(Room.Widget.SLICE)
 	room.press(Room.Widget.LAMP)
-	panel.press(LocalTime.ControlID.LAMP)
-	check(panel.coordinates.text.contains("+0.014865") and panel.coordinates.text.contains("+0.768474"), "Lamp probe follows slice and ring")
-	panel.press(LocalTime.ControlID.RELIEFS)
-	panel.press(LocalTime.ControlID.SHORTEST)
-	check(cfl.reliefs.visible and not figure.probe.is_visible_in_tree(), "The reliefs and their own probe return")
+	_press(controls, LocalTime.Action.LAMP)
+	var lamp_slice: Dictionary = room.mobile.Data.data.slices[room.mobile.slice_index]
+	var lamp: Dictionary = lamp_slice.lamps[room.mobile.selected]
+	check(controls.manifest.data.probe_tracks[controls.track].v_cell == lamp.v_cell and controls.manifest.data.sites[controls.site].z_cell == lamp_slice.z_cell,
+		"The contour probe follows the chosen lamp's native indices")
+	_press(controls, LocalTime.Action.FLOOR)
+	_press(controls, LocalTime.Action.CORE)
+	_press(controls, LocalTime.Action.SHORTEST)
+	_press(controls, LocalTime.Action.LEVEL_1)
+	check(figure.selected == [-1,-1] and maps.maps[panel.slice_index].visible, "The mask, paired maps and contour volumes stay independent")
 
 func _check_panel_text(panel: LocalTime) -> void:
 	for label: Label3D in panel.find_children("*", "Label3D", true, false):
@@ -220,18 +276,36 @@ func _pictures() -> void:
 		room.press(Room.Widget.LAMP)
 	room.press(Room.Widget.START)
 	room.mobile.advance(room.mobile.Data.data.reference_period_s)
-	_place(Vector3(-3.95, 0.01, 5.85))
-	visitor.camera.look_at(room.wall.to_global(Vector3(1.60, 1.92, 0.95)))
+	_place(Vector3(-3.70, 0.01, 4.25))
+	visitor.camera.look_at(room.wall.to_global(Vector3(-2.10, 1.50, 1.10)))
 	await _save_picture("right-wall")
-	_place(Vector3(-2.70, 0.01, 1.15))
+	_place(Vector3(-2.70, 0.01, -0.25))
 	visitor.camera.look_at(figure.contours.to_global(Vector3(0, 0.70, 0)))
 	await _save_picture("contours")
 	_approach(figure.key_mount, 2.64)
 	visitor.camera.look_at(figure.key_mount.to_global(Vector3(0,-0.46,0)))
 	await _save_picture("colour-bars")
-	_place(Vector3(-0.81, 0.01, -5.63))
-	visitor.camera.look_at(figure.cfl.to_global(Vector3(0, 1.46, 0.18)))
+	var cfl := figure.cfl
+	_place(room.to_local(cfl.to_global(Vector3(0,0.01,4.20))))
+	visitor.camera.look_at(cfl.to_global(Vector3(0,2.00,0.25)))
 	await _save_picture("CFL-reliefs")
+	visitor.camera.position.y = 1.18
+	visitor.camera.look_at(cfl.to_global(Vector3(0,1.91,0.25)))
+	await _save_picture("CFL-seated")
+	var volume := figure.volume
+	_place(room.to_local(volume.to_global(Vector3(0,0.01,3.95))))
+	visitor.camera.look_at(volume.to_global(Vector3(0,1.88,0.20)))
+	await _save_picture("CFL-contour-comparison")
+	figure.contour_panel.press(figure.contour_panel.actions.find(LocalTime.Action.LEVEL_4))
+	await _save_picture("CFL-contours-1ns")
+	figure.contour_panel.press(figure.contour_panel.actions.find(LocalTime.Action.LEVEL_1))
+	_approach(panel, 1.50)
+	_press(panel, LocalTime.Action.STACK)
+	_place(room.to_local(cfl.to_global(Vector3(2.45,0.01,4.85))))
+	visitor.camera.look_at(cfl.to_global(Vector3(0,1.95,0.22)))
+	await _save_picture("CFL-velocity-slices")
+	panel.press(panel.actions.find(LocalTime.Action.STACK))
+	visitor.camera.position.y = 1.71
 	_approach(panel, 2.10)
 	visitor.camera.position.y = 1.18
 	visitor.camera.look_at(panel.global_position)

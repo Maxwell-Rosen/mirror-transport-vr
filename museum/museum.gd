@@ -124,13 +124,14 @@ func gallery(s: float, z: float, number: int) -> void:
 	box(Vector3(s*8,(7+frame_top)*0.5,z),Vector3(0.4,7-frame_top,frame_width),"plaster",true)
 	box(Vector3(s*7.93,jamb_height+lintel_height*0.5,z),Vector3(0.70,lintel_height,frame_width),"trim",true)
 	# Rooms extend outward, with the long axis available for the tandem gallery.
-	var mid := s*(HALL_WIDTH/2+DEPTH/2)
+	var depth: float = $TimeDilation.ROOM_DEPTH if number == 3 else DEPTH
+	var mid := s*(HALL_WIDTH/2+depth/2)
 	var is_open := GALLERY_TITLES.has(number)
-	box(Vector3(mid,-0.10,z),Vector3(DEPTH,0.20,BAY),"floor",is_open)
-	box(Vector3(mid,5.1,z),Vector3(DEPTH,0.20,BAY),"stone")
-	box(Vector3(s*(8+DEPTH),2.5,z),Vector3(0.2,5,BAY),"stone",is_open)
+	box(Vector3(mid,-0.10,z),Vector3(depth,0.20,BAY),"floor",is_open)
+	box(Vector3(mid,5.1,z),Vector3(depth,0.20,BAY),"stone")
+	box(Vector3(s*(8+depth),2.5,z),Vector3(0.2,5,BAY),"stone",is_open)
 	for edge in [-1.0,1.0]:
-		box(Vector3(mid,2.5,z+edge*(BAY/2-0.06)),Vector3(DEPTH,5,0.12),"stone",is_open)
+		box(Vector3(mid,2.5,z+edge*(BAY/2-0.06)),Vector3(depth,5,0.12),"stone",is_open)
 	if not is_open:
 		barrier(Vector3(s*8,2,z),Vector3(0.38,4,OPENING))
 		box(Vector3(s*7.98,1.0,z),Vector3(0.05,0.145,OPENING),"tape")
@@ -146,12 +147,12 @@ func gallery(s: float, z: float, number: int) -> void:
 		lettering(title, Vector3(s*7.69, 1.76, sign_z - s*0.16), 0.125, yaw, false, true)
 		if number == 1:
 			var inner_edge := 7.94 + JAMB_DEPTH / 2
-			$MagneticMirror.set_gallery(to_global(Vector3(s * inner_edge, 0, z)), OPENING, BAY - 0.24, HALL_WIDTH / 2 + DEPTH - 0.10 - inner_edge)
+			$MagneticMirror.set_gallery(to_global(Vector3(s * inner_edge, 0, z)), OPENING, BAY - 0.24, HALL_WIDTH / 2 + depth - 0.10 - inner_edge)
 		for edge in [-1.0, 1.0]:
-			box(Vector3(mid, 0.14, z + edge * (BAY / 2 - 0.16)), Vector3(DEPTH, 0.26, 0.13), "stone")
-			box(Vector3(mid, 0.29, z + edge * (BAY / 2 - 0.17)), Vector3(DEPTH, 0.05, 0.15), "trim")
-		box(Vector3(s * (8 + DEPTH - 0.16), 0.14, z), Vector3(0.13, 0.26, BAY), "stone")
-		box(Vector3(s * (8 + DEPTH - 0.17), 0.29, z), Vector3(0.15, 0.05, BAY), "trim")
+			box(Vector3(mid, 0.14, z + edge * (BAY / 2 - 0.16)), Vector3(depth, 0.26, 0.13), "stone")
+			box(Vector3(mid, 0.29, z + edge * (BAY / 2 - 0.17)), Vector3(depth, 0.05, 0.15), "trim")
+		box(Vector3(s * (8 + depth - 0.16), 0.14, z), Vector3(0.13, 0.26, BAY), "stone")
+		box(Vector3(s * (8 + depth - 0.17), 0.29, z), Vector3(0.15, 0.05, BAY), "trim")
 	else:
 		lettering("%02d" % number,Vector3(s*7.69,2.00,sign_z),0.51,yaw,true)
 		lettering("Gallery",Vector3(s*7.69,1.58,sign_z),0.123,yaw)

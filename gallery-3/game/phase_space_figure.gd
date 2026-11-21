@@ -2,13 +2,16 @@ extends "res://museum/architecture.gd"
 ## The mask and CFL sculptures are independent stations with one room-gated load.
 
 const LocalTime := preload("res://gallery-3/game/local_time.gd")
+const ContourStand := preload("res://gallery-3/game/contour_sculpture.gd")
 const CFLStand := preload("res://gallery-3/game/cfl_sculpture.gd")
 @onready var cfl: CFLStand = $CFLStand
+@onready var volume: ContourStand = $ContourStand
+@onready var contour_panel: LocalTime = $ContourStand/Console/TimePanel
 @export var print_texture: Texture2D
 @export var manifest: JSON
 @onready var contours: Node3D = $Contours
 @onready var print_mount: Node3D = $Print
-@onready var time_panel: LocalTime = $TimePanel
+@onready var time_panel: LocalTime = $CFLStand/Console/TimePanel
 
 const PRINT_WIDTH := 3.90
 var buttons: Array[StaticBody3D] = []
@@ -18,10 +21,6 @@ var selected := [-1, -1]
 var selection_marks: Array[MeshInstance3D] = []
 var cursor: MeshInstance3D
 var readout: Label3D
-var time_layers: Array[MeshInstance3D] = []
-var ion_core: MeshInstance3D
-var floor_outline: MeshInstance3D
-var probe: MeshInstance3D
 var plinth_key: Label3D
 var key_mount := Node3D.new()
 var key_buttons: Array[StaticBody3D] = []
@@ -38,9 +37,7 @@ func _ready() -> void:
 	finish("ticks", "ffffff")
 	_plinth()
 	_print_and_keys()
-	_local_time()
 	assemble()
-	time_panel.changed.connect(_refresh)
 	_refresh()
 
 func _plinth() -> void:
@@ -116,9 +113,9 @@ func _print_and_keys() -> void:
 			var layer := contours.get_node("%s/%s" % [family, entry.node]) as MeshInstance3D
 			_set_ink(layer, (layer.mesh.surface_get_material(0) as StandardMaterial3D).albedo_color)
 			if group == 0 and is_equal_approx(entry.level, 0.1):
-				ion_core = _overlay(layer, Color("#f9cb355c"))
+				volume.add_overlay(layer, false)
 			if group == 1 and is_equal_approx(entry.level, 1.0):
-				floor_outline = _overlay(layer, Color("#ba9ce4"), true)
+				volume.add_overlay(layer, true)
 			layers.append(layer)
 			groups.append(group)
 			var print_at := Vector3(size.x * (float(bounds[0]) - 0.5) + (i + 0.5) * width,
@@ -158,14 +155,6 @@ func _colour_bar(entry: Dictionary, group: int, index: int) -> void:
 	lettering(number, key_mount.transform * (at + Vector3(0,-0.087,0.005)), 0.066).rotation = key_mount.rotation
 	key_buttons.append(_hit(key_mount, at + Vector3(0,-0.035,0.012), Vector2(KEY_WIDTH, 0.173)))
 
-func _overlay(layer: MeshInstance3D, color: Color, outline := false) -> MeshInstance3D:
-	var duplicate_mesh := MeshInstance3D.new()
-	duplicate_mesh.mesh = layer.mesh
-	cfl.limits.add_child(duplicate_mesh)
-	duplicate_mesh.transform = layer.transform
-	_set_ink(duplicate_mesh, color, outline)
-	return duplicate_mesh
-
 func _set_ink(layer: MeshInstance3D, color: Color, outline := false) -> void:
 	var low: Array = manifest.data.domain_min_xyz_m
 	var high: Array = manifest.data.domain_max_xyz_m
@@ -177,26 +166,6 @@ func _set_ink(layer: MeshInstance3D, color: Color, outline := false) -> void:
 	ink.set_shader_parameter("outline", outline)
 	layer.material_override = ink
 	layer.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-
-func _local_time() -> void:
-	for entry: Dictionary in time_panel.manifest.data.contours:
-		var layer := cfl.limits.get_node("LocalTime/" + str(entry.node)) as MeshInstance3D
-		_set_ink(layer, (layer.mesh.surface_get_material(0) as StandardMaterial3D).albedo_color)
-		time_layers.append(layer)
-	var dot := SphereMesh.new()
-	dot.radius = 0.024
-	dot.height = 2 * dot.radius
-	dot.radial_segments = 12
-	dot.rings = 6
-	var white := StandardMaterial3D.new()
-	white.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	white.albedo_color = Board.TEXT
-	dot.material = white
-	probe = MeshInstance3D.new()
-	probe.name = "Probe"
-	probe.mesh = dot
-	probe.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	cfl.limits.add_child(probe)
 
 func _mark(width: float, mount: Node3D) -> MeshInstance3D:
 	var mark := MeshInstance3D.new()
@@ -248,18 +217,6 @@ func _refresh() -> void:
 		"Select a colour to isolate a shell. Select it again for all levels.     %s · frame %d · %.6f s") % [
 		100 * float(stats.slowed_cell_fraction), 100 * float(stats.slowed_absolute_ion_fraction),
 		manifest.data.run, manifest.data.frame, manifest.data.saved_time_s]
-	var data: Dictionary = time_panel.manifest.data
-	cfl.show_probe(time_panel)
-	ion_core.visible = time_panel.active and time_panel.show_population
-	for i in time_layers.size():
-		var cells: int = data.contours[i].with_cells if time_panel.with_dilation else data.contours[i].before_cells
-		time_layers[i].visible = time_panel.active and time_panel.level == i and cells > 0
-	floor_outline.visible = time_panel.active and time_panel.show_floor
-	probe.visible = time_panel.active
-	var cut: Dictionary = data.probe_tracks[time_panel.track]
-	var scale_factors: Array = data.exhibit_metres_per_axis_unit_Z_vparallel_mu
-	probe.position = Vector3(data.sites[time_panel.site].z_m * scale_factors[0],
-		cut.mu_keV_T * scale_factors[2], -cut.v_parallel_Mm_s * scale_factors[1])
 
 func at_board(eye: Vector3) -> bool:
 	var p := print_mount.to_local(eye)

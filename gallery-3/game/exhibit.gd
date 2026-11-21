@@ -8,6 +8,10 @@ const Mobile := preload("res://gallery-3/game/mobile.gd")
 const PhaseFigure := preload("res://gallery-3/game/phase_space_figure.gd")
 # Keep heavy resources out of the museum's preload chain.
 const FIGURE_PATH := "res://gallery-3/game/phase_space_figure.tscn"
+const ROOM_DEPTH := 34.0
+# The scene origin is eight metres inside the fixed atrium door.
+const ENTRANCE_Z := 8.0
+const FAR_WALL_Z := ENTRANCE_Z - ROOM_DEPTH
 enum Widget { START, RATES, SLICE, LAMP }
 const BUTTON_SIZE := Vector2(1.12, 0.175)
 
@@ -77,12 +81,12 @@ func _reading_boards() -> void:
 		"distribution on this cut, on a logarithmic scale."
 	]
 	_reading_board(-5.35, "Which lights fall behind the beat?", "\n".join(lines))
-	_reading_board(0.25, "Why look near a mirror throat?",
+	_reading_board(-1.30, "Why look near a mirror throat?",
 		"On either side of a throat, the magnetic field changes steeply.\n" +
 		"Ions with a large magnetic moment μ feel a strong push back\n" +
 		"toward weaker field. Their speed can cross a velocity bin in a\n" +
 		"fraction of a nanosecond. Most turn back before this slope.")
-	_reading_board(5.25, "What does a longer step buy?",
+	_reading_board(11.40, "What does a longer step buy?",
 		"At the shortest-step cell, β = 0.1. Its update covers a tenth\n" +
 		"of each shared tick. The grid can take ten times longer steps,\n" +
 		"so following slow collisions takes about a tenth as many updates.\n" +
@@ -177,9 +181,12 @@ func widget_at(surface: Object) -> int:
 			swatch = figure.key_buttons.find(surface)
 		if swatch >= 0:
 			return buttons.size() + swatch
-		var control := figure.time_panel.buttons.find(surface)
-		if control >= 0:
-			return buttons.size() + figure.buttons.size() + control
+		var offset := buttons.size() + figure.buttons.size()
+		for panel: PhaseFigure.LocalTime in [figure.time_panel, figure.contour_panel]:
+			var control := panel.buttons.find(surface)
+			if control >= 0:
+				return offset + control
+			offset += panel.buttons.size()
 	return buttons.find(surface)
 
 func press(widget: int) -> void:
@@ -188,8 +195,10 @@ func press(widget: int) -> void:
 			var index := widget - buttons.size()
 			if index < figure.buttons.size():
 				figure.press(index)
-			else:
+			elif index < figure.buttons.size() + figure.time_panel.buttons.size():
 				figure.time_panel.press(index - figure.buttons.size())
+			else:
+				figure.contour_panel.press(index - figure.buttons.size() - figure.time_panel.buttons.size())
 		return
 	match widget:
 		Widget.START:
@@ -209,7 +218,7 @@ func press(widget: int) -> void:
 func _sync_lamp_probe() -> void:
 	if figure:
 		var cut: Dictionary = Mobile.Data.data.slices[mobile.slice_index]
-		figure.time_panel.set_lamp(cut.z_cell, cut.lamps[mobile.selected].v_cell, Mobile.Data.data.mu_cell)
+		figure.contour_panel.set_lamp(cut.z_cell, cut.lamps[mobile.selected].v_cell, Mobile.Data.data.mu_cell)
 
 func _show_focus() -> void:
 	for i in indicators.size():
@@ -217,7 +226,9 @@ func _show_focus() -> void:
 	if figure:
 		var picked := focus if focus >= 0 else hover
 		figure.point(picked - buttons.size())
-		figure.time_panel.point(picked - buttons.size() - figure.buttons.size())
+		var first_control := buttons.size() + figure.buttons.size()
+		figure.time_panel.point(picked - first_control)
+		figure.contour_panel.point(picked - first_control - figure.time_panel.buttons.size())
 
 func point(widget: int) -> void:
 	if widget != hover:
@@ -233,9 +244,7 @@ func tab(backward: bool) -> void:
 	var span := _focus_range(camera.global_position)
 	if span.y == 0:
 		return
-	if figure and span.x == buttons.size() + figure.buttons.size():
-		focus = span.x + figure.time_panel.tab_index(focus - span.x, backward)
-	elif focus < span.x or focus >= span.y:
+	if focus < span.x or focus >= span.y:
 		focus = span.y - 1 if backward else span.x
 	else:
 		focus = wrapi(focus + (-1 if backward else 1), span.x, span.y)
@@ -248,21 +257,17 @@ func clear_focus() -> void:
 
 func contains_visitor(eye: Vector3) -> bool:
 	var p := to_local(eye)
-	return absf(p.x) < 4.88 and p.z > -7.88 and p.z < 7.76
+	return absf(p.x) < 4.88 and p.z > FAR_WALL_Z + 0.12 and p.z < ENTRANCE_Z - 0.24
 
 func _focus_range(eye: Vector3) -> Vector2i:
 	if figure:
 		var print_end := buttons.size() + figure.buttons.size()
-		var at_print := figure.at_board(eye)
-		var at_time := figure.time_panel.at_panel(eye)
-		if at_print and at_time:
-			# The print and console meet at the far-right corner. Tab follows the face in view.
-			var camera := get_viewport().get_camera_3d()
-			if camera:
-				at_time = camera.global_basis.z.dot(figure.time_panel.global_basis.z) > camera.global_basis.z.dot(figure.print_mount.global_basis.z)
-		if at_time:
-			return Vector2i(print_end, print_end + figure.time_panel.buttons.size())
-		if at_print:
+		var map_end := print_end + figure.time_panel.buttons.size()
+		if figure.contour_panel.at_panel(eye) or figure.volume.at_sculpture(eye):
+			return Vector2i(map_end, map_end + figure.contour_panel.buttons.size())
+		if figure.time_panel.at_panel(eye) or figure.cfl.at_sculpture(eye):
+			return Vector2i(print_end, map_end)
+		if figure.at_board(eye):
 			return Vector2i(buttons.size(), print_end)
 	var p := desk.to_local(eye)
 	if absf(p.x) < 1.5 and p.z > 0 and p.z < 2.8:
@@ -308,7 +313,7 @@ func _process(delta: float) -> void:
 	_update_figure(camera != null and contains_visitor(camera.global_position))
 	if camera:
 		var eye := to_local(camera.global_position)
-		if absf(eye.x) < 4.88 and eye.z > -7.88 and eye.z < 11.8:
+		if absf(eye.x) < 4.88 and eye.z > FAR_WALL_Z + 0.12 and eye.z < ENTRANCE_Z + 3.8:
 			mobile.advance(delta)
 		if focus >= 0:
 			var span := _focus_range(camera.global_position)

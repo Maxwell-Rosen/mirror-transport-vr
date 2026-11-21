@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="Script" path="res://gallery-3/game/phase_space_figure.gd" id="1"]
 [ext_resource type="PackedScene" path="res://simulation-renders/gallery-3/time-dilation.glb" id="2"]
@@ -10,9 +10,10 @@
 [ext_resource type="Script" path="res://gallery-3/game/cfl_sculpture.gd" id="8"]
 [ext_resource type="PackedScene" path="res://simulation-renders/gallery-3/cfl-relief.glb" id="9"]
 [ext_resource type="JSON" path="res://simulation-renders/gallery-3/cfl-relief.json" id="10"]
+[ext_resource type="Script" path="res://gallery-3/game/contour_sculpture.gd" id="11"]
 
 [node name="PhaseSpaceFigure" type="Node3D"]
-position = Vector3(-1.62, 0, 0)
+position = Vector3(-2.7, 0, 0)
 script = ExtResource("1")
 print_texture = ExtResource("3")
 manifest = ExtResource("4")
@@ -22,24 +23,44 @@ position = Vector3(0, 0.86, 1.42)
 scale = Vector3(1.25, 1.25, 1.25)
 
 [node name="Print" type="Node3D" parent="."]
-position = Vector3(-6.17, 1.86, 4.86)
-rotation = Vector3(0, 1.5707963, 0)
+position = Vector3(0, 1.86, 9.64)
+rotation = Vector3(0, 3.1415927, 0)
 
 [node name="CFLStand" type="Node3D" parent="."]
-position = Vector3(-4.28, 0, 1.32)
+position = Vector3(-8.7, 0, 1.32)
 script = ExtResource("8")
 manifest = ExtResource("10")
-contour_manifest = ExtResource("7")
 
 [node name="Reliefs" parent="CFLStand" instance=ExtResource("9")]
-position = Vector3(0, 0.84, 0)
+position = Vector3(0, 1.09, 0)
 
-[node name="TimeLimits" parent="CFLStand" instance=ExtResource("5")]
-position = Vector3(0, 0.84, 0)
-visible = false
+[node name="Console" type="Node3D" parent="CFLStand"]
+position = Vector3(-3.60, 0, 1.66)
+rotation = Vector3(0, 0.38, 0)
 
-[node name="TimePanel" type="Node3D" parent="."]
-position = Vector3(-4.28, 0.78, 2.86)
-rotation = Vector3(-1.21, 0, 0)
+[node name="TimePanel" type="Node3D" parent="CFLStand/Console"]
+position = Vector3(0, 1.19, 0)
+rotation = Vector3(-0.54, 0, 0)
 script = ExtResource("6")
+manifest = ExtResource("10")
+
+[node name="ContourStand" type="Node3D" parent="."]
+position = Vector3(-17.85, 0, 1.32)
+script = ExtResource("11")
+manifest = ExtResource("7")
+map_manifest = ExtResource("10")
+
+[node name="Uncapped" parent="ContourStand" instance=ExtResource("5")]
+
+[node name="Saved" parent="ContourStand" instance=ExtResource("5")]
+
+[node name="Console" type="Node3D" parent="ContourStand"]
+position = Vector3(-3.60, 0, 1.66)
+rotation = Vector3(0, 0.38, 0)
+
+[node name="TimePanel" type="Node3D" parent="ContourStand/Console"]
+position = Vector3(0, 1.19, 0)
+rotation = Vector3(-0.54, 0, 0)
+script = ExtResource("6")
+role = 1
 manifest = ExtResource("7")
