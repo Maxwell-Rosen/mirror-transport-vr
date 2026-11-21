@@ -27,6 +27,10 @@ On the far wall, *By the fire* hangs to the left of the central brass fins and *
 
 ## Exhibit entrances
 
+Lay out a new room from three places a visitor will use. From the atrium, look through the arch and identify the first apparatus. From the control, try an adjustment while watching its effect. From the reading position, check that the whole figure is visible and that a visitor can move closer to read an axis. In Gallery 1 the ion and its energy trace share a broadside view. In Gallery 2 the boards face their sculptures across the aisle, and open floor beyond the bead stand lets visitors step back from the thesis prints. Size the room around those views. [Mirror sightlines](gallery-1/README.md#room-and-sightlines) · [Between Bounces reading area](gallery-2/README.md#the-walk-from-the-atrium)
+
+Use light to draw the eye from the aisle to the apparatus, then give the accompanying print enough light and a caption that points to a feature worth finding. In the headset, approach at an angle and read the smallest relevant tick or caption from both seated and standing height. For a changing instrument face, reuse the shared board viewport. It refreshes the print when requested and generates filtered texture levels for distance and oblique views. [Instrument board renderer](museum/board_viewport.gd)
+
 Each doorway has a large exhibit number on the atrium wall, visible as the player walks down the hall. While an exhibit is under development, yellow-and-black striped tape stretches from jamb to jamb across its entrance at waist height. The sign beside the number reads **Under construction**.
 
 When an exhibit opens, the tape comes down and the exhibit title goes beside its number. The visitor can read the exhibit question on the main display through the opening. The return view through each opening includes the skylit hall. In Galleries 2 and 3, warm ceiling spots pick out each sculpture against a muted green-grey wall. Soft pools of light mark the reading boards across the aisle and the thesis figures on the end wall. Black panels carry white text, and the plots retain their own colours.

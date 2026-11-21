@@ -25,6 +25,16 @@ The fountain has its own quiet sound source at the basin. Visitors hear the runn
 
 Keep the floor and horizon level. For the taller data displays, plan optional flight with ascent, descent and a control to return to the floor beneath the visitor. [Movement and interaction bindings](CONTROLS.md)
 
+## Designing a visitor trial
+
+Start a gallery README with a short visit someone can actually try. Give the visitor a starting view, something specific to follow, one change to make and an outcome they can recognize. At the mirror, ask them to predict whether particle 6 will cross the right throat. Change the mirror ratio from 1 to 31.41 with the same launch settings. Crossing the ring in the first trial and turning before it in the second give the visitor a way to answer the question by looking. [Mirror trial](gallery-1/README.md)
+
+Keep the subject recognizable when the visitor turns from the sculpture to a plot. In the dye river a white ring picks out the same parcel on the graph. At the bead stand the halo lets the visitor follow one bead into a passing orbit, see where it waits during the hold, and follow it to a collector after release. When a brief event carries the explanation, give visitors a way to revisit it. **Next phase** takes them to the event and **Pause** gives them time to inspect it. [Between Bounces](gallery-2/README.md)
+
+Decide what a comparison holds fixed. In the lamp rings, switching dilation preserves the selected sample and elapsed time. A visitor can attribute the difference in crest position to the clock rate. Explain each visible effect where it appears, especially when the sculpture combines evidence and analogy. Here the saved frame supplies the clock multiplier and cell content. The travelling crest and its damping belong to the teaching model. A caption that calls the whole animation “frame 75” would imply a measured time history. [What the lamps measure](gallery-3/README.md#what-the-lamps-measure)
+
+Try the proposed visit without coaching. Ask the visitor to show what changed and point to the evidence. If they can work the control but lose the particle, inspect the selection marker and the view from the control. If they can follow the motion but misread its meaning, revisit the label or the comparison. Record the repeatable trial beside the gallery’s numerical reference checks so later changes can be tested against both. [Gallery 1 visitor and reference checks](gallery-1/README.md#checks-for-the-first-build)
+
 ## Galleries
 
 | Gallery and visitor question | Interaction and data |
