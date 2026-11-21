@@ -78,6 +78,7 @@ func _run() -> void:
 	_check_bead_trigger()
 	await _check_lamp_trigger()
 	await _check_loss_trial()
+	await _check_tandem_trial()
 	await _check_pause_and_reset()
 
 	menu = current_scene.get_node("VisitMenu")
@@ -319,6 +320,32 @@ func _check_loss_trial() -> void:
 	_trigger_at(velocity.buttons[velocity.Action.GRID_LINES])
 	check(velocity.zoomed and not velocity.grid_visible and velocity.mask_visible,
 		"The right trigger enlarges the loss-cone tip and toggles its native grid")
+
+func _check_tandem_trial() -> void:
+	var room = current_scene.get_node("TandemMirror")
+	visitor.face_atrium(room.to_global(Vector3(0, 0.01, 1.85)))
+	var landing: Vector3 = room.to_global(Vector3(0, 0, -1.25))
+	_point_at(landing)
+	_stick(Vector2.RIGHT)
+	check(visitor.teleport_arc.ring.visible and visitor.teleport_arc.ring.global_position.distance_to(landing) < 0.09,
+		"The seated controller can target the floor inside arch 6")
+	_stick(Vector2.ZERO)
+	check(room.contains_visitor(visitor.camera.global_position), "Teleport crosses the tandem gallery threshold")
+	var deadline := Time.get_ticks_msec() + 15000
+	while not room.installation and Time.get_ticks_msec() < deadline:
+		await process_frame
+	if not room.installation:
+		check(false, "The tandem instruments load after teleport")
+		return
+	await physics_frame
+	_stand_in_front(room.get_node("SliceMount"))
+	_trigger_at(room.installation.buttons[2])
+	check(room.cut == 2, "The trigger selects the third distribution slice")
+	_stand_in_front(room.get_node("BarrierMount"))
+	_trigger_at(room.installation.buttons[4])
+	check(not room.plugged, "The trigger selects the flat-potential comparison")
+	_trigger_at(room.installation.buttons[5])
+	check(room.plugged, "The trigger restores the saved plug potential")
 
 func _stand_in_front(mount: Node3D) -> void:
 	var direction := mount.global_basis.z

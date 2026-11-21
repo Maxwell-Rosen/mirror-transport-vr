@@ -1,0 +1,223 @@
+{
+  "run": "1x-tandem",
+  "frame": 75,
+  "time_s": 0.50015,
+  "static_source_frame": 43,
+  "static_source_time_s": 0.4600609968545619,
+  "gkeyll_changeset": "3e32cda94b0d",
+  "converter": "gallery-6/tools/export_tandem.py",
+  "sources": {
+    "distribution": "zzim-ion_75.gkyl",
+    "density": "zzim-ion_M0_75.gkyl",
+    "potential": "zzim-field_75.gkyl",
+    "source": "zzim-ion_source_43.gkyl",
+    "source_density": "zzim-ion_source_M0_43.gkyl",
+    "geometry": "zzim-geo_corn_nodes.gkyl",
+    "geometry_check": "zzim-geo_corn_mapc2p.gkyl",
+    "axial_map": "zzim-geo_corn_mc2nu_pos_deflated.gkyl",
+    "field": "zzim-geo_int_bmag.gkyl",
+    "velocity_map": "zzim-ion_mapc2p_vel.gkyl",
+    "j_vel": "zzim-ion_jacobvel.gkyl",
+    "j_total": "zzim-geo_int_jacobtot.gkyl",
+    "j_geo": "zzim-geo_int_jacobgeo.gkyl",
+    "inventory": "zzim-ion_integrated_moms.gkyl",
+    "injection": "zzim-ion_source_integrated_moms.gkyl",
+    "lower_wall": "zzim-ion_bflux_xlower_integrated_HamiltonianMoments.gkyl",
+    "upper_wall": "zzim-ion_bflux_xupper_integrated_HamiltonianMoments.gkyl"
+  },
+  "geometry_and_beam_input": "gkeyll-data/1x-tandem/sim.c",
+  "interpretation": "PhD-thesis-latex/Chapter Gkeyll Extensions/tex-files/tandem_mirrors.tex",
+  "assets": {
+    "tandem.json": "Native corner R and Z (m), 1001 points. Coil Z marks the nominal sim.c throat locations, winding dimensions schematic. All 1000 mapped cell centres and |B| (T), phi (V) use P1 constant coefficient/sqrt(2). Density and source M0 are physical-volume-weighted means. Static geometry frame 0 at 0 s. Velocity mapping/Jv diagnostics have no frame/time.",
+    "sculpture": "Eight azimuths of one saved axisymmetric field line. The 3D tube joins every fourth node and both endpoints, axial scale 0.65 and radial scale 3.2 (4.92 relative). The selectable pointer follows each cut's physical Z. Geometry check in gallery-6/tools/check_sculpture.gd.",
+    "cut-*.png": "Side-by-side signed velocity distributions on native physical cell faces, full mu range shown on asinh axis (linear width 1 keV/T), v_parallel cropped to ±3e6 m/s. No interpolation. f is phase-volume-weighted hybrid DG constant mode divided by sqrt(8) J_total_cellmean J_vel. Same formula for S. Signed symlog colour for f with linear core at ±1e-4 s³/m⁶. Source colour log above 1e-5 s²/m⁶, all lower values dark. Scales fixed across cuts. Source floor from sim.c is 1e-20 s²/m⁶. Source independent of time.",
+    "confinement": "Instantaneous gross inventory divided by total outward loss rate at final FDP endpoint. Take component 0 of final sample in both outward-positive boundary histories, inventory and injection. Multiply raw numbers/rates by 2π for axisymmetric quantities per unit poloidal flux label; this factor cancels in ratios. No plug-off lifetime comparison is available from this run."
+  },
+  "verification": {
+    "distribution": {
+      "max_relative_m0_error": 6.328271240363392e-15,
+      "axial_cells_checked": 1000,
+      "cut_moments": [
+        {
+          "iz": 500,
+          "reconstructed": 1.0213303542861392e+17,
+          "saved": 1.0213303542861402e+17
+        },
+        {
+          "iz": 627,
+          "reconstructed": 1.1887305954956565e+17,
+          "saved": 1.1887305954956554e+17
+        },
+        {
+          "iz": 749,
+          "reconstructed": 1.8417906453325763e+19,
+          "saved": 1.841790645332573e+19
+        },
+        {
+          "iz": 988,
+          "reconstructed": 74692214924173.94,
+          "saved": 74692214924173.97
+        }
+      ]
+    },
+    "source": {
+      "max_relative_m0_error": 1.3433698597964394e-14,
+      "axial_cells_checked": 1000,
+      "cut_moments": [
+        {
+          "iz": 500,
+          "reconstructed": 0.6626153980453955,
+          "saved": 0.662615398045396
+        },
+        {
+          "iz": 627,
+          "reconstructed": 33.7623830300159,
+          "saved": 33.76238303001573
+        },
+        {
+          "iz": 749,
+          "reconstructed": 1.561326013526881e+20,
+          "saved": 1.5613260135268814e+20
+        },
+        {
+          "iz": 988,
+          "reconstructed": 1.1951539995104707,
+          "saved": 1.19515399951047
+        }
+      ]
+    },
+    "maximum_sculpture_radius_interpolation_error_m": 0.00040610672441604434,
+    "printed_cell_centres": {
+      "cut-0.png": [
+        {
+          "iv": 31,
+          "imu": 0,
+          "value": 0.7212663867039627
+        },
+        {
+          "iv": 14,
+          "imu": 10,
+          "value": -3.6682472669436083e-06
+        },
+        {
+          "iv": 50,
+          "imu": 20,
+          "value": 1.764514310509279e-08
+        },
+        {
+          "iv": 10,
+          "imu": 0,
+          "value": 1.0001869078141548e-20
+        },
+        {
+          "iv": 14,
+          "imu": 10,
+          "value": 1.0001869078141547e-20
+        },
+        {
+          "iv": 50,
+          "imu": 20,
+          "value": 1.0001869078141547e-20
+        }
+      ],
+      "cut-1.png": [
+        {
+          "iv": 32,
+          "imu": 0,
+          "value": 0.42596823880193735
+        },
+        {
+          "iv": 14,
+          "imu": 10,
+          "value": -1.83542809960413e-10
+        },
+        {
+          "iv": 50,
+          "imu": 20,
+          "value": 3.593758567436581e-08
+        },
+        {
+          "iv": 19,
+          "imu": 16,
+          "value": 9.999397982050303e-21
+        },
+        {
+          "iv": 14,
+          "imu": 10,
+          "value": 9.999397982050298e-21
+        },
+        {
+          "iv": 50,
+          "imu": 20,
+          "value": 9.9993979820503e-21
+        }
+      ],
+      "cut-2.png": [
+        {
+          "iv": 31,
+          "imu": 16,
+          "value": 1.1421444710029787
+        },
+        {
+          "iv": 14,
+          "imu": 10,
+          "value": -2.1095667664945292e-07
+        },
+        {
+          "iv": 50,
+          "imu": 20,
+          "value": 0.0841769657550632
+        },
+        {
+          "iv": 19,
+          "imu": 22,
+          "value": 165.23557543270792
+        },
+        {
+          "iv": 14,
+          "imu": 10,
+          "value": 1.5745976585584588e-17
+        },
+        {
+          "iv": 50,
+          "imu": 20,
+          "value": 6.577281072587027e-10
+        }
+      ],
+      "cut-3.png": [
+        {
+          "iv": 44,
+          "imu": 6,
+          "value": 0.005350665988833448
+        },
+        {
+          "iv": 14,
+          "imu": 10,
+          "value": 3.0160525827740643e-27
+        },
+        {
+          "iv": 50,
+          "imu": 20,
+          "value": 1.3682307242476963e-26
+        },
+        {
+          "iv": 15,
+          "imu": 14,
+          "value": 1.0007598894016404e-20
+        },
+        {
+          "iv": 14,
+          "imu": 10,
+          "value": 1.0007598894016401e-20
+        },
+        {
+          "iv": 50,
+          "imu": 20,
+          "value": 1.0007598894016401e-20
+        }
+      ]
+    },
+    "inventory_reconstructed_per_wb": 4.214600214993179e+20,
+    "injection_reconstructed_per_wb_s": 5.220432123027395e+21
+  }
+}

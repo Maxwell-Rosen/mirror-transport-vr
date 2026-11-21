@@ -27,6 +27,8 @@ At the Gallery 4 energy rail, **Cut cell** selects the sole trapped corner in a 
 
 At the velocity-grid board, **Loss-cone tip** enlarges the same cells on the computational and physical axes. Toggle the grid lines and mask boundary over the ion distribution independently. At the axial grid, switch between **Uniform spacing** and **Simulation grid** with a probe fixed at **Midplane** or **Steep flank**. [Gallery 4 trials](gallery-4/README.md)
 
+In Gallery 6, select an axial cut to move the pointer on the coil sculpture and change both velocity plots. At the far wall, switch between **Flat potential** and **Saved potential** for the same ion. Use the mouse, right trigger, or Tab and Enter at either instrument. [The tandem mirror](gallery-6/README.md)
+
 ## Title screen and pause menu
 
 On the title screen, choose **Enter the museum** to begin or **Exit** to close the game. In either menu, use the mouse or Tab and Enter on desktop. On Quest, aim the right controller and pull its index trigger. A yellow ring marks where the ray meets the menu.

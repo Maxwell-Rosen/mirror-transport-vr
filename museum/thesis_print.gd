@@ -40,7 +40,7 @@ func _ready() -> void:
 		label.vertical_alignment = VERTICAL_ALIGNMENT_TOP
 		label.width = (width - 2.0 * inset) / label.pixel_size
 		label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		if centre_caption and line[2]:
+		if centre_caption:
 			label.position.x = 0
 			label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		var bounds := label.font.get_multiline_string_size(label.text, HORIZONTAL_ALIGNMENT_LEFT, label.width, label.font_size)

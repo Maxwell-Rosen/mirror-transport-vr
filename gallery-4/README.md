@@ -6,6 +6,8 @@ Gallery 1 lets a visitor change the mirror. Here the mirror is the one Gkeyll si
 
 ## The energy rail
 
+The opening **Cut cell** trial enlarges the right-hand crest beside the whole-mirror profile. The detailed view shows 61–63 keV at the selected corner. Its dashed energy line crosses the rising ridge just before the crest. Choose **Wall corner** and watch the line clear the same end of the mirror. Both plots draw the same native traces on labelled linear rulers.
+
 The two instruments share the left wall. A shallow relief follows the effective potential along the full five-metre mirror. White triangles mark the highest barrier on each path. The amber segment shows the connected part of the energy line that the ion can reach. **Trace left** or **Trace right** reveals the path from the white cross to a turn or a wall in 2.5 exhibit seconds. **Pause trace** and **Step** let you inspect it. The labelled vertical ruler fits the barriers and the selected energy. **Starting ion** and **Faster ion** share a 0–35 keV ruler so their height difference can be read directly.
 
 The side label asks **“Where does the parallel motion go?”** At fixed magnetic moment $\mu$, the ridge is the effective potential $U(Z,\mu)=\mu B(Z)+q_i\phi(Z)$ (the Yushmanov potential). The height of the line is the Hamiltonian $H=\tfrac12 m_i v_\parallel^2+U$. The gap between the line and the ridge gives the parallel kinetic energy. At the turn the gap closes and $v_\parallel=0$. Select **Show μB, qᵢφ** to reveal the magnetic and electric contributions. A peak of the combined energy can occur away from the magnetic throat.

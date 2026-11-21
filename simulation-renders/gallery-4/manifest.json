@@ -44,7 +44,7 @@
     "profiles": "Flattened left and right P1 traces in increasing Z, both field traces kept at shared faces. Static physical Z and magnetic field B[T] from geometry frame 0 (0 s), q_i phi[keV] from the frame-2 DG electrostatic potential. The run-wide velocity map stores no frame or time. Modal endpoint values are c0/sqrt(2) +/- sqrt(3/2) c1.",
     "classifier": "H = m_i v_parallel^2/2 + mu B + q_i phi. Use piecewise-linear U=mu B + q_i phi. Take its maximum on each path, including its launch point, both DG traces, and the grounded conducting-sheath endpoint mu B_wall + q_i * 0 V. H >= E_wall opens that path. The first forbidden segment gives the turning Z by linear interpolation.",
     "corners": "Index = 4*z_side + 2*v_side + mu_side. Side 0 means the lower physical face, side 1 the upper. Center probes use the midpoint of each mapped cell. No population weighting.",
-    "display": "The route reveal is exhibit time within one frozen snapshot. Point energies and wall access do not represent a time-resolved orbit or particle flux."
+    "display": "The route reveal is exhibit time within one frozen snapshot. Point energies and wall access do not represent a time-resolved orbit or particle flux. The cut-cell detail plots native traces within 0.020 m of the right crest on an independent linear energy axis in keV."
   },
   "entrance": {
     "asset": "entrance.png",

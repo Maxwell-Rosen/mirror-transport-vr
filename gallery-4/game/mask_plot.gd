@@ -120,6 +120,9 @@ func _draw() -> void:
 func _paint_cells(rows: Array) -> void:
 	var v: Array = data.v_edges_m_s
 	var mu: Array = data.mu_edges_kev_t
+	# Every pixel in this domain is sampled. A solid passing background keeps
+	# subpixel cell edges from exposing the blackboard between coloured rows.
+	draw_rect(GRAPH, OPEN)
 	for im in rows.size():
 		var bits: String = rows[im]
 		var start := 0
@@ -129,8 +132,8 @@ func _paint_cells(rows: Array) -> void:
 			var a := _project(v[start], mu[im+1])
 			var b := _project(v[end], mu[im])
 			var rect := Rect2(a, b - a).intersection(GRAPH)
-			if rect.has_area():
-				draw_rect(rect, TRAPPED if bits[start] == "1" else OPEN)
+			if bits[start] == "1" and rect.has_area():
+				draw_rect(rect, TRAPPED)
 			start = end
 
 func _axes_and_selection() -> void:
@@ -162,8 +165,7 @@ func _axes_and_selection() -> void:
 	var cross := _project(sample.v_m_s, sample.mu_kev_t)
 	if GRAPH.grow(0.1).has_point(cross):
 		for arm: Vector2 in [Vector2.RIGHT, Vector2.DOWN]:
-			draw_line(cross - arm * 10, cross + arm * 10, Color.BLACK, 6)
-			draw_line(cross - arm * 10, cross + arm * 10, Board.TEXT, 3)
+			draw_line(cross - arm * 10, cross + arm * 10, Board.TEXT, 4)
 
 func _draw_faces() -> void:
 	_text(770, 169, "Inside the selected cell", 30, true)

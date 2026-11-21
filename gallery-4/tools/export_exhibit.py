@@ -428,7 +428,8 @@ def main(source, thesis, out):
             "corners": "Index = 4*z_side + 2*v_side + mu_side. Side 0 means the lower physical face, side 1 the "
             "upper. Center probes use the midpoint of each mapped cell. No population weighting.",
             "display": "The route reveal is exhibit time within one frozen snapshot. Point energies and wall "
-            "access do not represent a time-resolved orbit or particle flux.",
+            "access do not represent a time-resolved orbit or particle flux. The cut-cell detail plots native "
+            "traces within 0.020 m of the right crest on an independent linear energy axis in keV.",
         },
         "entrance": {
             "asset": "entrance.png",

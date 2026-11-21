@@ -40,6 +40,7 @@ var cell: Dictionary
 var sample: Dictionary
 var ridge_mu := -1.0
 var ridge_ceiling := -1.0
+var ridge_with_detail := false
 var loaded_cell := Vector3i(-1, -1, -1)
 
 func configure(snapshot_data: Dictionary, state: Dictionary) -> void:
@@ -247,10 +248,11 @@ func _select() -> void:
 	sample = cell.center if corner == -1 else cell.corners[corner]
 	_refresh_energy()
 	mask.update_cut(slice_index, cell, corner, zoom, well_lens, probe)
-	if ridge_mu != float(sample.mu_kev_t) or ridge_ceiling != energy.ceiling_kev:
+	if ridge_mu != float(sample.mu_kev_t) or ridge_ceiling != energy.ceiling_kev or ridge_with_detail != energy.show_crest:
 		_shape_ridge()
 		ridge_mu = sample.mu_kev_t
 		ridge_ceiling = energy.ceiling_kev
+		ridge_with_detail = energy.show_crest
 	_update_route()
 	buttons[Widget.PASSING].visible = int(cell.trapped_corners) < 8
 	buttons[Widget.PASSING].collision_layer = 2 if buttons[Widget.PASSING].visible else 0
@@ -283,7 +285,7 @@ func _refresh_energy() -> void:
 			caption = "%s path  ·  %s at Z = %+.3f m" % [side, end, sample.reach_z_m[direction]]
 		else:
 			caption = "%s path  ·  2.5 exhibit seconds per trace  ·  %s" % [side, "playing" if playing else "paused"]
-	energy.update_plot(sample, label, parts, caption, preset == Trial.START or preset == Trial.FAST)
+	energy.update_plot(sample, label, parts, caption, preset == Trial.START or preset == Trial.FAST, preset == Trial.CUT)
 	button_labels[Widget.PAUSE].text = "Pause trace" if playing else "Play trace"
 
 func _update_route() -> void:

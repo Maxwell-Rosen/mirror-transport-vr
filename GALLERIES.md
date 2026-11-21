@@ -24,9 +24,7 @@ Show the source on top of the distribution function and how it's orbit distribut
 
 ## Gallery 6
 
-Tandem mirror simulations. Show the distribution function. Show the sources. Show the geometry thorugh a sculpture with the mirror coils, similar to the one used in gallery 1.
-
-Explain and show how a tandem mirror enhances the confinement time for the ions
+**Can an end plug turn a field-aligned ion?** Trace the four throats on a coil sculpture, compare the saved ion distribution and beam source at four axial cuts, then test whether the measured plug potential reflects a central ion. Relate its path to the whole-tube inventory and wall loss rate. [Gallery 6 trial and simulation checks](gallery-6/README.md)
 
 ## Gallery 7
 
