@@ -1,0 +1,271 @@
+{
+  "run": "1x-beams",
+  "frame": 75,
+  "saved_time_s": 0.50015,
+  "files": {
+    "beta": "zzim-ion_fdot_multiplier_75.gkyl",
+    "ion_distribution": "zzim-ion_75.gkyl",
+    "axial_map": "zzim-geo_corn_mc2nu_pos_deflated.gkyl",
+    "velocity_map": "zzim-ion_mapc2p_vel.gkyl",
+    "velocity_jacobian": "zzim-ion_jacobvel.gkyl",
+    "total_jacobian": "zzim-geo_int_jacobtot.gkyl",
+    "magnetic_field": "zzim-geo_int_bmag.gkyl",
+    "density_check": "zzim-ion_M0_75.gkyl",
+    "geometry_jacobian": "zzim-geo_int_jacobgeo.gkyl",
+    "saved_rate": "zzim-ion_cflrate_75.gkyl"
+  },
+  "method": "Unit ion Courant factor. With dilation the grid step each cell permits is 1e9 / saved cflrate (ns). Without dilation it is reconstructed as beta times that value, at the same instant. The shared step in each view is the minimum over the entire grid. At this bound, a cell advances by beta times the shared step with dilation, or by the shared step without it.",
+  "axes": "+X axial Z [m], -Z parallel velocity [10^6 m/s], +Y permitted grid step [ns, logarithmic].",
+  "z_m_per_m": 0.8,
+  "depth_m_per_Mm_s": 0.084,
+  "base_ns": 0.04,
+  "m_per_decade": 0.28,
+  "domain": [
+    [
+      -2.4999999999999987,
+      2.4999999999999987
+    ],
+    [
+      -10.089777487685838,
+      10.089777487685838
+    ],
+    [
+      -9.616567379734916e-18,
+      70.99154687029005
+    ]
+  ],
+  "grid_off_ns": 0.05255648418821394,
+  "floor_ns": 0.5255648418821391,
+  "plateau_color": "#c5a5ed",
+  "terrain_color": "#59b6bc",
+  "slice_selection": "Nearest native magnetic-moment centres to five equally spaced physical targets from maximum to minimum. No averaging over mu.",
+  "surface": "Triangles join mapped Z and parallel-velocity cell centres linearly in log time. Outer samples extend to their native domain faces. Split triangles where the reconstructed surface crosses the saved floor. With dilation, only the portion below it is raised and coloured violet. Vertical skirts close the display at the outer boundary. Fine lines follow constant log height and the plateau carries a planar coordinate grid.",
+  "probes": "Throat slope and midplane retain their native Z and velocity on every slice. Slice minimum follows the shortest reconstructed step on the selected slice.",
+  "cuts": [
+    {
+      "node": "Moment1",
+      "mu_cell": 31,
+      "mu_keV_T": 67.76672638944206,
+      "mu_faces_keV_T": [
+        64.54190590859407,
+        70.99154687029005
+      ],
+      "masked_cells": 17339,
+      "cells": 25600,
+      "probes": [
+        {
+          "name": "Throat slope",
+          "z_cell": 76,
+          "z_m": -1.0475026537774768,
+          "v_cell": 34,
+          "v_parallel_Mm_s": 0.1911952727853155,
+          "before_ns": 0.05255648418821394,
+          "with_ns": 0.5255648418821393,
+          "beta": 0.1
+        },
+        {
+          "name": "Midplane",
+          "z_cell": 200,
+          "z_m": 0.014864655941957568,
+          "v_cell": 34,
+          "v_parallel_Mm_s": 0.1911952727853155,
+          "before_ns": 30.19119835234249,
+          "with_ns": 30.19119835234249,
+          "beta": 1.0
+        },
+        {
+          "name": "Slice minimum",
+          "z_cell": 76,
+          "z_m": -1.0475026537774768,
+          "v_cell": 34,
+          "v_parallel_Mm_s": 0.1911952727853155,
+          "before_ns": 0.05255648418821394,
+          "with_ns": 0.5255648418821393,
+          "beta": 0.1
+        }
+      ]
+    },
+    {
+      "node": "Moment2",
+      "mu_cell": 28,
+      "mu_keV_T": 50.19865834832933,
+      "mu_faces_keV_T": [
+        47.558790188495095,
+        52.83852650816357
+      ],
+      "masked_cells": 16722,
+      "cells": 25600,
+      "probes": [
+        {
+          "name": "Throat slope",
+          "z_cell": 76,
+          "z_m": -1.0475026537774768,
+          "v_cell": 34,
+          "v_parallel_Mm_s": 0.1911952727853155,
+          "before_ns": 0.07036214880924731,
+          "with_ns": 0.5255648418821393,
+          "beta": 0.13387910149634094
+        },
+        {
+          "name": "Midplane",
+          "z_cell": 200,
+          "z_m": 0.014864655941957568,
+          "v_cell": 34,
+          "v_parallel_Mm_s": 0.1911952727853155,
+          "before_ns": 32.85408654488429,
+          "with_ns": 32.85408654488429,
+          "beta": 1.0
+        },
+        {
+          "name": "Slice minimum",
+          "z_cell": 76,
+          "z_m": -1.0475026537774768,
+          "v_cell": 34,
+          "v_parallel_Mm_s": 0.1911952727853155,
+          "before_ns": 0.07036214880924731,
+          "with_ns": 0.5255648418821393,
+          "beta": 0.13387910149634094
+        }
+      ]
+    },
+    {
+      "node": "Moment3",
+      "mu_cell": 24,
+      "mu_keV_T": 31.900483150988336,
+      "mu_faces_keV_T": [
+        29.949558835903613,
+        33.85140746607306
+      ],
+      "masked_cells": 15766,
+      "cells": 25600,
+      "probes": [
+        {
+          "name": "Throat slope",
+          "z_cell": 76,
+          "z_m": -1.0475026537774768,
+          "v_cell": 34,
+          "v_parallel_Mm_s": 0.1911952727853155,
+          "before_ns": 0.1088761144945298,
+          "with_ns": 0.5255648418821394,
+          "beta": 0.20716019379193146
+        },
+        {
+          "name": "Midplane",
+          "z_cell": 200,
+          "z_m": 0.014864655941957568,
+          "v_cell": 34,
+          "v_parallel_Mm_s": 0.1911952727853155,
+          "before_ns": 36.184022331690194,
+          "with_ns": 36.184022331690194,
+          "beta": 1.0
+        },
+        {
+          "name": "Slice minimum",
+          "z_cell": 70,
+          "z_m": -1.0623446027728543,
+          "v_cell": 63,
+          "v_parallel_Mm_s": 9.038124554356823,
+          "before_ns": 0.07997759352723231,
+          "with_ns": 0.5255648418821393,
+          "beta": 0.1521745504147854
+        }
+      ]
+    },
+    {
+      "node": "Moment4",
+      "mu_cell": 19,
+      "mu_keV_T": 16.095938033228144,
+      "mu_faces_keV_T": [
+        14.85995544382689,
+        17.3319206226294
+      ],
+      "masked_cells": 14204,
+      "cells": 25600,
+      "probes": [
+        {
+          "name": "Throat slope",
+          "z_cell": 76,
+          "z_m": -1.0475026537774768,
+          "v_cell": 34,
+          "v_parallel_Mm_s": 0.1911952727853155,
+          "before_ns": 0.2073041885305599,
+          "with_ns": 0.5255648418821393,
+          "beta": 0.39444074643229077
+        },
+        {
+          "name": "Midplane",
+          "z_cell": 200,
+          "z_m": 0.014864655941957568,
+          "v_cell": 34,
+          "v_parallel_Mm_s": 0.1911952727853155,
+          "before_ns": 39.664196240401886,
+          "with_ns": 39.664196240401886,
+          "beta": 1.0
+        },
+        {
+          "name": "Slice minimum",
+          "z_cell": 70,
+          "z_m": -1.0623446027728543,
+          "v_cell": 63,
+          "v_parallel_Mm_s": 9.038124554356823,
+          "before_ns": 0.08150125345097727,
+          "with_ns": 0.5255648418821393,
+          "beta": 0.15507364069313898
+        }
+      ]
+    },
+    {
+      "node": "Moment5",
+      "mu_cell": 0,
+      "mu_keV_T": 0.044369716793931285,
+      "mu_faces_keV_T": [
+        -9.616567379734916e-18,
+        0.08873943358786258
+      ],
+      "masked_cells": 6324,
+      "cells": 25600,
+      "probes": [
+        {
+          "name": "Throat slope",
+          "z_cell": 76,
+          "z_m": -1.0475026537774768,
+          "v_cell": 34,
+          "v_parallel_Mm_s": 0.1911952727853155,
+          "before_ns": 3.1009944373346277,
+          "with_ns": 3.1009944373346277,
+          "beta": 1.0
+        },
+        {
+          "name": "Midplane",
+          "z_cell": 200,
+          "z_m": 0.014864655941957568,
+          "v_cell": 34,
+          "v_parallel_Mm_s": 0.1911952727853155,
+          "before_ns": 43.9541641197693,
+          "with_ns": 43.9541641197693,
+          "beta": 1.0
+        },
+        {
+          "name": "Slice minimum",
+          "z_cell": 70,
+          "z_m": -1.0623446027728543,
+          "v_cell": 63,
+          "v_parallel_Mm_s": 9.038124554356823,
+          "before_ns": 0.0831360886522661,
+          "with_ns": 0.5255648418821393,
+          "beta": 0.15818426581683295
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "native_cells_per_state": 128000,
+    "max_mesh_error_m": 6.659840728975011e-08,
+    "checks": "Round-trip float32 triangles. All displayed centre coordinates and both heights checked against independently read rates, multipliers and DG map coefficients. Checked the clamp and local advance over the complete frame. Verified the ion density integral on all 400 axial bins."
+  },
+  "asset": {
+    "file": "cfl-relief.glb",
+    "bytes": 7995492,
+    "sha256": "750f60c166f8f07472331ae507141e4e88e248c66f00f046caabb316998bdb0f"
+  }
+}

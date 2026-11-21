@@ -58,24 +58,28 @@ func build(palette: Dictionary, shapes: Dictionary, xr: bool) -> void:
 		emblem.rotation.x = PI/2
 		emblem.scale.x = 0.52
 	panel(-4.0, "W E L C O M E", "Welcome to Maxwell Rosen’s\nPhD thesis. Explore how magnetic\nmirrors confine plasma through\nsimulations.", 1.49)
+	# The advisers look down the hall from the reverse of the foyer arch.
+	photograph(preload("res://museum/photographs/ammar-hakim.webp"), "Ammar Hakim",
+		Vector3(1.14, 4.96, -0.25), PI, 1.62, 1.62)
+	photograph(preload("res://museum/photographs/greg-hammett.webp"), "Greg Hammett",
+		Vector3(-1.14, 4.96, -0.25), PI, 1.62, 1.62)
 	var controls: String
 	if xr:
 		controls = "Tilt the stick in any direction.\nAim the arc at the floor within 4 m.\nRelease to land at the circle.\n\nIndex trigger to select · Hold to drag\nA to open the pause menu"
 	else:
-		controls = "WASD or arrow keys to walk\nMouse to look and aim\nLeft-click to select · Hold to drag\n\nEsc to open the pause menu\nChoose “Reset to title” for a fresh visit."
+		controls = "WASD or arrow keys to walk\nHold Shift to sprint\nMouse to look and aim\nLeft-click to select · Hold to drag\nEsc to open the pause menu\nChoose “Reset to title” for a fresh visit."
 	panel(4.0, "QUEST · RIGHT HAND" if xr else "KEYBOARD & MOUSE", controls)
 	for z: float in [ROOM_DEPTH * 0.25, ROOM_DEPTH * 0.75]:
 		box(Vector3(0, 5.78, z), Vector3(ROOM_WIDTH, 0.18, 0.22), "stone")
 	ticket_counter()
+	photograph(preload("res://museum/photographs/maxwell-rosen.webp"), "Maxwell Rosen",
+		Vector3(-side_wall + 0.16, 2.70, mid_z), PI / 2, 1.28)
 	var bench_z := 4.08
 	bench(side_wall - 0.70, bench_z)
-	for i in 2:
-		var z := bench_z + (i - 0.5) * 1.12
-		box(Vector3(side_wall - 0.19, 1.58, z), Vector3(0.06, 0.65, 1.03), "walnut")
-		box(Vector3(side_wall - 0.23, 1.58, z), Vector3(0.03, 0.60, 0.98), "paper")
-		var study := "botanical%d" % i
-		prototypes[study] = printed_face(Rect2(272, 16 + i * 128, 224, 112))
-		piece(study, Vector3(side_wall - 0.249, 1.58, z), Vector3(0.89, 0.445, 1), "print", Vector3(0, -PI / 2, 0))
+	photograph(preload("res://museum/photographs/spring-courtyard.webp"), "Spring at Princeton",
+		Vector3(side_wall - 0.16, 1.60, bench_z - 0.48), -PI / 2, 0.80)
+	photograph(preload("res://museum/photographs/evening-tower.webp"), "Evening light",
+		Vector3(side_wall - 0.16, 1.60, bench_z + 0.72), -PI / 2, 0.80)
 	plant(side_wall - 0.71, bench_z + 1.47)
 	plant(-4.91, ROOM_DEPTH - 1.14)
 	potted_tree(Vector3(4.93, 0, 2.30))

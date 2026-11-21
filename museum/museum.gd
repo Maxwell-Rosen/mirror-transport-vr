@@ -2,15 +2,31 @@ extends "res://museum/architecture.gd"
 
 # Metres. The foyer looks down -Z. Each bay owns a full gallery outside the aisle.
 const HALL_WIDTH := 16.0
+const FIRST_GALLERY_Z := -7.5
 const BAY := 10.0
 const DEPTH := 16.0
 const OPENING := 4.0
 const SIGN_OFFSET := 3.32
+const SIGN_CENTER_Y := 1.74
+const SIGN_HEIGHT := 1.40
+const JAMB_WIDTH := 0.16
 const JAMB_DEPTH := 0.64
+# Halfway between the far jamb and the column on the shared wall.
+const PHOTO_OFFSET := (OPENING / 2 + JAMB_WIDTH + BAY / 2) / 2
 const END := -45.0
 const BAY_COUNT := 4
 const FOUNTAIN_RADIUS := 2.15
 const GALLERY_TITLES := {1: "The Magnetic\nMirror", 2: "Between\nBounces", 3: "Time\nDilation"}
+const GALLERY_PHOTOS := {
+	1: [preload("res://museum/photographs/graduate-students.webp"), "Princeton program in plasma physics graduate students"],
+	2: [preload("res://museum/photographs/poster-session.webp"), "Poster session"],
+	3: [preload("res://museum/photographs/string-players.webp"), "Sinfonia cello section"],
+	4: [preload("res://museum/photographs/around-the-table.webp"), "Around the table"],
+	5: [preload("res://museum/photographs/orchestra-rehearsal.webp"), "In rehearsal"],
+	6: [preload("res://museum/photographs/evening-with-friends.webp"), "An evening with friends"],
+	7: [preload("res://museum/photographs/campfire.webp"), "By the fire"],
+	8: [preload("res://museum/photographs/autumn-lawn.webp"), "Autumn on campus"],
+}
 var spring := preload("res://museum/spring.gd").new()
 
 func _ready() -> void:
@@ -77,21 +93,30 @@ func hall() -> void:
 			box(Vector3(s*8,3.5,z),Vector3(0.4,7,2.5),"plaster",true)
 		box(Vector3(s*5.75,7.45,END/2),Vector3(0.53,0.55,-END),"stone")
 		box(Vector3(s*3.75,0.009,END/2),Vector3(0.032,0.008,-END),"bronze")
+		plant(s * 6.86, FIRST_GALLERY_Z + BAY - SIGN_OFFSET)
 		for i in BAY_COUNT:
-			var z := -7.5 - i*BAY
-			gallery(s,z,2*i+(1 if s<0 else 2))
-			# The bench and plaque share one third of the wall between doors.
-			# The column occupies its centre and the planter the opposite third.
+			var z := FIRST_GALLERY_Z - i*BAY
+			var number := 2*i + (1 if s < 0 else 2)
+			gallery(s,z,number)
 			bench(s * 6.88, z + SIGN_OFFSET)
 			column(s * 5.75, z + BAY / 2)
-			plant(s * 6.86, z + BAY - SIGN_OFFSET)
-		column(s * 5.75, -7.5 - (BAY_COUNT - 0.5) * BAY)
+			hang_gallery_photo(s, z, number)
+		column(s * 5.75, FIRST_GALLERY_Z - (BAY_COUNT - 0.5) * BAY)
 		roof_slope(s)
 	# High recessed panel and vertical brass fins behind the fountain.
 	box(Vector3(0,3.55,END+0.24),Vector3(7,5.9,0.18),"stone")
 	for i in range(-11,12):
 		box(Vector3(i*0.27,3.55,END+0.36),Vector3(0.05,5.55,0.10),"bronze")
 	fountain()
+
+func hang_gallery_photo(side: float, entrance_z: float, number: int) -> void:
+	var wall := Vector3(side * (HALL_WIDTH / 2 - 0.20), SIGN_CENTER_Y, entrance_z - PHOTO_OFFSET)
+	var photo: Array = GALLERY_PHOTOS[number]
+	photograph(photo[0], photo[1], wall, -side * PI / 2, SIGN_HEIGHT / PHOTO_FRAME_SCALE)
+	if number == 3:
+		bench(side * 7.05, wall.z)
+	else:
+		plant(side * 6.86, entrance_z - BAY / 2 - 0.32)
 
 func roof_slope(side: float) -> void:
 	var tilt := Vector3(0,0,-side*atan(0.30))
@@ -108,10 +133,9 @@ func roof_slope(side: float) -> void:
 func gallery(s: float, z: float, number: int) -> void:
 	zone = "Gallery%d" % number
 	# Fit the plaster and baseboards around the frame so the reveals have one visible face.
-	var jamb_width := 0.16
 	var jamb_height := 3.40
 	var lintel_height := 0.18
-	var frame_width := OPENING + 2.0*jamb_width
+	var frame_width := OPENING + 2.0*JAMB_WIDTH
 	var frame_top := jamb_height + lintel_height
 	var half_wall := (BAY-frame_width)*0.5
 	for edge in [-1.0,1.0]:
@@ -119,18 +143,19 @@ func gallery(s: float, z: float, number: int) -> void:
 		box(Vector3(s*8,3.5,wall_z),Vector3(0.4,7,half_wall),"plaster",true)
 		box(Vector3(s*7.76,0.12,wall_z),Vector3(0.16,0.24,half_wall),"stone")
 		box(Vector3(s*7.71,0.26,wall_z),Vector3(0.18,0.07,half_wall),"trim")
-		var jamb_z: float = z+edge*(OPENING+jamb_width)*0.5
-		box(Vector3(s*7.94,jamb_height*0.5,jamb_z),Vector3(JAMB_DEPTH,jamb_height,jamb_width),"stone",true)
+		var jamb_z: float = z+edge*(OPENING+JAMB_WIDTH)*0.5
+		box(Vector3(s*7.94,jamb_height*0.5,jamb_z),Vector3(JAMB_DEPTH,jamb_height,JAMB_WIDTH),"stone",true)
 	box(Vector3(s*8,(7+frame_top)*0.5,z),Vector3(0.4,7-frame_top,frame_width),"plaster",true)
 	box(Vector3(s*7.93,jamb_height+lintel_height*0.5,z),Vector3(0.70,lintel_height,frame_width),"trim",true)
 	# Rooms extend outward, with the long axis available for the tandem gallery.
-	var mid := s*(HALL_WIDTH/2+DEPTH/2)
+	var depth: float = $TimeDilation.ROOM_DEPTH if number == 3 else DEPTH
+	var mid := s*(HALL_WIDTH/2+depth/2)
 	var is_open := GALLERY_TITLES.has(number)
-	box(Vector3(mid,-0.10,z),Vector3(DEPTH,0.20,BAY),"floor",is_open)
-	box(Vector3(mid,5.1,z),Vector3(DEPTH,0.20,BAY),"stone")
-	box(Vector3(s*(8+DEPTH),2.5,z),Vector3(0.2,5,BAY),"stone",is_open)
+	box(Vector3(mid,-0.10,z),Vector3(depth,0.20,BAY),"floor",is_open)
+	box(Vector3(mid,5.1,z),Vector3(depth,0.20,BAY),"stone")
+	box(Vector3(s*(8+depth),2.5,z),Vector3(0.2,5,BAY),"stone",is_open)
 	for edge in [-1.0,1.0]:
-		box(Vector3(mid,2.5,z+edge*(BAY/2-0.06)),Vector3(DEPTH,5,0.12),"stone",is_open)
+		box(Vector3(mid,2.5,z+edge*(BAY/2-0.06)),Vector3(depth,5,0.12),"stone",is_open)
 	if not is_open:
 		barrier(Vector3(s*8,2,z),Vector3(0.38,4,OPENING))
 		box(Vector3(s*7.98,1.0,z),Vector3(0.05,0.145,OPENING),"tape")
@@ -138,7 +163,7 @@ func gallery(s: float, z: float, number: int) -> void:
 			box(Vector3(s*7.945,1.0,z-1.87+i*0.22),Vector3(0.018,0.158,0.093),"black",false,Vector3(0.38,0,0))
 	var yaw := -s*PI/2
 	var sign_z := z + SIGN_OFFSET
-	box(Vector3(s*7.75,1.74,sign_z),Vector3(0.09,1.40,1.60),"board")
+	box(Vector3(s*7.75,SIGN_CENTER_Y,sign_z),Vector3(0.09,SIGN_HEIGHT,1.60),"board")
 	if is_open:
 		var title: String = GALLERY_TITLES[number]
 		lettering(str(number), Vector3(s*7.69, 1.76, sign_z - s*0.55), 0.45, yaw, true)
@@ -146,12 +171,12 @@ func gallery(s: float, z: float, number: int) -> void:
 		lettering(title, Vector3(s*7.69, 1.76, sign_z - s*0.16), 0.125, yaw, false, true)
 		if number == 1:
 			var inner_edge := 7.94 + JAMB_DEPTH / 2
-			$MagneticMirror.set_gallery(to_global(Vector3(s * inner_edge, 0, z)), OPENING, BAY - 0.24, HALL_WIDTH / 2 + DEPTH - 0.10 - inner_edge)
+			$MagneticMirror.set_gallery(to_global(Vector3(s * inner_edge, 0, z)), OPENING, BAY - 0.24, HALL_WIDTH / 2 + depth - 0.10 - inner_edge)
 		for edge in [-1.0, 1.0]:
-			box(Vector3(mid, 0.14, z + edge * (BAY / 2 - 0.16)), Vector3(DEPTH, 0.26, 0.13), "stone")
-			box(Vector3(mid, 0.29, z + edge * (BAY / 2 - 0.17)), Vector3(DEPTH, 0.05, 0.15), "trim")
-		box(Vector3(s * (8 + DEPTH - 0.16), 0.14, z), Vector3(0.13, 0.26, BAY), "stone")
-		box(Vector3(s * (8 + DEPTH - 0.17), 0.29, z), Vector3(0.15, 0.05, BAY), "trim")
+			box(Vector3(mid, 0.14, z + edge * (BAY / 2 - 0.16)), Vector3(depth, 0.26, 0.13), "stone")
+			box(Vector3(mid, 0.29, z + edge * (BAY / 2 - 0.17)), Vector3(depth, 0.05, 0.15), "trim")
+		box(Vector3(s * (8 + depth - 0.16), 0.14, z), Vector3(0.13, 0.26, BAY), "stone")
+		box(Vector3(s * (8 + depth - 0.17), 0.29, z), Vector3(0.15, 0.05, BAY), "trim")
 	else:
 		lettering("%02d" % number,Vector3(s*7.69,2.00,sign_z),0.51,yaw,true)
 		lettering("Gallery",Vector3(s*7.69,1.58,sign_z),0.123,yaw)

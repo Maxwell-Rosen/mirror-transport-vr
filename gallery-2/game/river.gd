@@ -51,14 +51,14 @@ func _ready() -> void:
 	_island()
 	var feed := point(Course.LOOP, 0.125, -0.55)
 	_tap(feed, Vector3.FORWARD * 0.12)
-	var headwater := point(Course.STRAIGHT, 0, 0)
-	_tap(headwater, Vector3.FORWARD * 0.12)
+	var tap := point(Course.STRAIGHT, model.mouth, 0)
+	_tap(tap, Vector3(-0.07, 0, -0.12))
 	for item in [[0.375,"H"], [0.875,"L"]]:
 		var p := point(0,item[0],1.45)
 		caption(item[1],p+Vector3.UP*0.052,0.095,0.055)
 	caption("Loop feed",feed+Vector3(-0.23,0.070,-0.032),0.34,0.052)
 	caption("Sluice",point(Course.SLUICE,0.45,1)+Vector3(0.16,0.050,-0.016),0.23,0.048)
-	caption("Upstream tap",headwater+Vector3(0.22,0.054,-0.13),0.40,0.047)
+	caption("Dye tap", tap + Vector3(-0.22,0.054,-0.13), 0.25, 0.047)
 	var scale_face := Plaque.new()
 	scale_face.study = Plaque.Study.DYE_SCALE
 	scale_face.loop_dye = loop_dye
@@ -67,6 +67,7 @@ func _ready() -> void:
 	plaque.study = Plaque.Study.RIVER
 	plaque.period = model.period_s
 	plaque.length_m = model.length_m
+	plaque.tap_q = model.mouth
 	plaque.loss = Manifest.data["river.png"].parameters.linear_loss_per_s
 	plaque.settled = _profile(0, image.get_height()-1)
 	plaque.straight_settled = _profile(2, image.get_height()-1)
@@ -189,7 +190,9 @@ func advance(delta: float) -> void:
 	var row: float = clock * model.fps
 	for material in water:
 		material.set_shader_parameter("frame_row", row)
-	water[Course.STRAIGHT].set_shader_parameter("parcel_q", fposmod(lengths, 1))
+	# Follow a dyed parcel from the tap to the outlet at the actual water speed.
+	var parcel_q: float = model.mouth + fposmod(lengths, 1.0 - model.mouth)
+	water[Course.STRAIGHT].set_shader_parameter("parcel_q", parcel_q)
 	if floori(row) == last_tick:
 		return
 	last_tick = floori(row)
@@ -197,7 +200,7 @@ func advance(delta: float) -> void:
 	plaque.held = clock >= model.hold_s and clock < model.release_s
 	plaque.lap = 1.0 / (model.loop_slow if plaque.held else model.loop_full)
 	plaque.speed = model.slow_m_s if plaque.held else model.speed_m_s
-	plaque.parcel_q = fposmod(lengths, 1)
+	plaque.parcel_q = parcel_q
 	plaque.concentration = _profile(0, row)
 	plaque.straight = _profile(2, row)
 	plaque.refresh()

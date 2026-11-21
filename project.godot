@@ -38,6 +38,10 @@ walk_back={
 "deadzone": 0.2,
 "events": [Object(InputEventKey,"physical_keycode":83), Object(InputEventKey,"physical_keycode":4194322)]
 }
+sprint={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"physical_keycode":4194325)]
+}
 
 [rendering]
 

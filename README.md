@@ -4,13 +4,13 @@ Walk through the museum for Maxwell Rosen’s PhD thesis on magnetic mirror equi
 
 ## Gallery layout
 
-The 16 m wide atrium has four 10 m bays on each side. Numbering runs from the foyer toward the far wall, with odd numbers on the left. The first-build rooms extend 16 m outward from their 4 m entrances, with 5 m ceilings. Gallery 2 holds the twin pendulums, dye river and bead rings. [Museum layout and sightlines](SETTING.md) · [Exhibit roadmap](PLAN.md#galleries)
+The 16 m wide atrium has four 10 m bays on each side. Numbering runs from the foyer toward the far wall, with odd numbers on the left. The first-build rooms extend 16 m outward from their 4 m entrances, with 5 m ceilings. Gallery 2 holds the twin pendulums, dye river, whirlpool and bead rings. [Museum layout and sightlines](SETTING.md) · [Exhibit roadmap](PLAN.md#galleries)
 
 | Gallery | Visitor question | Status |
 | --- | --- | --- |
 | [1 · The Magnetic Mirror](gallery-1/README.md) | Which particles turn back, and which escape through the ends? | Playable |
 | [2 · Between Bounces](gallery-2/README.md) | Can you predict how much plasma escapes without computing every bounce? | Playable |
-| [3 · Time Dilation](gallery-3/README.md) | Which lights fall behind the beat? | Playable |
+| [3 · Time Dilation](gallery-3/README.md) | Does a slower clock change the final glow? | Playable |
 
 Each gallery has a top-level folder named for its entrance number, such as `gallery-1/` or `gallery-2/`. Start a new gallery’s plan in its `README.md`. Put its Godot scenes, scripts, and resources in `game/`, design drawings in `sketches/`, and its exporters and checks in `tools/`. The Quest APK and editor ZIP automatically collect each numbered gallery’s `game/` files.
 
@@ -24,7 +24,7 @@ Open `project.godot` with Godot 4.7 and press **F5**. On the laptop, run this co
 flatpak run org.godotengine.Godot --path . --xr-mode off
 ```
 
-Choose **Enter the museum** from the title screen, or **Exit** to close the game. The desktop visitor is 1.83 m tall with a standing eye height of 1.71 m. Walk with **WASD** or the **arrow keys**, look with the mouse, and left-click to interact. Press **Esc** to pause, see the controls, and adjust or mute the audio. Choose **Resume visit** to continue, or **Reset to title** to return to the main menu.
+Choose **Enter the museum** from the title screen, or **Exit** to close the game. The desktop visitor is 1.83 m tall with a standing eye height of 1.71 m. Walk with **WASD** or the **arrow keys** and hold **Shift** to sprint. Look with the mouse and left-click to interact. Press **Esc** to pause, see the controls, and adjust or mute the audio. Choose **Resume visit** to continue, or **Reset to title** to return to the main menu.
 
 On a system with an active OpenXR runtime and Touch controllers, launch with `--xr-mode on`. Use the **right controller** for all controls. Tilt its **thumbstick** in any direction and aim the arc at the floor. Release the stick to teleport to the circle, up to **4 m** away. Pull the **index trigger** to select, hold it to drag, and press **A** to pause or resume.
 

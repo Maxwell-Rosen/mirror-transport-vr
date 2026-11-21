@@ -1,0 +1,289 @@
+{
+  "run": "1x-beams",
+  "frame": 75,
+  "saved_time_s": 0.50015,
+  "files": {
+    "beta": "zzim-ion_fdot_multiplier_75.gkyl",
+    "ion_distribution": "zzim-ion_75.gkyl",
+    "axial_map": "zzim-geo_corn_mc2nu_pos_deflated.gkyl",
+    "velocity_map": "zzim-ion_mapc2p_vel.gkyl",
+    "velocity_jacobian": "zzim-ion_jacobvel.gkyl",
+    "total_jacobian": "zzim-geo_int_jacobtot.gkyl",
+    "magnetic_field": "zzim-geo_int_bmag.gkyl",
+    "density_check": "zzim-ion_M0_75.gkyl",
+    "geometry_jacobian": "zzim-geo_int_jacobgeo.gkyl"
+  },
+  "grid_shape_Z_vparallel_mu": [
+    400,
+    64,
+    32
+  ],
+  "IonDistribution": {
+    "threshold": "relative_f >= level",
+    "colormap": "Matplotlib inferno, log10 from 1e-8 to 1",
+    "quantity": "Magnitude of the physical cell-average ion distribution [s^3/m^6], divided by its velocity-space maximum magnitude at the same Z."
+  },
+  "TimeFactor": {
+    "threshold": "beta < level",
+    "colormap": "Matplotlib Blues at 0.32 + 0.55*(beta_level-0.1)/0.9",
+    "quantity": "Local update factor beta [1], saved cellwise P0 fdot_multiplier."
+  },
+  "contours": [
+    {
+      "node": "F01_ge_1e-05",
+      "family": "IonDistribution",
+      "level": 9.999999999999999e-06,
+      "sRGB": "#8a226a",
+      "opacity": 0.05625141143798828,
+      "selected_cells": 179448,
+      "triangles": 38684
+    },
+    {
+      "node": "F02_ge_3p162e-05",
+      "family": "IonDistribution",
+      "level": 3.1622776601683795e-05,
+      "sRGB": "#a32c61",
+      "opacity": 0.05815559208393097,
+      "selected_cells": 157743,
+      "triangles": 33894
+    },
+    {
+      "node": "F03_ge_0p0001",
+      "family": "IonDistribution",
+      "level": 0.0001,
+      "sRGB": "#bc3754",
+      "opacity": 0.06203125,
+      "selected_cells": 140090,
+      "triangles": 31256
+    },
+    {
+      "node": "F04_ge_0p0003162",
+      "family": "IonDistribution",
+      "level": 0.00031622776601683794,
+      "sRGB": "#d24644",
+      "opacity": 0.06925435841083527,
+      "selected_cells": 122922,
+      "triangles": 22042
+    },
+    {
+      "node": "F05_ge_0p001",
+      "family": "IonDistribution",
+      "level": 0.001,
+      "sRGB": "#e45a31",
+      "opacity": 0.08182209014892577,
+      "selected_cells": 112702,
+      "triangles": 19974
+    },
+    {
+      "node": "F06_ge_0p003162",
+      "family": "IonDistribution",
+      "level": 0.0031622776601683794,
+      "sRGB": "#f1731d",
+      "opacity": 0.10251696884632111,
+      "selected_cells": 101844,
+      "triangles": 16678
+    },
+    {
+      "node": "F07_ge_0p01",
+      "family": "IonDistribution",
+      "level": 0.01,
+      "sRGB": "#f98e09",
+      "opacity": 0.13509033203125,
+      "selected_cells": 89898,
+      "triangles": 13616
+    },
+    {
+      "node": "F08_ge_0p03162",
+      "family": "IonDistribution",
+      "level": 0.03162277660168379,
+      "sRGB": "#fcac11",
+      "opacity": 0.1844651061296463,
+      "selected_cells": 76068,
+      "triangles": 11226
+    },
+    {
+      "node": "F09_ge_0p1",
+      "family": "IonDistribution",
+      "level": 0.1,
+      "sRGB": "#f9cb35",
+      "opacity": 0.25695789337158204,
+      "selected_cells": 59488,
+      "triangles": 8858
+    },
+    {
+      "node": "F10_ge_0p3162",
+      "family": "IonDistribution",
+      "level": 0.31622776601683794,
+      "sRGB": "#f2ea69",
+      "opacity": 0.3605203706026077,
+      "selected_cells": 37142,
+      "triangles": 6282
+    },
+    {
+      "node": "B01_lt_0p15",
+      "family": "TimeFactor",
+      "level": 0.15,
+      "sRGB": "#a6cee4",
+      "opacity": 0.23555555555555552,
+      "selected_cells": 11840,
+      "triangles": 3270
+    },
+    {
+      "node": "B02_lt_0p2",
+      "family": "TimeFactor",
+      "level": 0.2,
+      "sRGB": "#9cc9e1",
+      "opacity": 0.2172222222222222,
+      "selected_cells": 44659,
+      "triangles": 7948
+    },
+    {
+      "node": "B03_lt_0p3",
+      "family": "TimeFactor",
+      "level": 0.3,
+      "sRGB": "#82bbdb",
+      "opacity": 0.18388888888888885,
+      "selected_cells": 118130,
+      "triangles": 14460
+    },
+    {
+      "node": "B04_lt_0p4",
+      "family": "TimeFactor",
+      "level": 0.4,
+      "sRGB": "#6aaed6",
+      "opacity": 0.15499999999999997,
+      "selected_cells": 179390,
+      "triangles": 14934
+    },
+    {
+      "node": "B05_lt_0p5",
+      "family": "TimeFactor",
+      "level": 0.5,
+      "sRGB": "#56a0ce",
+      "opacity": 0.13055555555555556,
+      "selected_cells": 227526,
+      "triangles": 14664
+    },
+    {
+      "node": "B06_lt_0p6",
+      "family": "TimeFactor",
+      "level": 0.6,
+      "sRGB": "#4191c6",
+      "opacity": 0.11055555555555555,
+      "selected_cells": 265721,
+      "triangles": 16220
+    },
+    {
+      "node": "B07_lt_0p7",
+      "family": "TimeFactor",
+      "level": 0.7,
+      "sRGB": "#3282be",
+      "opacity": 0.095,
+      "selected_cells": 296872,
+      "triangles": 17072
+    },
+    {
+      "node": "B08_lt_0p8",
+      "family": "TimeFactor",
+      "level": 0.8,
+      "sRGB": "#2171b5",
+      "opacity": 0.08388888888888887,
+      "selected_cells": 323581,
+      "triangles": 17580
+    },
+    {
+      "node": "B09_lt_0p9",
+      "family": "TimeFactor",
+      "level": 0.9,
+      "sRGB": "#1561a9",
+      "opacity": 0.07722222222222222,
+      "selected_cells": 346390,
+      "triangles": 17752
+    },
+    {
+      "node": "B10_lt_1",
+      "family": "TimeFactor",
+      "level": 1.0,
+      "sRGB": "#09529d",
+      "opacity": 0.075,
+      "selected_cells": 366226,
+      "triangles": 17958
+    }
+  ],
+  "distribution": "Divide the constant DG mode by sqrt(8), the velocity Jacobian and the cell-average total configuration Jacobian.",
+  "absolute_ion_content": "Sum of absolute signed phase-cell integrals. Each integral uses the mapped phase-space volume including 2*pi/m_i.",
+  "coordinates": "Evaluate both faces of the saved p=1 axial and separable velocity maps. Use Z [m], v_parallel [10^6 m/s] and mu [keV/T].",
+  "godot_axes": {
+    "+X": "Z [m]",
+    "-Z": "v_parallel [10^6 m/s]",
+    "+Y": "mu [keV/T]"
+  },
+  "exhibit_metres_per_axis_unit_Z_vparallel_mu": [
+    0.6,
+    0.07,
+    0.018
+  ],
+  "domain_min_xyz_m": [
+    -1.4999999999999991,
+    -1.7309821283522847e-19,
+    -0.7062844241380087
+  ],
+  "domain_max_xyz_m": [
+    1.4999999999999991,
+    1.2778478436652208,
+    0.7062844241380087
+  ],
+  "surface": "Exterior faces of the thresholded native cell unions, capped at sampled domain boundaries. Adjacent coplanar faces are merged. No subsampling or interpolation.",
+  "statistics_reference": "Slowed cells have beta < 1. Core cells have relative_f >= 0.1.",
+  "statistics": {
+    "total_cells": 819200,
+    "slowed_cells": 366226,
+    "core_cells": 59488,
+    "overlap_cells": 0,
+    "slowed_cell_fraction": 0.44705322265625,
+    "slowed_absolute_ion_fraction": 5.5542820713242834e-05,
+    "max_relative_f_in_slowed_cells": 0.06521901698992845,
+    "max_local_slowed_absolute_ion_fraction": 0.05864610907200413,
+    "max_local_z_cell": 144,
+    "max_local_z_m": -0.8660064344276399
+  },
+  "wall_print": {
+    "file": "time-dilation.png",
+    "sha256": "f8584ec40b2b2a6912a601403f89fd0de10f61ca73b4f934cf16890579f176e9",
+    "key_bounds_xywh_from_bottom_left": [
+      [
+        0.215,
+        0.745,
+        0.36,
+        0.015
+      ],
+      [
+        0.215,
+        0.684,
+        0.36,
+        0.015
+      ]
+    ],
+    "slice_z_m": -0.8660064344276399,
+    "velocity_slice_limits_1e6_m_s": [
+      -2.5,
+      2.5
+    ],
+    "mu_slice_limits_keV_T": [
+      0,
+      12
+    ],
+    "distribution_colour_floor_relative": 1e-08
+  },
+  "verification": {
+    "density": "Signed velocity integral against the saved M0 times geometry Jacobian in every axial cell.",
+    "max_density_relative_error": 3.7867128762471976e-15,
+    "mesh": "Reload GLB. Check every triangle corner against mapped face positions within 1e-7 exhibit m and each enclosed volume against the sum of selected cell volumes to 1e-6 relative."
+  },
+  "asset": {
+    "file": "time-dilation.glb",
+    "bytes": 6797516,
+    "sha256": "6ab64f6e5516fc0daaa54199b7351893cd75a59e2d2895630cb19e1ab6084a4d",
+    "triangles": 344368
+  }
+}

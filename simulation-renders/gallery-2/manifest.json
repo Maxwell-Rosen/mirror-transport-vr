@@ -5,8 +5,8 @@
   "river.png": {
     "run": "Periodic dye-river teaching model, in exhibit seconds",
     "source": "gallery-2/tools/river_model.py",
-    "diagnostic": "Dimensionless dye concentration. Three side-by-side profiles: loop f/f* in turns, receiving stream f/f* in channel lengths, independent straight river C/C* from its upstream tap to its outlet.",
-    "axes": "Each strip includes both endpoints. Frames run from 0 through period_s inclusive at fps. One extra row gives constant slow-speed equilibria for the loop and independent river.",
+    "diagnostic": "Dimensionless dye concentration along the loop (f/f*), the sluice-fed stream (f/f*) and the independent straight river (C/C*).",
+    "axes": "Each strip spans q = 0 to 1 inclusive. q measures turns on the loop and fractional channel length on each river. In the straight river, x = (q - mouth) * length_m in metres. Water is clean upstream of x = 0. Frames run from 0 through period_s inclusive at fps. One extra row gives constant slow-speed equilibria for the loop and independent river.",
     "transform": "Periodic 256-point Fourier advection-dispersion with local source/drain Strang splitting at 0.0125 s. Drain-weighted sluice mixing and delayed downstream advection in passing time. Exact characteristics and periodic inlet pool for the straight river. Linear resampling; lossless RGB bytes, F = pack_max (256 R + G)/65535, no gamma conversion or mipmaps.",
     "playback": {
       "period_s": 28,
@@ -43,5 +43,33 @@
     "transform": "Continuous circular motion, 0.65 exhibit seconds of smooth radial interpolation per scattering event, then a rigid tilt of the whole tabletop. During the held phase a trapped loss ends at the separatrix halfway to the blue path. Passing positions and transfers use the same frozen clock.",
     "rates": "Per model second: inner supply 2.32 beads, each neighbouring trapped hop 0.208, outer-to-blue 0.64 on its semicircle, blue–orange exchange 1.40 on their semicircles. Full and slowed laps last 5 and 15 exhibit seconds. The passing phase advances at 0.72 radians per active exhibit second on the bend and 0.72 tabletop metres per active exhibit second on the straight.",
     "interpretation": "Stochastic illustration of the phase split in the thesis chapter The Pseudo Orbit-Averaging Algorithm and the topology in Combined Model §3.5.1. Counts describe the bead model."
+  },
+  "whirlpool.png": {
+    "run": "Periodic annular whirlpool teaching model, in exhibit seconds",
+    "source": "gallery-2/tools/whirlpool_model.py",
+    "diagnostic": "Dye concentration C/C* on closed orbits and in the open collector and exhaust.",
+    "axes": "Two equal strips. First: radius r/R from inner_radius to 1, constant around each turn. Second: normalized active travel time q from 0 to 1. Row i is i/fps exhibit seconds, including both endpoints.",
+    "transform": "Logarithmic mean plus finite-volume harmonic solution of cylindrical diffusion with uniform inner Dirichlet feed and outer Robin loss. Integrate rim inflow along open characteristics in active time. At the zero-width tongue use the mean over the first half cell. Lossless bytes C/C* = (256 R + G)/65535, linear spatial interpolation, native 20 Hz frames, no gamma conversion or mipmaps.",
+    "geometry": "Idealized tabletop annulus of radius R = 0.58 m with a central bore and a 32 degree tilt. Each radius maps to one closed disk contour. The spiral collector covers 0 <= q <= pickup in one turn. The exhaust tapers to a nozzle at q=0.95 and its free jet reaches the drain at q=1. Neutral reflections indicate motion. Hue uses gallery-2/game/whirlpool_dye.tres.",
+    "comparison_board": "gallery-2/tools/print_blackboards.py plots the river loop and whirlpool orbit at r/R = 0.60 from both atlases at release (frame 240, 12 exhibit s). Each trace is divided by its own azimuthal mean, omitting the repeated endpoint.",
+    "interpretation": "Teaching analogy for the distributed-source, distributed orbit/transit-coupling case in the thesis chapter on POA toy models. The radial dye field and exhibit clocks belong to the whirlpool model.",
+    "playback": {
+      "period_s": 28,
+      "hold_s": 4,
+      "release_s": 12,
+      "fps": 20,
+      "points": 129,
+      "loop_full": 0.5,
+      "loop_slow": 0.05,
+      "pickup": 0.625,
+      "transit_s": 5.0
+    },
+    "parameters": {
+      "inner_radius": 0.2,
+      "diffusivity_R2_s": 0.085,
+      "rim_leak_R_s": 0.055,
+      "feed_mean": 0.73,
+      "feed_amplitude": 0.26
+    }
   }
 }

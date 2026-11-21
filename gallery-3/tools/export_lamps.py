@@ -1,94 +1,57 @@
-"""Export the two phase-space cuts used by the time dilation mobile."""
+"""Export the cell-integrated ion content and clocks for the wave rings."""
 
 import argparse
 import json
-from pathlib import Path
 
 import numpy as np
 import postgkyl as pg
 from scipy.constants import elementary_charge
 
+if __package__:
+    from .ion_frame import FILES, FRAME, ROOT, RUN, load_frame
+else:
+    from ion_frame import FILES, FRAME, ROOT, RUN, load_frame
 
-ROOT = Path(__file__).resolve().parents[2]
-RUN = ROOT / "gkeyll-data/1x-beams"
 OUTPUT = ROOT / "simulation-renders/gallery-3/manifest.json"
-FRAME = 75
 # The same outward-going velocity cells at both locations, from the beam to its tail.
 VELOCITIES = [41, 42, 44, 45, 46, 47, 48, 52, 57, 63]
-FILES = {
-    "beta": f"zzim-ion_fdot_multiplier_{FRAME}.gkyl",
-    "ion_distribution": f"zzim-ion_{FRAME}.gkyl",
-    "axial_map": "zzim-geo_corn_mc2nu_pos_deflated.gkyl",
-    "velocity_map": "zzim-ion_mapc2p_vel.gkyl",
-    "velocity_jacobian": "zzim-ion_jacobvel.gkyl",
-    "total_jacobian": "zzim-geo_int_jacobtot.gkyl",
-    "magnetic_field": "zzim-geo_int_bmag.gkyl",
-    "density_check": f"zzim-ion_M0_{FRAME}.gkyl",
-    "geometry_jacobian": "zzim-geo_int_jacobgeo.gkyl",
-}
-
-
-def mapped_centres(coefficients):
-    """Check adjoining physical faces of the piecewise-linear coordinate map."""
-    middle = coefficients[:, 0] / np.sqrt(2)
-    offset = coefficients[:, 1] * np.sqrt(1.5)
-    left, right = middle - offset, middle + offset
-    np.testing.assert_allclose(right[:-1], left[1:], rtol=1e-9, atol=1e-13 * np.max(abs(middle)))
-    assert np.all(right > left)
-    return (left + right) / 2
 
 
 def source():
-    raw = {key: pg.GData(str(RUN / name)) for key, name in FILES.items()}
-    beta = raw["beta"].get_values()[..., 0]
-    distribution = raw["ion_distribution"]
-    coeff = distribution.get_values()
-    z = mapped_centres(raw["axial_map"].get_values())
-    vm = raw["velocity_map"].get_values()
-    v = mapped_centres(vm[:, 0, :2])
-    mu = mapped_centres(vm[0, :, 2:]) / (1e3 * elementary_charge)
-    jac_vel = raw["velocity_jacobian"].get_values()[..., 0]
-    jac_tot = raw["total_jacobian"].get_values()[:, 0] / np.sqrt(2)
-    bmag = raw["magnetic_field"].get_values()[:, 0] / np.sqrt(2)
-    assert distribution.ctx["basis_type"] == "gkhybrid" and coeff.shape == (*beta.shape, 12)
-    assert raw["beta"].ctx["poly_order"] == 0 and np.all((beta > 0) & (beta <= 1))
-    assert np.all(jac_vel > 0) and np.all(jac_tot > 0)
-    for key in ("beta", "density_check"):
-        assert raw[key].ctx["frame"] == distribution.ctx["frame"] == FRAME
-        assert raw[key].ctx["time"] == distribution.ctx["time"]
-    for a, b in zip(raw["beta"].get_grid(), distribution.get_grid()):
-        np.testing.assert_array_equal(a, b)
+    frame = load_frame()
+    # Integrate the saved constant DG mode directly on the computational grid
+    # as an independent check of the mapped cell counts used for brightness.
+    raw = pg.GData(str(RUN / FILES["ion_distribution"]))
+    constant_mode = raw.get_values()[..., 0]
+    dz, dv, dm = map(np.diff, raw.get_grid())
+    velocity_measure = 2 * np.pi / raw.ctx["mass"]
+    z, v, mu = ((left + right) / 2 for left, right in frame.faces)
+    mu = mu / (1e3 * elementary_charge)
     positive = np.flatnonzero(z > 0)
-    locations = [("Right throat", positive[np.argmax(bmag[positive])]), ("Near midplane", positive[0])]
-    dz, dv, dm = map(np.diff, distribution.get_grid())
-    gyro_measure = 2 * np.pi / distribution.ctx["mass"]
-    m0 = raw["density_check"].get_values()
-    jac_geo = raw["geometry_jacobian"].get_values()
+    locations = [("Right throat", positive[np.argmax(frame.bmag[positive])]), ("Near midplane", positive[0])]
     slices = []
     for label, iz in locations:
-        # The saved distribution carries the position and velocity Jacobians.
-        f = coeff[iz, :, :, 0] / (np.sqrt(8) * jac_vel[iz] * jac_tot[iz])
-        phase_volume = dz[iz] * dv[:, None] * dm[None, :] * gyro_measure * jac_vel[iz] * jac_tot[iz]
-        density_count = dz[iz] * np.dot(m0[iz], jac_geo[iz]) / 2
-        np.testing.assert_allclose(np.sum(f * phase_volume), density_count, rtol=1e-9)
-        magnitude = abs(f[VELOCITIES, 0])
+        content = abs(frame.count[iz, VELOCITIES, 0])
+        direct = abs(constant_mode[iz, VELOCITIES, 0]) * dz[iz] * dv[VELOCITIES] * dm[0] * velocity_measure / np.sqrt(8)
+        np.testing.assert_allclose(content, direct, rtol=1e-12, atol=0)
         lamps = [
-            {"v_cell": j, "v_parallel_m_s": float(v[j]), "relative_f": float(q),
-             "beta": float(beta[iz, j, 0])}
-            for j, q in zip(VELOCITIES, magnitude / magnitude.max())
+            {"v_cell": j, "v_parallel_m_s": float(v[j]), "relative_content": float(q),
+             "beta": float(frame.beta[iz, j, 0])}
+            for j, q in zip(VELOCITIES, content / content.max(), strict=True)
         ]
         slices.append({"name": label, "z_cell": int(iz), "z_m": float(z[iz]), "lamps": lamps})
     return {
-        "run": "1x-beams", "frame": FRAME, "saved_time_s": distribution.ctx["time"], "files": FILES,
+        "run": "1x-beams", "frame": FRAME, "saved_time_s": frame.time, "files": FILES,
         "mu_cell": 0, "mu_keV_T": float(mu[0]), "reference_period_s": 3.6,
-        "brightness_decades": 24, "brightness_floor": 0.15,
+        "brightness_decades": 24, "brightness_floor": 0.22, "settle_laps": 4,
         "method": {
             "selection": "Positive-Z cell nearest the midplane and cell of maximum positive-Z cell-centre B. Ten positive parallel velocities in the lowest magnetic moment bin. Indices are zero-based.",
-            "coordinates": "Cell centres from physical faces of the saved 1D p=1 axial map and separable ion velocity maps. Magnetic moment in keV/T. The equally spaced clock rings order the selected velocities and do not represent distances.",
-            "beta": "Direct cellwise P0 fdot_multiplier value, dimensionless. One turn and one smooth pulse per reference_period_s / beta exhibit seconds. Reference mode uses 1 at every lamp.",
-            "relative_f": "Absolute physical cell-average ion distribution, divided by the largest of the ten sampled values in each slice. Physical average = distribution constant mode / (sqrt(8) * velocity Jacobian * cell-average total configuration Jacobian).",
-            "brightness": "Peak filament drive = floor + (1-floor) * clamp(1 + log10(relative_f) / brightness_decades, 0, 1). The pulse envelope modulates this between 28% and 100%.",
-            "check": "Integrating the signed reconstructed distribution over all velocities recovers the saved M0 density integral in each displayed axial cell, including the configuration Jacobian, to relative tolerance 1e-9.",
+            "coordinates": "Cell centres from physical faces of the saved 1D p=1 axial map and separable ion velocity maps. Magnetic moment in keV/T. Ring radius orders the velocity samples. Angle locates a fixed lamp on the sculpture.",
+            "beta": "Direct cellwise P0 fdot_multiplier, dimensionless. Local laps q = beta * exhibit seconds / reference_period_s. With dilation off, beta = 1 in every cell.",
+            "relative_content": "Magnitude of the signed ion number integrated over the entire mapped phase-space cell, normalized to the largest of the ten magnitudes on this cut (dimensionless). Includes configuration and velocity Jacobians, native cell widths and 2*pi/ion mass.",
+            "brightness": "Peak drive P = floor + (1-floor) * clamp(1 + log10(relative_content) / brightness_decades, 0, 1). The steady drive is P/2. The ten reference lamps always show this profile.",
+            "wave": "Illustrative disturbance about the saved profile, on an exhibit clock. Drive at clockwise angle theta from the left notch is (P/2) * (1 + A*cos(theta - 2*pi*q)^3). A = 1 - smoothstep(0, settle_laps, q). Both travel and damping advance on the same local clock. The angular mean is P/2 throughout. Frame 75 supplies the target profile and factors only.",
+            "check": "Compare each selected cell count with the direct integral of its raw DG constant mode (relative tolerance 1e-12). Integrating the full signed velocity distribution recovers the saved M0 density integral including the configuration Jacobian at every axial cell (relative tolerance 1e-9).",
         },
         "slices": slices,
     }

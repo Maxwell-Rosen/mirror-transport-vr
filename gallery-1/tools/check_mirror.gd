@@ -37,7 +37,7 @@ func _run() -> void:
 	if "--pictures" in OS.get_cmdline_user_args():
 		await _desktop_pictures()
 	if errors == 0:
-		print("PASS title, pause, fresh visit, entrance mat and ticket counter, signed loss barriers, saved geometry, live sliders, reset, expander transits, gallery entrances, keyboard walking and exhibit interaction.")
+		print("PASS title, pause, fresh visit, entrance mat and ticket counter, signed loss barriers, saved geometry, live sliders, reset, expander transits, gallery entrances, keyboard walking and sprinting, and exhibit interaction.")
 	for type: String in ["AudioStreamPlayer", "AudioStreamPlayer3D"]:
 		for player in current_scene.find_children("*", type, true, false):
 			player.stop()
@@ -356,13 +356,14 @@ func _foyer_checks() -> void:
 
 func _walking_checks() -> void:
 	visitor.face_atrium(Vector3(0, 0.01, -7))
+	var rendered := DisplayServer.get_name() != "headless"
 	var bindings := {KEY_W: Vector2.UP, KEY_UP: Vector2.UP, KEY_S: Vector2.DOWN, KEY_DOWN: Vector2.DOWN,
 		KEY_A: Vector2.LEFT, KEY_LEFT: Vector2.LEFT, KEY_D: Vector2.RIGHT, KEY_RIGHT: Vector2.RIGHT}
 	for code: Key in bindings:
 		_walk_key(code, true)
 		var direction := Input.get_vector(&"walk_left", &"walk_right", &"walk_forward", &"walk_back")
 		check(direction == bindings[code], "%s walks in the expected direction" % OS.get_keycode_string(code))
-		if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
+		if rendered:
 			visitor._physics_process(1.0 / 60)
 			check(Vector2(visitor.velocity.x, visitor.velocity.z).is_equal_approx(direction * 2.4), "Walking moves the visitor")
 		_walk_key(code, false)
@@ -370,6 +371,14 @@ func _walking_checks() -> void:
 	_walk_key(KEY_RIGHT, true)
 	var diagonal := Input.get_vector(&"walk_left", &"walk_right", &"walk_forward", &"walk_back")
 	check(diagonal.is_equal_approx(Vector2(1, -1).normalized()), "WASD and arrow keys can be mixed at normal walking speed")
+	for sprinting: bool in [true, false]:
+		_walk_key(KEY_SHIFT, sprinting)
+		check(Input.is_action_pressed(&"sprint") == sprinting, "Sprint follows the Shift key")
+		if rendered:
+			visitor._physics_process(1.0 / 60)
+			var speed := 4.8 if sprinting else 2.4
+			check(Vector2(visitor.velocity.x, visitor.velocity.z).is_equal_approx(diagonal * speed),
+				"Pressing and releasing Shift changes speed while both movement keys stay held")
 	_walk_key(KEY_W, false)
 	_walk_key(KEY_RIGHT, false)
 	var before := visitor.position

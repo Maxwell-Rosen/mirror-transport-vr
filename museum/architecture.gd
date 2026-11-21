@@ -3,6 +3,10 @@ extends Node3D
 const SERIF := preload("res://museum/fonts/DejaVuSerif.ttf")
 const SANS := preload("res://museum/fonts/DejaVuSans.ttf")
 const Board := preload("res://museum/board_style.gd")
+# Mat and rail widths are fractions of the uncropped print's height.
+const PHOTO_MAT_MARGIN := 0.085
+const PHOTO_RAIL_WIDTH := 0.030
+const PHOTO_FRAME_SCALE := 1.0 + 2.0 * (PHOTO_MAT_MARGIN + PHOTO_RAIL_WIDTH)
 # Baked from seamless smooth simplex noise (frequency 0.055, #ece9e4 to white)
 # so the stone is ready on the first frame after a scene reload.
 const STONE_GRAIN := preload("res://museum/stone_grain.png")
@@ -100,6 +104,50 @@ func lettering(words: String, at: Vector3, height: float, yaw := 0.0, display :=
 	label.position = at
 	label.rotation.y = yaw
 	return label
+
+# The mount starts at the wall surface. Local +Z faces the viewer.
+func photograph(texture: Texture2D, caption: String, wall: Vector3, yaw: float, height: float, min_mat_width := 0.0) -> void:
+	if not finishes.has("photo_mat"):
+		finish("photo_mat", "e9e3d4", 0.0, 1.0)
+		finish("picture_frame", "594132", 0.0, 0.68)
+	var mount := Transform3D(Basis(Vector3.UP, yaw), wall)
+	var rotation_y := Vector3(0, yaw, 0)
+	var print_size := texture.get_size() * (height / texture.get_height())
+	var mat_size := Vector2(maxf(print_size.x, min_mat_width), height) + Vector2.ONE * 2.0 * height * PHOTO_MAT_MARGIN
+	var rail := height * PHOTO_RAIL_WIDTH
+	var outer_height := mat_size.y + 2.0 * rail
+	box(mount * Vector3(0, 0, 0.015), Vector3(mat_size.x, mat_size.y, 0.030), "photo_mat", false, rotation_y)
+	for side: float in [-1.0, 1.0]:
+		box(mount * Vector3(side * (mat_size.x + rail) / 2, 0, 0.026),
+			Vector3(rail, outer_height, 0.052), "picture_frame", false, rotation_y)
+		box(mount * Vector3(0, side * (mat_size.y + rail) / 2, 0.026),
+			Vector3(mat_size.x, rail, 0.052), "picture_frame", false, rotation_y)
+
+	var paper := StandardMaterial3D.new()
+	paper.albedo_texture = texture
+	paper.roughness = 1.0
+	paper.metallic_specular = 0.0
+	paper.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC
+	var face := QuadMesh.new()
+	face.size = print_size
+	face.material = paper
+	var print_face := MeshInstance3D.new()
+	print_face.name = texture.resource_path.get_file().get_basename()
+	print_face.mesh = face
+	print_face.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	add_child(print_face)
+	print_face.transform = mount.translated_local(Vector3.BACK * 0.036)
+
+	var type_height := height * 0.099
+	var label := lettering(caption, wall, type_height, yaw, true)
+	label.width = (mat_size.x + 2.0 * rail - type_height) / label.pixel_size
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	var text_size := label.font.get_multiline_string_size(caption, HORIZONTAL_ALIGNMENT_CENTER, label.width, label.font_size) * label.pixel_size
+	var plate_size := text_size + Vector2(type_height, 0.36 * type_height)
+	var plate_y := -outer_height / 2 - 0.42 * type_height - plate_size.y / 2
+	label.position = mount * Vector3(0, plate_y, 0.025)
+	box(mount * Vector3(0, plate_y, 0.010), Vector3(plate_size.x, plate_size.y, 0.020),
+		"board", false, rotation_y)
 
 func pavement(width: int, start: int, length_m: int) -> void:
 	box(Vector3(0,-0.12,start + length_m * 0.5), Vector3(width,0.24,length_m),"joint",true)

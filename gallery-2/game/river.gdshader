@@ -40,6 +40,9 @@ void fragment() {
 		// The mouth spans the same receiving-bank coordinates as the sluice mesh.
 		float bank_q = mouth + (2.0 * UV.y - 1.0) * mouth_half_width;
 		f = mix(concentration(1, mouth), concentration(1, bank_q), smoothstep(0.65, 1.0, UV.x));
+	} else if (channel == 3 && UV.x < mouth) {
+		// Keep the tap's sharp dye front from filtering into the clean water.
+		f = 0.0;
 	} else {
 		f = concentration(channel == 3 ? 2 : channel, UV.x);
 	}
@@ -51,7 +54,7 @@ void fragment() {
 	if (channel == 3) {
 		vec2 offset = (UV - vec2(parcel_q, 0.5)) * vec2(100.0, 5.0);
 		float ring = 1.0 - smoothstep(0.12, 0.28, abs(length(offset) - 0.76));
-		float visible = smoothstep(0.0, 0.02, min(parcel_q, 1.0-parcel_q));
+		float visible = smoothstep(0.0, 0.02, min(parcel_q-mouth, 1.0-parcel_q));
 		ALBEDO = mix(ALBEDO, vec3(1.0), ring * visible);
 	}
 }

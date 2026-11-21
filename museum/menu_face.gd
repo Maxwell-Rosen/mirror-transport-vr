@@ -15,6 +15,7 @@ const AUDIO_SETTINGS := "user://audio.cfg"
 const CONTROLS := [
 	["Look and aim", "Move mouse", "Turn head and point controller"],
 	["Walk", "WASD or arrow keys", "Physical steps"],
+	["Sprint", "Hold Shift while moving", "—"],
 	["Aim teleport", "—", "Tilt stick any way and aim the arc"],
 	["Land at circle (up to 4 m)", "—", "Release stick"],
 	["Select button or particle", "Left click", "Pull index trigger"],
@@ -161,7 +162,7 @@ func _draw() -> void:
 		draw_line(Vector2(36, 170), Vector2(896, 170), Board.RULE, 1.5)
 		for row in CONTROLS.size():
 			for column in 3:
-				_words(Vector2(columns[column], 198 + row * 38), CONTROLS[row][column], 18)
+				_words(Vector2(columns[column], 198 + row * 33), CONTROLS[row][column], 18)
 		draw_line(Vector2(36, 485), Vector2(896, 485), Board.RULE, 1)
 		_words(Vector2(36, 529), "Volume", 23)
 		draw_string(SANS, Vector2(540, 529), "%d%%" % roundi(volume.value), HORIZONTAL_ALIGNMENT_RIGHT, 76, 23, Board.TEXT)

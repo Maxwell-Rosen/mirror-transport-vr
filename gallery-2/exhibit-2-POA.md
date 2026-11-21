@@ -4,17 +4,35 @@
 
 ## The walk from the atrium
 
-Keep the original **16 m deep × 10 m wide** room, 4 m doorway and 5 m ceiling. Viewed from the atrium, the three freestanding sculptures run along the visitor’s **right**. The bead stand carries its phase controls on the right side of the inclined display. Visitors can walk around all three sculptures.
+Keep the original **16 m deep × 10 m wide** room, 4 m doorway and 5 m ceiling. Viewed from the atrium, the four freestanding sculptures run along the visitor’s **right**. The bead stand carries its phase controls on the right side of the inclined display.
 
-![Scale plan of the gallery with three objects on the right and a four-metre ruler.](sketches/room.svg)
+![Scale plan of the gallery with the river and whirlpool side by side and a four-metre ruler.](sketches/room.svg)
 
 | Centre from doorway | Station | Length along aisle × width × height, including its sign |
 | --- | --- | --- |
 | 2.2 m | Twin pendulums | 2.60 × 1.20 × 2.40 m |
-| 6.0 m | Dye river | 3.20 × 1.65 × 1.93 m |
-| 10.4 m | Bead rings and two open paths | 3.95 × 2.20 × 2.24 m |
+| 5.8 m | Dye river | 3.20 × 1.65 × 1.93 m |
+| 9.4 m | Dye whirlpool | 2.70 × 1.84 × 2.22 m |
+| 13.35 m | Bead rings and two open paths | 3.95 × 2.20 × 2.24 m |
 
 Place the centres 2.7 m off the right wall. Even the widest base leaves 1.6 m behind it. Keep a continuous 3 m viewing aisle and floor landings within the 4 m teleport range. The bead tracks rise from 0.80 to 1.80 m on a 28° slope facing the aisle. Face each question toward the arriving visitor, with white lettering on matte black. [Gallery layout](../SETTING.md) · [Reach and controls](../CONTROLS.md)
+
+## The blackboards
+
+Each board hangs directly across from its sculpture on the left wall, centred 1.57 m above the floor. At the pendulums, one bounce of period $T_b$ samples a local source $S$ with the time-weighted average $\langle S\rangle_b=T_b^{-1}\oint S\,dt$. When many bounces fit within a collision time $\tau_c$, their precise timing matters little to the slow evolution of the trapped population.
+
+The dye river illustrates the long, orbit-averaged phase. For the ion distribution $f$, the algorithm advances
+
+$$
+\frac{\partial f}{\partial t}
+= H_{\rm orbit}\left[\alpha\{\mathcal H,f\}+C(f)+S\right].
+$$
+
+On a closed orbit the mask $H_{\rm orbit}=1$. The factor $0<\alpha<1$ scales Hamiltonian motion along the orbit. Collisions $C(f)$ and the source keep their physical rates. A slowed bounce can still sample the orbit when $T_b/\alpha\ll\tau_c$. This relaxes the time-step limit from orbital motion and lets larger steps follow collisional evolution. On a passing path $H_{\rm orbit}=0$, so its distribution holds at the last full-speed value.
+
+The whirlpool board compares the concentration around one lap of each water sculpture at the instant of release, divided by that lap’s mean. The river has a peak downstream of its localized dye tap. The whirlpool trace stays level at one.
+
+At the bead rings, the short full-dynamics phase restores $\partial_t f=\{\mathcal H,f\}+C(f)+S$ throughout phase space. Small steps resolve a few transit times, so ions on open paths can scatter and reach the walls before the next orbit-averaged phase. [Thesis derivation](<../../PhD-thesis-latex/Chapter POA Toy Models/tex-files/algorithm.tex>) · [Rosen, Francisquez and Hammett](https://arxiv.org/abs/2604.00121)
 
 ## Twin pendulums · Which pendulum settles first?
 
@@ -36,9 +54,15 @@ At 4 s the loop switches from 2 to 20 s per lap and the sluice and receiving str
 
 > Now follow the white ring in the straight river nearest you. How far does a parcel carry its dye when it moves at half speed?
 
-This separate 3 m river has its own upstream dye tap. Halving the current doubles the settled inlet concentration, halves the downstream decay length and makes the concentration gradient at the tap four times steeper. The white ring on the right graph travels with the ring on the water. On both graphs the solid curve shows the current water and the dashed curve gives the equilibrium at the slower speed. [Dye transport equations and checks](model-notes.md#river-with-gradual-exchange)
+Clean water enters this separate 3 m river and reaches a dye tap halfway along, level with the sluice mouth in the neighbouring stream. The right graph follows the whole river, with the tap at 0 m and the outlet 1.5 m downstream. Halving the current doubles the settled concentration at the tap, halves the downstream decay length and makes the gradient just downstream of the tap four times steeper. The white ring on the graph travels with the ring on the water. On both graphs the solid curve shows the current water and the dashed curve gives the equilibrium at the slower speed. [Dye transport equations and checks](model-notes.md#river-with-gradual-exchange)
 
 The earlier plan-view studies show the original gradual slowdown and a straight reach with a fixed feed and zero downstream decay. [Loop motion study](sketches/river.mp4) · [Straight-channel sketch](sketches/river-open.svg)
+
+## Dye whirlpool · Do opposite sides match?
+
+> Find A and B on opposite sides of the same spinning disk. When the exhaust freezes, does one probe turn redder than the other?
+
+The red feed surrounds the central opening. Dye diffuses outward across the disks. Water from every angle along the rim enters a widening spiral channel, turns into the tapered exhaust and flows out through the nozzle. With the river beside it, watch what happens at 4 exhibit seconds. The open water holds its colour and reflections. The disks keep turning at one tenth speed while dye continues to diffuse. Both probes change together. At 12 s the exhaust picks up where it stopped. [Dye field, phase clocks and reference values](model-notes.md#the-dye-whirlpool)
 
 ## Bead rings · When do beads reach the wall?
 

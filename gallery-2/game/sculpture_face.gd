@@ -15,6 +15,7 @@ var period := 0.0
 var held := false
 var speed := 0.0
 var length_m := 0.0
+var tap_q := 0.0
 var loss := 0.5
 var parcel_q := 0.0
 
@@ -60,21 +61,22 @@ func _river() -> void:
 	var phase := "Orbit-averaged phase (OAP)" if held else "Full dynamics phase (FDP)"
 	words(24, 70, "%s   ·   %.0f s/lap   ·   Sluice %s" % [phase, lap, "held" if held else "flowing"], 21)
 	words(702, 38, "What if the straight river slows?", 32, true)
-	words(702, 70, "The tap adds the same mass of dye each second.", 21)
+	words(702, 70, "The centre tap adds the same mass of dye each second.", 21)
 	rule(Vector2(680, 18), Vector2(680, 294))
 	words(24, 105, "Loop concentration   f / f*", 21)
 	words(702, 105, "Dye concentration   C / C*", 21)
 	words(1039, 105, "Steady decay length   %.0f m" % (speed/loss), 20)
 	var loop_plot := Rect2(77, 121, 566, 99)
 	var straight_plot := Rect2(750, 121, 571, 99)
+	var tap_index := roundi(tap_q * (straight.size() - 1))
 	_plot(loop_plot, 0.9, concentration, settled)
-	_plot(straight_plot, 0.0, straight, straight_settled)
+	_plot(straight_plot, 0.0, straight, straight_settled, tap_index)
 	words(70, 245, "0", 18)
 	words(235, 245, "Position around loop (turns)", 18)
 	words(635, 245, "1", 18)
-	words(743, 245, "0", 18)
-	words(908, 245, "Distance from tap  x (m)", 18)
-	words(1310, 245, "%.0f" % length_m, 18)
+	words(743, 245, "Inlet  −%.1f m" % (tap_q * length_m), 18)
+	words(straight_plot.position.x + tap_q * straight_plot.size.x - 46, 245, "Tap  x = 0 m", 18)
+	words(1200, 245, "Outlet  +%.1f m" % ((1.0 - tap_q) * length_m), 18)
 	if not concentration.is_empty():
 		var last := concentration.size()-1
 		var high := concentration[roundi(0.375*last)]
@@ -84,10 +86,10 @@ func _river() -> void:
 		var index := parcel_q * (straight.size()-1)
 		var f := lerpf(straight[floori(index)], straight[ceili(index)], fmod(index, 1.0))
 		var mark := straight_plot.position + straight_plot.size * Vector2(parcel_q, 1.0-f/DYE_TOP)
-		if parcel_q > 0.01 and parcel_q < 0.99:
+		if parcel_q > tap_q + 0.01 and parcel_q < 0.99:
 			draw_circle(mark, 6.0, Board.FACE)
 			draw_arc(mark, 6.0, 0.0, TAU, 18, Board.TEXT, 2.5, true)
-		words(702, 282, "Flow  %.1f m/s       Tap  %.2f       Outlet  %.2f" % [speed, straight[0], straight[-1]], 22)
+		words(702, 282, "Flow  %.1f m/s       Tap  %.2f       Outlet  %.2f" % [speed, straight[tap_index], straight[-1]], 22)
 	rule(Vector2(24, 302), Vector2(1336, 302))
 	rule(Vector2(25, 328), Vector2(68, 328), Board.TEXT, 3.5)
 	words(80, 335, "Water now", 20)
@@ -105,7 +107,7 @@ func loop_spread() -> float:
 		high = maxf(high, f)
 	return high - low
 
-func _plot(rect: Rect2, lower: float, live: PackedFloat32Array, reference: PackedFloat32Array) -> void:
+func _plot(rect: Rect2, lower: float, live: PackedFloat32Array, reference: PackedFloat32Array, jump_index := -1) -> void:
 	for i in 4:
 		var fraction := i/3.0
 		var y := lerpf(rect.end.y, rect.position.y, fraction)
@@ -122,10 +124,13 @@ func _plot(rect: Rect2, lower: float, live: PackedFloat32Array, reference: Packe
 		var points := PackedVector2Array()
 		for i in series.size():
 			var v := Vector2(float(i)/(series.size()-1), (DYE_TOP-series[i])/(DYE_TOP-lower))
-			points.append(rect.position + rect.size*v)
+			var point := rect.position + rect.size*v
+			if i == jump_index:
+				points.append(Vector2(point.x, rect.end.y))
+			points.append(point)
 		if dashed:
 			for i in range(0, points.size()-2, 4):
-				rule(points[i], points[i+2], GOLD, 2.8)
+				draw_polyline(points.slice(i, i+3), GOLD, 2.8, true)
 		else:
 			draw_polyline(points, Board.TEXT, 3.5, true)
 
@@ -136,7 +141,7 @@ func _dye_scale() -> void:
 	_scale(loop_dye, Rect2(296, 17, 248, 18), 0.8)
 	rule(Vector2(578, 12), Vector2(578, 69))
 	words(604, 32, "Straight river   C / C*", 23, true)
-	words(604, 64, "Upstream tap → outlet", 19)
+	words(604, 64, "Centre tap → outlet", 19)
 	_scale(straight_dye, Rect2(885, 17, 266, 18), 0.0)
 
 func _scale(dye: GradientTexture1D, rect: Rect2, lower: float) -> void:

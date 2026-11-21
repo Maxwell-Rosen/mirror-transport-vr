@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://gallery-2/game/exhibit.gd" id="1"]
 [ext_resource type="Script" path="res://gallery-2/game/pendulums.gd" id="2"]
 [ext_resource type="Script" path="res://gallery-2/game/river.gd" id="3"]
 [ext_resource type="Script" path="res://gallery-2/game/transport.gd" id="4"]
+[ext_resource type="Script" path="res://gallery-2/game/whirlpool.gd" id="5"]
 
 [node name="BetweenBounces" type="Node3D"]
 script = ExtResource("1")
@@ -14,11 +15,16 @@ rotation = Vector3(0, 3.14159265, 0)
 script = ExtResource("2")
 
 [node name="River" type="Node3D" parent="."]
-position = Vector3(6, 0, 2.3)
+position = Vector3(5.8, 0, 2.3)
 rotation = Vector3(0, 3.14159265, 0)
 script = ExtResource("3")
 
+[node name="Whirlpool" type="Node3D" parent="."]
+position = Vector3(9.4, 0, 2.3)
+rotation = Vector3(0, 3.14159265, 0)
+script = ExtResource("5")
+
 [node name="Transport" type="Node3D" parent="."]
-position = Vector3(10.4, 0, 2.3)
+position = Vector3(13.35, 0, 2.3)
 rotation = Vector3(0, 3.14159265, 0)
 script = ExtResource("4")

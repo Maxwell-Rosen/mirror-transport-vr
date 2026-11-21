@@ -8,7 +8,7 @@ FULL_TIME = PERIOD - (RELEASE - HOLD)
 FPS, POINTS = 20, 129
 LOOP_FULL, LOOP_SLOW = 0.5, 0.05  # turns/s
 DISPERSION = 0.006  # turns²/s
-MOUTH, MOUTH_HALF_WIDTH = 0.5, 1 / 64  # fraction of receiving channel length
+MOUTH, MOUTH_HALF_WIDTH = 0.5, 1 / 64  # channel fractions, tap at the mouth
 PASSING_SPEED, GATE_TIME = 0.25, 0.5  # channel lengths/s, active seconds
 LENGTH, FAST, SLOW = 3.0, 1.0, 0.5  # metres, m/s
 DOSE, LOSS, MIXER_LENGTH = 0.6, 0.5, 1.0  # J/(A C*) in m/s, 1/s, V/A in m
@@ -25,7 +25,7 @@ def travel(t, fast, slow):
 
 
 def inlet(t):
-    """Periodic well-mixed head pool, from V dC/dt = J - AuC."""
+    """Periodic mixing pool at the tap, from V dC/dt = J - AuC."""
     fast_eq, slow_eq = DOSE / FAST, DOSE / SLOW
     a = np.exp(-FAST * FULL_TIME / MIXER_LENGTH)
     b = np.exp(-SLOW * (RELEASE - HOLD) / MIXER_LENGTH)
@@ -43,12 +43,14 @@ def inlet(t):
 
 
 def straight_profile(t, x):
-    """A parcel entering at t_in has x = integral(u dt) and C = C_in exp(-λ age)."""
+    """x is signed distance from the tap. Clean water receives dye as it crosses x=0."""
     switches = np.array([0, HOLD, RELEASE, PERIOD])
     distances = travel(switches, FAST, SLOW)
-    cycles, upstream = np.divmod(travel(t, FAST, SLOW) - x, distances[-1])
+    cycles, upstream = np.divmod(
+        travel(t, FAST, SLOW) - np.maximum(x, 0), distances[-1]
+    )
     entered = PERIOD * cycles + np.interp(upstream, distances, switches)
-    return inlet(entered) * np.exp(-LOSS * (t - entered))
+    return np.where(x < 0, 0.0, inlet(entered) * np.exp(-LOSS * (t - entered)))
 
 
 def steady_loop(q, speed):

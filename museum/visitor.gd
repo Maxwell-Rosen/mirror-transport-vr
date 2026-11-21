@@ -2,6 +2,8 @@ extends CharacterBody3D
 
 const DESKTOP_HEIGHT := 1.83
 const DESKTOP_EYE_HEIGHT := 1.71
+const WALK_SPEED := 2.4
+const SPRINT_SPEED := 4.8
 const Foyer := preload("res://museum/foyer/foyer.gd")
 const START := Foyer.MAT_TOP
 const Mirror := preload("res://gallery-1/game/exhibit.gd")
@@ -149,7 +151,7 @@ func _hover(widget: int, station := Station.MIRROR) -> void:
 		reticle.queue_redraw()
 
 func _physics_process(_delta: float) -> void:
-	var walk := Vector2.ZERO
+	var motion := Vector3.ZERO
 	if xr_active:
 		# Sweep the capsule through tracked room-scale steps, keeping it beneath the head.
 		var step := camera.global_position-global_position
@@ -158,7 +160,12 @@ func _physics_process(_delta: float) -> void:
 		move_and_collide(step)
 		update_controller()
 	elif Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
-		walk = Input.get_vector(&"walk_left", &"walk_right", &"walk_back", &"walk_forward")
+		var walk := Input.get_vector(&"walk_left", &"walk_right", &"walk_back", &"walk_forward")
+		var speed := SPRINT_SPEED if Input.is_action_pressed(&"sprint") else WALK_SPEED
+		var forward := -camera.global_basis.z
+		forward.y = 0
+		forward = forward.normalized()
+		motion = (forward * walk.y + forward.cross(Vector3.UP) * walk.x) * speed
 		var eye := camera.global_position
 		reticle.visible = mirror.contains_visitor(eye) or bounces.contains_visitor(eye) or dilation.contains_visitor(eye)
 		var aim := -camera.global_basis.z
@@ -166,11 +173,7 @@ func _physics_process(_delta: float) -> void:
 			aim_pointer(camera.global_position, aim, down)
 		mouse_edges.clear()
 		aim_pointer(camera.global_position, aim, pointer_down)
-	var forward := -camera.global_basis.z
-	forward.y = 0
-	forward = forward.normalized()
-	var motion := (forward*walk.y+forward.cross(Vector3.UP)*walk.x)*2.4
-	velocity = Vector3(motion.x,-1.0,motion.z)
+	velocity = Vector3(motion.x, -1.0, motion.z)
 	move_and_slide()
 
 func trigger_pressed() -> bool:

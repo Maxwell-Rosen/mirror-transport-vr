@@ -41,24 +41,47 @@ Dye accumulates near the feed during the orbit-averaged phase. After release, th
 
 In active passing time $a$, a well-mixed sluice with residence time $\tau_g=0.5$ s obeys $\tau_g\,dB/da=\int g_d F\,dq-B$. Its outflow feeds the middle of the receiving channel. The downstream signal is $B(a-\Delta q/v)$ with $v=0.25$ channel lengths per active second. A half-cosine mixing strip spans the upstream half of the physical opening. The sluice lip samples the same receiving-bank coordinate along its entire width. During OAP the passing clock stops while the loop's feed and sink continue. A full cycle returns the concentrations, wave crests and marked parcel to their initial positions.
 
-**Independent straight river.** The front channel is 3 m long with constant cross-section $A$. Its upstream tap injects dye mass $J$ per second into a well-mixed inlet pool of volume $V$. Dye decays in the reach at first-order rate $\lambda$. For constant speed $u$, steady inlet flux balance gives $AuC(0)=J$. Along a parcel, $dC/dt=-\lambda C$ and $dx/dt=u$. Thus
+**Independent straight river.** The front channel is 3 m long with constant cross-section $A$. Its tap sits opposite the sluice mouth and defines $x=0$. Clean water flows from $x=-1.5$ m to the tap, where dye enters a well-mixed pool of volume $V$ at mass rate $J$. Dye decays between the tap and the outlet at $x=+1.5$ m at first-order rate $\lambda$. For constant speed $u$, steady flux balance at the tap gives $AuC(0)=J$. Along a dyed parcel, $dC/dt=-\lambda C$ and $dx/dt=u$. For $x\geq 0$,
 
 $$
 C(x)=\frac{J}{Au}e^{-\lambda x/u},\qquad
 \ell=\frac{u}{\lambda},\qquad
-\left.\frac{dC}{dx}\right|_{0}=-\frac{\lambda J}{Au^2}.
+\left.\frac{dC}{dx}\right|_{0^+}=-\frac{\lambda J}{Au^2}.
 $$
 
 With $J/(A C_*)=0.6$ m/s and $\lambda=0.5$ s⁻¹ the two steady profiles have directly measurable differences.
 
-| Speed | Tap $C(0)/C_*$ | Decay length $\ell$ | Inlet slope in $C_*/\mathrm{m}$ | Outlet $C(3)/C_*$ |
+| Speed | Tap $C(0)/C_*$ | Decay length $\ell$ | Slope just downstream of tap in $C_*/\mathrm{m}$ | Outlet $C(1.5)/C_*$ |
 | --- | --- | --- | --- | --- |
-| 1 m/s | 0.60 | 2 m | −0.30 | 0.134 |
-| 0.5 m/s | 1.20 | 1 m | −1.20 | 0.060 |
+| 1 m/s | 0.60 | 2 m | −0.30 | 0.283 |
+| 0.5 m/s | 1.20 | 1 m | −1.20 | 0.268 |
 
-During playback the speed changes at the same instants as the loop. The finite inlet volume, $V/A=1$ m, makes its colour rise and fall continuously according to $V\,dC_{\rm in}/dt=J-Au(t)C_{\rm in}$. Each parcel at $(x,t)$ entered at $t_i$ with $\int_{t_i}^t u(s)\,ds=x$. Its current concentration is $C_{\rm in}(t_i)e^{-\lambda(t-t_i)}$. The water and the solid graph sample this transient. The white ring follows one parcel in both views. At half speed a parcel spends twice as long in each metre of river.
+During playback the speed changes at the same instants as the loop. The finite mixing volume at the tap, $V/A=1$ m, makes its colour rise and fall continuously according to $V\,dC_{\rm in}/dt=J-Au(t)C_{\rm in}$. Each downstream parcel at $(x,t)$ crossed the tap at $t_i$ with $\int_{t_i}^t u(s)\,ds=x$. Its current concentration is $C_{\rm in}(t_i)e^{-\lambda(t-t_i)}$. The water and the solid graph sample this transient. The white ring follows a parcel from tap to outlet in both views. At half speed a parcel spends twice as long in each metre of river.
 
 The exporter solves for a repeating cycle, checks the loop against a finer integration and checks the straight river against the characteristic from its inlet. The saved texture covers 129 positions per channel every 0.05 s, with an identical closing frame. The final row supplies the steady references. [Model](tools/river_model.py) · [Export and numerical checks](tools/export_gallery.py) · [Asset manifest](../simulation-renders/gallery-2/manifest.json)
+
+## The dye whirlpool
+
+The whirlpool is an annular dye-transport teaching model. Its central opening has radius $a=0.20R$. The inner rim supplies dye uniformly in angle, and the entire outer rim leaks into the spiral collector. The model starts on a repeating cycle with the same azimuthal symmetry. Slowing circulation therefore creates no concentration difference around a disk. A radial gradient drives dye from the source to the rim in both phases. The thesis analyzes the corresponding distributed source and distributed coupling on a trapped orbit. [Thesis model](<../../PhD-thesis-latex/Chapter POA Toy Models/tex-files/fiveeq_distS_distL.tex>)
+
+Use $c=C/C_*$ for normalized dye concentration, $s=r/R$ for normalized radius, and $t$ in exhibit seconds. On $0.20\le s\le 1$ the field obeys
+
+$$
+\partial_t c=\frac{D}{s}\partial_s(s\,\partial_s c),\qquad
+c(0.20,t)=0.73+0.26\sin(2\pi t/28),\qquad
+-D\,\partial_s c(1,t)=k\,c(1,t).
+$$
+
+Here $D=0.085$ and $k=0.055$ per exhibit second in normalized coordinates. The open channel collects equal water inflows per unit angle, mixes them across its width and advects the mixture out of the nozzle. A trip takes 5 active seconds. Dye circles the rim for the first 3.125 and spends the last 0.25 in the falling sheet between nozzle and drain. From 4 through 12 exhibit seconds the open clock holds. The disks slow from 2 to 20 seconds per lap while the boundary conditions and radial diffusion keep their rates. On release, collection resumes from the current rim.
+
+| Exhibit time (s) | Central feed $c$ | A and B at $r/R=0.60$ | Outer rim $c$ | Outlet $c$ |
+| --- | --- | --- | --- | --- |
+| 4 | 0.933 | 0.519 | 0.369 | 0.296 |
+| 8 | 0.983 | 0.606 | 0.445 | 0.296 |
+| 12 | 0.843 | 0.595 | 0.455 | 0.296 |
+| 18 | 0.527 | 0.432 | 0.346 | 0.419 |
+
+The exporter checks the packed frames against a four-times finer radial solution, the rim flux and an independent reconstruction of the parcels at the outlet. Godot samples the two physical probes and the colour field from that same lossless atlas. The plaque reports normalized concentration. Its water reflections mark motion. The wall board compares both water sculptures at release, dividing each lap by its own mean. [Dye model](tools/whirlpool_model.py) · [Export checks](tools/export_gallery.py) · [Packaged data](../simulation-renders/gallery-2/manifest.json)
 
 ## Optional velocity cut in the transport stand
 

@@ -2,8 +2,10 @@ extends "res://museum/architecture.gd"
 ## Local X is depth from the atrium. Positive Z is on the incoming visitor's right.
 
 const Transport := preload("res://gallery-2/game/transport.gd")
+const BLACKBOARD_SHADER := preload("res://gallery-2/game/blackboards/ink.gdshader")
+const BLACKBOARD_SIZE := Vector2(3.36, 1.89)
 @onready var rings: Transport = $Transport
-@onready var stations := [$Pendulums, $River, rings]
+@onready var stations := [$Pendulums, $River, $Whirlpool, rings]
 
 func _ready() -> void:
 	add_child(structure)
@@ -14,14 +16,10 @@ func _ready() -> void:
 	lettering("Between Bounces",Vector3(15.815,2.56,-0.2),0.207,-PI/2,true)
 	lettering("Can we predict escape without computing every bounce?",Vector3(15.815,2.29,-0.2),0.112,-PI/2)
 	lettering("Pseudo-orbit averaging",Vector3(15.815,2.08,-0.2),0.096,-PI/2)
-	var method := Vector3(12.95,2.93,4.87)
-	box(method,Vector3(3.64,1.07,0.034),"brass")
-	box(method+Vector3.FORWARD*0.024,Vector3(3.60,1.03,0.018),"board")
-	lettering("Which clock can we slow?",method+Vector3(0,0.33,-0.046),0.17,PI,true)
-	lettering("An ion can make many laps of a trapped orbit between collisions.",method+Vector3(0,0.10,-0.046),0.101,PI)
-	lettering("Slower laps can still sample it before the population changes.",method+Vector3(0,-0.055,-0.046),0.097,PI)
-	lettering("A passing ion reaches the wall in one trip.",method+Vector3(0,-0.21,-0.046),0.094,PI)
-	lettering("Restoring full speed lets us measure where it arrives.",method+Vector3(0,-0.36,-0.046),0.094,PI)
+	blackboard($Pendulums, preload("res://gallery-2/game/blackboards/pendulums.png"))
+	blackboard($River, preload("res://gallery-2/game/blackboards/river.png"))
+	blackboard($Whirlpool, preload("res://gallery-2/game/blackboards/whirlpool.png"))
+	blackboard(rings, preload("res://gallery-2/game/blackboards/rings.png"))
 	for x: float in [3.8,11.7]:
 		var light := OmniLight3D.new()
 		light.position = Vector3(x,3.15,1.65)
@@ -31,6 +29,24 @@ func _ready() -> void:
 		light.shadow_enabled = false
 		add_child(light)
 	assemble()
+
+func blackboard(station: Node3D, ink: Texture2D) -> void:
+	var centre := Vector3(station.position.x, 1.57, -4.855)
+	box(centre, Vector3(BLACKBOARD_SIZE.x + 0.05, BLACKBOARD_SIZE.y + 0.05, 0.05), "brass")
+	var material := ShaderMaterial.new()
+	material.shader = BLACKBOARD_SHADER
+	material.set_shader_parameter("lettering", ink)
+	material.set_shader_parameter("face_color", Board.FACE)
+	material.set_shader_parameter("text_color", Board.TEXT)
+	var face := QuadMesh.new()
+	face.size = BLACKBOARD_SIZE
+	face.material = material
+	var board := MeshInstance3D.new()
+	board.name = str(station.name) + "Blackboard"
+	board.mesh = face
+	board.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	board.position = centre + Vector3.BACK * 0.027
+	add_child(board)
 
 func contains_visitor(eye: Vector3) -> bool:
 	var room := to_local(eye)
@@ -48,6 +64,4 @@ func _process(delta: float) -> void:
 	if not at_rings(camera.global_position):
 		rings.clear_focus()
 	for station: Node3D in stations:
-		var p := station.to_local(camera.global_position)
-		if Vector2(p.x,p.z).length() < 3.50:
-			station.advance(delta)
+		station.advance(delta)

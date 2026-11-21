@@ -4,9 +4,9 @@ Put the simulation textures and 3D data that ship with the museum here, includin
 
 Keep the original runs local in `gkeyll-data/<run>/`. When reducing a texture or simplifying a mesh, compare the exported values and coordinates at representative locations, such as the midplane and a throat, with the same diagnostic and frame. Record the source files, units, frame, saved time and any conversion or reduction in the asset manifest. [Exhibit-specific checks](../PLAN.md#platform-and-simulation-data)
 
-Gallery 2 ships a lossless phase–time dye texture and native bead trajectories with their wall and trapped-loss events from its teaching models. Its manifest records the sources, normalizations, frames and transformations. [Between Bounces manifest](gallery-2/manifest.json) · [Exporter](../gallery-2/tools/export_gallery.py)
+Gallery 2 ships lossless dye histories for the river and whirlpool, and native bead trajectories with their wall and trapped-loss events. Its teaching-model manifest records the sources, normalizations, frames and transformations. [Between Bounces manifest](gallery-2/manifest.json) · [Exporter](../gallery-2/tools/export_gallery.py)
 
-Gallery 3 ships twenty sampled clock rates and relative ion distribution values from frame 75 of `1x-beams`. Its manifest also records the physical coordinates, brightness mapping and reference clock. [Time Dilation manifest](gallery-3/manifest.json) · [Exporter](../gallery-3/tools/export_lamps.py)
+Gallery 3 ships twenty sampled clock rates and relative cell-integrated ion contents from frame 75 of `1x-beams`. Its manifest also records the physical coordinates, logarithmic brightness mapping, exhibit clock and illustrative damping envelope. [Time Dilation manifest](gallery-3/manifest.json) · [Exporter](../gallery-3/tools/export_lamps.py)
 
 ## Plot a saved field in Python
 
