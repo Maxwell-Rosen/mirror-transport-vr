@@ -1,7 +1,9 @@
 extends "res://museum/architecture.gd"
 ## Local X is depth from the atrium. Positive Z is on the incoming visitor's right.
 
+const GalleryLighting := preload("res://museum/gallery_lighting.gd")
 const Transport := preload("res://gallery-2/game/transport.gd")
+const ROOM_DEPTH := 20.0
 const BLACKBOARD_SHADER := preload("res://gallery-2/game/blackboards/ink.gdshader")
 const BLACKBOARD_SIZE := Vector2(3.36, 1.89)
 @onready var rings: Transport = $Transport
@@ -11,27 +13,27 @@ func _ready() -> void:
 	add_child(structure)
 	finish_board()
 	finish("brass", "b9925f", 0.38)
-	box(Vector3(15.87,4.32,-0.2),Vector3(0.035,0.96,3.82),"brass")
-	box(Vector3(15.84,4.32,-0.2),Vector3(0.028,0.92,3.78),"board")
-	lettering("Between Bounces",Vector3(15.815,4.54,-0.2),0.207,-PI/2,true)
-	lettering("Can we predict escape without computing every bounce?",Vector3(15.815,4.27,-0.2),0.112,-PI/2)
-	lettering("Pseudo-orbit averaging",Vector3(15.815,4.06,-0.2),0.096,-PI/2)
+	# The landscape plate leaves space for the room title above it.
+	var title_at := Vector3($OrbitPaths.position.x, 3.91, $OrbitPaths.position.z)
+	box(title_at + Vector3.RIGHT * 0.03, Vector3(0.035,0.96,3.82),"brass")
+	box(title_at, Vector3(0.028,0.92,3.78),"board")
+	lettering("Between Bounces",title_at + Vector3(-0.025,0.22,0),0.207,-PI/2,true)
+	lettering("Can we predict escape without computing every bounce?",title_at + Vector3(-0.025,-0.05,0),0.112,-PI/2)
+	lettering("Pseudo-orbit averaging",title_at + Vector3(-0.025,-0.26,0),0.096,-PI/2)
 	blackboard($Pendulums, preload("res://gallery-2/game/blackboards/pendulums.png"))
 	blackboard($River, preload("res://gallery-2/game/blackboards/river.png"))
 	blackboard($Whirlpool, preload("res://gallery-2/game/blackboards/whirlpool.png"))
 	blackboard(rings, preload("res://gallery-2/game/blackboards/rings.png"))
-	for x: float in [3.8,11.7]:
-		var light := OmniLight3D.new()
-		light.position = Vector3(x,3.15,1.65)
-		light.light_color = Color("#fff0d6")
-		light.light_energy = 0.75
-		light.omni_range = 5.4
-		light.shadow_enabled = false
-		add_child(light)
+	for station: Node3D in stations:
+		GalleryLighting.exhibit(self, station.position + Vector3.UP * 1.10,
+			Vector3(station.position.x, 0, 4.865), 3.35)
+	for plate: Node3D in [$OrbitPaths, $OrbitPhases]:
+		GalleryLighting.print_lamp(self, plate)
 	assemble()
 
 func blackboard(station: Node3D, ink: Texture2D) -> void:
 	var centre := Vector3(station.position.x, 1.57, -4.855)
+	GalleryLighting.reading(self, Vector3(centre.x, 0, centre.z - 0.016), 0.0, BLACKBOARD_SIZE.x)
 	box(centre, Vector3(BLACKBOARD_SIZE.x + 0.05, BLACKBOARD_SIZE.y + 0.05, 0.05), "brass")
 	var material := ShaderMaterial.new()
 	material.shader = BLACKBOARD_SHADER
@@ -50,7 +52,7 @@ func blackboard(station: Node3D, ink: Texture2D) -> void:
 
 func contains_visitor(eye: Vector3) -> bool:
 	var room := to_local(eye)
-	return Rect2(0.20,-4.88,15.69,9.76).has_point(Vector2(room.x,room.z))
+	return room.x >= 0.20 and room.x < ROOM_DEPTH - 0.11 and absf(room.z) < 4.88
 
 func at_rings(eye: Vector3) -> bool:
 	var p := rings.to_local(eye)

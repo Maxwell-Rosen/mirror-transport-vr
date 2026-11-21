@@ -36,7 +36,7 @@ rotation = Vector3(0, 1.5707963, 0)
 script = ExtResource("3")
 
 [node name="DilationOccupancy" type="Node3D" parent="."]
-position = Vector3(-2.4, 1.67, -25.83)
+position = Vector3(-2.05, 1.67, -29.83)
 script = ExtResource("thesis_print")
 artwork = ExtResource("dilation-occupancy")
 print_width = 3.25
@@ -45,7 +45,7 @@ caption = "Blue cells in panel a advance at a reduced rate (β < 1). Orange mark
 credit = "Maxwell Rosen  ·  Thesis figure 5.23  ·  Beam runs, frame 75 at 0.500150 s"
 
 [node name="DilationComparison" type="Node3D" parent="."]
-position = Vector3(2.05, 1.67, -25.83)
+position = Vector3(2.05, 1.67, -29.83)
 script = ExtResource("thesis_print")
 artwork = ExtResource("dilation-comparison")
 print_width = 3.25

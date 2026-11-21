@@ -34,7 +34,7 @@ rotation = Vector3(0, 3.14159265, 0)
 script = ExtResource("4")
 
 [node name="OrbitPaths" type="Node3D" parent="."]
-position = Vector3(15.84, 1.65, -2.43)
+position = Vector3(19.84, 1.65, -2.30)
 rotation = Vector3(0, -1.5707963, 0)
 script = ExtResource("thesis_print")
 artwork = ExtResource("orbit-paths")
@@ -44,7 +44,7 @@ caption = "Trace the closed loop in position z and parallel velocity v∥. The t
 credit = "Maxwell Rosen  ·  Thesis figure 3.5  ·  Five-equation model"
 
 [node name="OrbitPhases" type="Node3D" parent="."]
-position = Vector3(15.84, 1.65, 2.3)
+position = Vector3(19.84, 1.65, 2.30)
 rotation = Vector3(0, -1.5707963, 0)
 script = ExtResource("thesis_print")
 artwork = ExtResource("orbit-phases")

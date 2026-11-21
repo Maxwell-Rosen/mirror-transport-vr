@@ -152,6 +152,17 @@ func _check_floor_plan() -> void:
 	check(visitor.move_and_collide(room.global_basis * Vector3.FORWARD * (Room.ROOM_DEPTH - 2)) == null,
 		"The entire extended room has a continuous central aisle")
 	check(visitor.move_and_collide(room.global_basis * Vector3.FORWARD * 2) != null, "The new end wall stops the visitor")
+	for plate: Node3D in [room.get_node("DilationOccupancy"), room.get_node("DilationComparison")]:
+		for button: StaticBody3D in room.figure.contour_panel.buttons:
+			var hit := button.get_child(0) as CollisionShape3D
+			var size := (hit.shape as BoxShape3D).size
+			var bounds := plate.global_transform.affine_inverse() * hit.global_transform * AABB(-size / 2, size)
+			check(bounds.position.z > 4.0, "%s has a full reading area past the contour controls" % plate.name)
+		var eye := plate.to_global(Vector3(0,0,3.5))
+		visitor.face_atrium(Vector3(eye.x,0.02,eye.z))
+		check(room.contains_visitor(visitor.camera.global_position), "Reading %s keeps the room active" % plate.name)
+		check(visitor.move_and_collide(-plate.global_basis.z * 3.0) == null, "The reader can approach the %s caption" % plate.name)
+		check(visitor.move_and_collide(-plate.global_basis.z) != null, "The wall behind %s stops the reader" % plate.name)
 	var floor_target := Vector3(-0.65,0,cfl_z)
 	_place(floor_target + Vector3.BACK * 3.5)
 	var hand: Vector3 = visitor.global_position + Vector3.UP

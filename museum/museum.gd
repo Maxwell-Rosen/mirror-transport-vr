@@ -16,17 +16,15 @@ const PHOTO_OFFSET := (OPENING / 2 + JAMB_WIDTH + BAY / 2) / 2
 const END := -45.0
 const BAY_COUNT := 4
 const FOUNTAIN_RADIUS := 2.15
-const THANKSGIVING_PRINT := preload("res://museum/photographs/thanksgiving-at-ammars.webp")
-const THANKSGIVING_CAPTION := "Thanksgiving at Ammar’s house"
 const GALLERY_TITLES := {1: "The Magnetic\nMirror", 2: "Between\nBounces", 3: "Time\nDilation"}
 const GALLERY_PHOTOS := {
 	1: [preload("res://museum/photographs/graduate-students.webp"), "Princeton program in plasma physics graduate students"],
 	2: [preload("res://museum/photographs/poster-session.webp"), "Poster session"],
 	3: [preload("res://museum/photographs/gkeyll-group-dinner.webp"), "Dinner with the Gkeyll group"],
 	4: [preload("res://museum/photographs/around-the-table.webp"), "Around the table"],
-	5: [preload("res://museum/photographs/orchestra-rehearsal.webp"), "In rehearsal"],
+	5: [preload("res://museum/photographs/orchestra-rehearsal.webp"), "The Princeton University Sinfonia rehearsing"],
 	6: [preload("res://museum/photographs/evening-with-friends.webp"), "Princeton Reunions with my roommates"],
-	7: [THANKSGIVING_PRINT, THANKSGIVING_CAPTION],
+	7: [preload("res://museum/photographs/thanksgiving-at-ammars.webp"), "Thanksgiving at Ammar’s house"],
 	8: [preload("res://museum/photographs/autumn-lawn.webp"), "Autumn on campus"],
 }
 var spring := preload("res://museum/spring.gd").new()
@@ -37,6 +35,8 @@ func _ready() -> void:
 	finish("limestone", "d2c8b6", 0.0, 0.56)
 	prototypes["fluted_shaft"] = fluted_shaft()
 	finish("stone", "b3a693")
+	finish("gallery_ceiling", "7e8179")
+	finish("sculpture_wall", "697668")
 	finish("trim", "e5d8bd")
 	finish("joint", "847e71")
 	finish("floor", "aaa295")
@@ -110,12 +110,12 @@ func hall() -> void:
 	for i in range(-11,12):
 		box(Vector3(i*0.27,3.55,END+0.36),Vector3(0.05,5.55,0.10),"bronze")
 	var back_wall_z := END + 0.21
+	var photo_x := 5.33
+	var print_height := SIGN_HEIGHT / PHOTO_FRAME_SCALE
 	photograph(preload("res://museum/photographs/campfire.webp"), "By the fire",
-		Vector3(-6.58, SIGN_CENTER_Y, back_wall_z), 0.0, 1.00)
-	photograph(THANKSGIVING_PRINT, THANKSGIVING_CAPTION,
-		Vector3(-4.64, SIGN_CENTER_Y, back_wall_z), 0.0, 1.00)
-	photograph(preload("res://museum/photographs/improv-group.webp"), "My improvisational comedy group",
-		Vector3(5.33, SIGN_CENTER_Y, back_wall_z), 0.0, SIGN_HEIGHT / PHOTO_FRAME_SCALE)
+		Vector3(-photo_x, SIGN_CENTER_Y, back_wall_z), 0.0, print_height)
+	photograph(preload("res://museum/photographs/improv-group.webp"), "The Princeton Graduate Improvisational Comedy Troupe",
+		Vector3(photo_x, SIGN_CENTER_Y, back_wall_z), 0.0, print_height)
 	fountain()
 
 func hang_gallery_photo(side: float, entrance_z: float, number: int) -> void:
@@ -157,14 +157,19 @@ func gallery(s: float, z: float, number: int) -> void:
 	box(Vector3(s*8,(7+frame_top)*0.5,z),Vector3(0.4,7-frame_top,frame_width),"plaster",true)
 	box(Vector3(s*7.93,jamb_height+lintel_height*0.5,z),Vector3(0.70,lintel_height,frame_width),"trim",true)
 	# Rooms extend outward, with the long axis available for the tandem gallery.
-	var depth: float = $TimeDilation.ROOM_DEPTH if number == 3 else DEPTH
+	var depth := DEPTH
+	match number:
+		2: depth = $BetweenBounces.ROOM_DEPTH
+		3: depth = $TimeDilation.ROOM_DEPTH
 	var mid := s*(HALL_WIDTH/2+depth/2)
 	var is_open := GALLERY_TITLES.has(number)
+	var has_exhibit_lamps := number in [2, 3]
 	box(Vector3(mid,-0.10,z),Vector3(depth,0.20,BAY),"floor",is_open)
-	box(Vector3(mid,5.1,z),Vector3(depth,0.20,BAY),"stone")
+	box(Vector3(mid,5.1,z),Vector3(depth,0.20,BAY),"gallery_ceiling" if has_exhibit_lamps else "stone")
 	box(Vector3(s*(8+depth),2.5,z),Vector3(0.2,5,BAY),"stone",is_open)
 	for edge in [-1.0,1.0]:
-		box(Vector3(mid,2.5,z+edge*(BAY/2-0.06)),Vector3(depth,5,0.12),"stone",is_open)
+		var surface := "sculpture_wall" if has_exhibit_lamps and edge == s else "stone"
+		box(Vector3(mid,2.5,z+edge*(BAY/2-0.06)),Vector3(depth,5,0.12),surface,is_open)
 	if not is_open:
 		barrier(Vector3(s*8,2,z),Vector3(0.38,4,OPENING))
 		box(Vector3(s*7.98,1.0,z),Vector3(0.05,0.145,OPENING),"tape")

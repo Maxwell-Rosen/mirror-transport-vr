@@ -4,9 +4,11 @@
 
 ## The walk from the atrium
 
-Keep the original **16 m deep × 10 m wide** room, 4 m doorway and 5 m ceiling. Viewed from the atrium, the four freestanding sculptures run along the visitor’s **right**. The bead stand carries its phase controls on the right side of the inclined display.
+The room is **20 m deep × 10 m wide**, with a 4 m doorway and 5 m ceiling. Viewed from the atrium, the four freestanding sculptures run along the visitor’s **right**. The bead stand carries its phase controls on the right side of the inclined display.
 
-![Scale plan of the gallery with the river and whirlpool side by side and a four-metre ruler.](sketches/room.svg)
+Beyond the bead stand, the reading area extends across the room so both thesis prints and their captions can be viewed straight on. The sketch shows the original 16 m sculpture layout.
+
+![Scale plan of the sculpture layout with the river and whirlpool side by side and a four-metre ruler.](sketches/room.svg)
 
 | Centre from doorway | Station | Length along aisle × width × height, including its sign |
 | --- | --- | --- |

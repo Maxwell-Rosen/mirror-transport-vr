@@ -1,6 +1,8 @@
 extends Node3D
 ## Room +Z leads to the atrium. On RightWall, +X runs toward the entrance and +Z faces the aisle.
 
+const GalleryLighting := preload("res://museum/gallery_lighting.gd")
+const Podiums := preload("res://gallery-3/game/podiums.gd")
 const Architecture := preload("res://museum/architecture.gd")
 const Board := preload("res://museum/board_style.gd")
 
@@ -8,7 +10,7 @@ const Mobile := preload("res://gallery-3/game/mobile.gd")
 const PhaseFigure := preload("res://gallery-3/game/phase_space_figure.gd")
 # Keep heavy resources out of the museum's preload chain.
 const FIGURE_PATH := "res://gallery-3/game/phase_space_figure.tscn"
-const ROOM_DEPTH := 34.0
+const ROOM_DEPTH := 38.0
 # The scene origin is eight metres inside the fixed atrium door.
 const ENTRANCE_Z := 8.0
 const FAR_WALL_Z := ENTRANCE_Z - ROOM_DEPTH
@@ -49,12 +51,13 @@ func _ready() -> void:
 		var ceiling := Vector3(joint.x + side * 0.16, 4.96, joint.z)
 		_rod(joint, ceiling, 0.009)
 		wall.drum(ceiling, 0.14, 0.06, "brass")
-	var light := OmniLight3D.new()
-	light.position = Vector3(4.8,3.85,2.55)
-	light.light_color = Color("#fff0d4")
-	light.light_energy = 1.20
-	light.omni_range = 5.2
-	wall.add_child(light)
+	GalleryLighting.exhibit(wall, mobile.position, Vector3(base.x, 0, -0.016), 3.63)
+	var podiums: Node3D = $RightWall/Podiums
+	for top: Vector3 in [Podiums.MASK, Podiums.RELIEF, Podiums.COMPARISON]:
+		var target := podiums.transform * top + Vector3.UP * 0.55
+		GalleryLighting.exhibit(wall, target, Vector3(target.x, 0, -0.016), Podiums.WIDTH)
+	for plate: Node3D in [$DilationOccupancy, $DilationComparison]:
+		GalleryLighting.print_lamp(wall, plate)
 	var plaque := Vector3(base.x, 3.99, base.z + 0.10)
 	wall.box(plaque, Vector3(3.54,0.46,0.042), "brass")
 	wall.box(plaque + Vector3.BACK * 0.025, Vector3(3.51,0.43,0.016), "board")
@@ -110,6 +113,7 @@ func _reading_boards() -> void:
 
 func _reading_board(x: float, title: String, body: String) -> void:
 	var centre := Vector3(x, 1.58, 0.03)
+	GalleryLighting.reading(reading_wall, Vector3(x, 0, -0.016), 0.0, 3.6)
 	reading_wall.box(centre, Vector3(3.60, 1.54, 0.045), "brass")
 	reading_wall.box(centre + Vector3.BACK * 0.026, Vector3(3.56, 1.50, 0.018), "board")
 	reading_wall.lettering(title, centre + Vector3(-1.62, 0.56, 0.041), 0.141, 0, true, true)

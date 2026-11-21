@@ -4,7 +4,7 @@ Walk through the museum for Maxwell Rosen’s PhD thesis on magnetic mirror equi
 
 ## Gallery layout
 
-The 16 m wide atrium has four 10 m bays on each side. Numbering runs from the foyer toward the far wall, with odd numbers on the left. The first-build rooms extend 16 m outward from their 4 m entrances, with 5 m ceilings. Gallery 2 holds the twin pendulums, dye river, whirlpool and bead rings. [Museum layout and sightlines](SETTING.md) · [Exhibit roadmap](PLAN.md#galleries)
+The 16 m wide atrium has four 10 m bays on each side. Numbering runs from the foyer toward the far wall, with odd numbers on the left. The open galleries have 4 m entrances and 5 m ceilings. Gallery 1 is 16 m deep. Gallery 2 extends 20 m and Gallery 3 extends 38 m, with open reading areas beyond their last stations. [Museum layout and sightlines](SETTING.md) · [Exhibit roadmap](PLAN.md#galleries)
 
 | Gallery | Visitor question | Status |
 | --- | --- | --- |

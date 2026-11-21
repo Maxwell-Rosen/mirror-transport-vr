@@ -36,6 +36,7 @@ func _run() -> void:
 	_sculptures()
 	_ring_controls()
 	_blackboards()
+	_reading_area()
 	if "--pictures" in OS.get_cmdline_user_args(): await _pictures()
 	for type: String in ["AudioStreamPlayer", "AudioStreamPlayer3D"]:
 		for player in current_scene.find_children("*",type,true,false): player.stop()
@@ -90,6 +91,22 @@ func _blackboards() -> void:
 				check(camera.is_position_in_frustum(target) and space.intersect_ray(ray).is_empty(),
 					"Whole %s board is in view at %.2f m eye height" % [station.name, height])
 	camera.transform = previous_view
+
+func _reading_area() -> void:
+	var rings := room.rings
+	var plinth := rings.structure.get_child(0) as CollisionShape3D
+	var plinth_size := (plinth.shape as BoxShape3D).size
+	var plinth_bounds := AABB(-plinth_size / 2, plinth_size)
+	for plate: Node3D in [room.get_node("OrbitPaths"), room.get_node("OrbitPhases")]:
+		var into_plate := plate.global_transform.affine_inverse()
+		var base := into_plate * plinth.global_transform * plinth_bounds
+		var panel := into_plate * rings.display.global_transform * rings.display.mesh.get_aabb()
+		check(minf(base.position.z, panel.position.z) > 4.0, "%s has four metres of reading space past the bead stand" % plate.name)
+		var eye := plate.to_global(Vector3(0, 0, 3.5))
+		visitor.face_atrium(Vector3(eye.x, 0.02, eye.z))
+		check(room.contains_visitor(visitor.camera.global_position), "Reading %s keeps the room active" % plate.name)
+		check(visitor.move_and_collide(-plate.global_basis.z * 3.0) == null, "The reader can approach the %s caption" % plate.name)
+		check(visitor.move_and_collide(-plate.global_basis.z) != null, "The wall behind %s stops the reader" % plate.name)
 
 func _sculptures() -> void:
 	_pendulum_traces()

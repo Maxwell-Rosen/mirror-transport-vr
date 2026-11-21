@@ -59,7 +59,7 @@ At 0.1 ns, 38,037 cells qualify on the left and zero on the right. At 1 ns both 
 
 ## Two beam runs on the far wall
 
-Thesis figure 5.23 compares the share of velocity cells slowed near each throat with the ion content they carry. Figure 5.25 follows the density, flow and temperature profiles after five cycles with and without full-dynamics time dilation. Both wall prints reproduce the original PDF artwork at its published aspect ratio, with a caption at the lower right. The reading board opposite the two-box plinth connects its adjustable contour to the saved time floor. [Print sources and conversion](../simulation-renders/gallery-3/thesis-prints.json) · [Print exporter](../tools/print_thesis_figures.py)
+Thesis figure 5.23 compares the share of velocity cells slowed near each throat with the ion content they carry. Figure 5.25 follows the density, flow and temperature profiles after five cycles with and without full-dynamics time dilation. The 38 m room opens into a full-width reading area beyond the comparison console. Both end-wall prints reproduce the original PDF artwork at its published aspect ratio, with a caption at the lower right. The reading board opposite the two-box plinth connects its adjustable contour to the saved time floor. [Print sources and conversion](../simulation-renders/gallery-3/thesis-prints.json) · [Print exporter](../tools/print_thesis_figures.py)
 
 ### Rendering cost in the museum
 
