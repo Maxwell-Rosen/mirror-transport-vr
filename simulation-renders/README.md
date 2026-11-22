@@ -10,6 +10,8 @@ Gallery 3 ships twenty sampled clock rates and relative cell-integrated ion cont
 
 Gallery 4 ships three native cuts of the frame-2 beam-run loss-cone mask, the maps and field traces for probing all 6,144 cells, two samplings of the axial magnetic field and two original thesis prints. The near-midplane cut also carries 2,048 signed distribution values for the computational and physical grid comparison. The exporters verify the saved mask and the distribution’s velocity integral against the independent ion-density diagnostic. [Loss and grid manifest](gallery-4/manifest.json) · [Mask and axial grid exporter](../gallery-4/tools/export_exhibit.py) · [Velocity distribution exporter](../gallery-4/tools/velocity_grid.py)
 
+Gallery 5 pairs the signed distributions and orbit-distributed injection of the two ratio-32 baselines, their density and potential histories, and fourteen audited scan endpoints. Its asset index links the individual source records and numerical checks. [Simple-mirror manifest](gallery-5/manifest.json)
+
 ## Plot a saved field in Python
 
 Run this example from the project root. It uses Postgkyl to read the static magnetic field and its axial coordinate map from `gkeyll-data/1x-beams/`. Both diagnostics store linear discontinuous Galerkin coefficients. At a cell centre, only the constant coefficient contributes, with a factor of 1/√2.

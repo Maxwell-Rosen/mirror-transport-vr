@@ -1,0 +1,11 @@
+{
+  "exhibit": "Gallery 5 · How long does a mirror hold its fuel?",
+  "sources": ["Maxwell Rosen, PhD thesis, Chapter 5", "Rosen et al., Gyrokinetic equilibria of high temperature superconducting magnetic mirrors, PRE manuscript and numerical audit"],
+  "baseline": {"nominal_mirror_ratio": 32, "runs": ["1x-beams", "1x-maxw"], "final_frame": 75, "final_header_time_s": 0.50015},
+  "records": {
+    "phase-manifest.json": "Distribution and static injection, physical coordinates, levels, signed velocity integrals, native reference moments, total injection checks and asset hashes.",
+    "history_manifest.json": "Time-dependent density, endpoint moments, phase clocks and potentials with separate probe coordinates and per-run saved times.",
+    "scan_manifest.json": "Fourteen completed simulations, integrated fueling and inventory diagnostics, collision normalization and fits.",
+    "thesis-prints.json": "Six printed masters, plotting scripts, runs, frame selections, original PDF and packaged PNG checksums."
+  }
+}

@@ -22,6 +22,8 @@ Simple mirror results with beams vs Maxwellian. PRE results, with distribution f
 
 Show the source on top of the distribution function and how it's orbit distributed
 
+[Gallery 5 instruments and visitor trials](gallery-5/README.md) · [Beam source on the measured distribution](gallery-5/sketches/beam-source-slice.png) · [Completed Maxwellian data request](needdata.md)
+
 ## Gallery 6
 
 Tandem mirror simulations. Show the distribution function. Show the sources. Show the geometry thorugh a sculpture with the mirror coils, similar to the one used in gallery 1.

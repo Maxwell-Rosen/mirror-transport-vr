@@ -27,6 +27,8 @@ At the Gallery 4 energy rail, **Cut cell** selects the sole trapped corner in a 
 
 At the velocity-grid board, **Loss-cone tip** enlarges the same cells on the computational and physical axes. Toggle the grid lines and mask boundary over the ion distribution independently. At the axial grid, switch between **Uniform spacing** and **Simulation grid** with a probe fixed at **Midplane** or **Steep flank**. [Gallery 4 trials](gallery-4/README.md)
 
+In Gallery 5, switch **Beam / Maxwellian** at the plinth, choose **Follow band**, and use **Next slice** to inspect the throat or sheath. At the density and potential desks, step or play saved frames and zoom the final full-dynamics phase. At the end wall, a numbered button selects both runs at that mirror ratio. Use the mouse or right trigger, or Tab / Shift+Tab and Enter at the nearest desk. Leaving the room holds the current samples. [Gallery 5 visitor trials](gallery-5/README.md)
+
 ## Title screen and pause menu
 
 On the title screen, choose **Enter the museum** to begin or **Exit** to close the game. In either menu, use the mouse or Tab and Enter on desktop. On Quest, aim the right controller and pull its index trigger. A yellow ring marks where the ray meets the menu.

@@ -78,6 +78,7 @@ func _run() -> void:
 	_check_bead_trigger()
 	await _check_lamp_trigger()
 	await _check_loss_trial()
+	await _check_simple_trial()
 	await _check_pause_and_reset()
 
 	menu = current_scene.get_node("VisitMenu")
@@ -173,13 +174,13 @@ func _check_teleport() -> void:
 	_stick(Vector2.ZERO)
 	check(visitor.position == HALL and not arc.visible, "Losing tracking cancels the pending jump until a fresh tilt")
 
-	var approach := Vector3(-6, 0.01, -27.5)
+	var approach := Vector3(-6, 0.01, -37.5)
 	visitor.face_atrium(approach)
 	for x: float in [-9.5, -7.69]:
-		_point_at(Vector3(-6.5, 0, -27.5))
+		_point_at(Vector3(-6.5, 0, -37.5))
 		_stick(Vector2.RIGHT)
 		check(arc.ring.is_visible_in_tree(), "Clear floor beside the gallery is reachable")
-		_point_at(Vector3(x, 0, -27.5))
+		_point_at(Vector3(x, 0, -37.5))
 		visitor.update_controller()
 		check(arc.visible and not arc.ring.is_visible_in_tree(), "The arc stops at a barrier and the circle requires capsule clearance")
 		_stick(Vector2.ZERO)
@@ -319,6 +320,31 @@ func _check_loss_trial() -> void:
 	_trigger_at(velocity.buttons[velocity.Action.GRID_LINES])
 	check(velocity.zoomed and not velocity.grid_visible and velocity.mask_visible,
 		"The right trigger enlarges the loss-cone tip and toggles its native grid")
+
+func _check_simple_trial() -> void:
+	var room := visitor.simple
+	visitor.face_atrium(room.to_global(Vector3(0, 0.01, 1.80)))
+	var landing := room.to_global(Vector3(0, 0, -1.3))
+	_point_at(landing)
+	_stick(Vector2.RIGHT)
+	check(visitor.teleport_arc.ring.is_visible_in_tree(), "Arch 5 accepts a floor teleport from the atrium")
+	_stick(Vector2.ZERO)
+	check(room.contains_visitor(visitor.camera.global_position), "Teleport crosses the simple mirror threshold")
+	var deadline := Time.get_ticks_msec() + 15000
+	while not room.installation and Time.get_ticks_msec() < deadline:
+		await process_frame
+	if not room.installation:
+		check(false, "Gallery 5 loads after teleport")
+		return
+	await physics_frame
+	var scan = room.installation.get_node("Scan")
+	visitor.face_atrium(scan.to_global(Vector3(-3.52, 0.01, 2.0)))
+	_trigger_at(scan.buttons[0])
+	check(scan.face.selected == 0, "The right trigger selects the measured ratio-3 pair")
+	var potential = room.installation.get_node("Potential")
+	_stand_in_front(room.get_node("PotentialMount"))
+	_trigger_at(potential.buttons[potential.FINAL])
+	check(potential.face.frame == 75, "The right trigger brings all potential traces to the last saved frame")
 
 func _stand_in_front(mount: Node3D) -> void:
 	var direction := mount.global_basis.z

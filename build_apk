@@ -100,14 +100,18 @@ def verify_apk(apk, sdk, env, project):
                      "simulation-renders/gallery-3/manifest.json", "gallery-4/game/loss_classification.tscn",
                      "gallery-4/game/installation.tscn", "simulation-renders/gallery-4/entrance.png",
                      "simulation-renders/gallery-4/phase-compression.png",
-                     "simulation-renders/gallery-4/magnetic-field-coordinates.png"):
+                     "simulation-renders/gallery-4/magnetic-field-coordinates.png", "gallery-5/game/simple_mirror.tscn",
+                     "gallery-5/game/installation.tscn", *(f"simulation-renders/gallery-5/fig-5-{i}.png" for i in range(1, 7)),
+                     *(f"simulation-renders/gallery-5/phase-{case}{suffix}" for case in ("beam", "maxw")
+                       for suffix in (".glb", "-rails.glb", ".png"))):
             if name.encode() not in index:
                 raise ValueError(f"Missing Godot resource in APK: {name}")
         for path in ("gallery-1/game/reference/manifest.json", "gallery-1/game/reference/field-profile.csv",
                      "simulation-renders/gallery-2/transport.json",
                      "simulation-renders/gallery-2/manifest.json", "simulation-renders/gallery-3/manifest.json",
                      "simulation-renders/gallery-4/manifest.json", "simulation-renders/gallery-4/loss.json",
-                     "simulation-renders/gallery-4/grid.json", "simulation-renders/gallery-4/velocity.json"):
+                     "simulation-renders/gallery-4/grid.json", "simulation-renders/gallery-4/velocity.json",
+                     *(path.relative_to(project).as_posix() for path in (project / "simulation-renders/gallery-5").glob("*.json"))):
             if package.read(f"assets/{path}") != (project / path).read_bytes():
                 raise ValueError(f"Packaged reference data differs from {path}")
 

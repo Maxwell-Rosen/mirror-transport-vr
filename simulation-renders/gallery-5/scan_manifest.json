@@ -1,0 +1,161 @@
+{
+  "asset": "scan.json",
+  "sha256": "a94041933a367caa08d5e3daac10b1af2f145fc89a06c1ad4fc6eed967120a1e",
+  "paper": "Rosen et al., Gyrokinetic equilibria of high temperature superconducting magnetic mirrors; Fig. 4, thesis Fig. 5.6",
+  "exporter": "gallery-5/tools/scan_export.py",
+  "data_root": "/scratch/gpfs/CSD/mr1884/gkylmax/a-thesis-simulations",
+  "PRE-gkeyll-poa-paper sha256": {
+    "audit/numbers.json": "287b1d4b736e570a73a7d467f1090aa6a29f303e10641e86235d76060629a4cd",
+    "audit/provenance.json": "cf1acac233678121e2944cb3b5811ace0fec6b548356e64d03c4bf1eef5a672c",
+    "audit_numbers.py": "2c41a28f66f45a8d9e8289c93f7eb3ae1f1bf358b4a2fcfc7fd7ba46f10205ee",
+    "paper_data.py": "38ec5460d247506903bd9e1058af8455b1520ff128b9ee42c50c370a62026fcf",
+    "confinement_theory.py": "be4fd92e8bf7354e8601c1a3bafb767ef3d80a523be0af4a09ec84dc8724f13d",
+    "confinement-time.py": "b0e9db520ec14af43ca59a8d109712a85e2278ff434bcdcaac43729c3984a96c"
+  },
+  "files by diagnostic": {
+    "saved time": "zzim-field_75.gkyl",
+    "geometry-weighted ion count": "zzim-ion_integrated_moms.gkyl",
+    "geometry-weighted ions supplied per second": "zzim-ion_source_integrated_moms.gkyl",
+    "native cell count and mapped midplane density": "zzim-ion_M0_75.gkyl",
+    "mapped midplane flow-subtracted temperatures": "zzim-ion_BiMaxwellianMoments_75.gkyl",
+    "physical axis mapping": "zzim-geo_corn_mc2nu_pos_deflated.gkyl"
+  },
+  "run-relative input sizes in bytes": {
+    "1x-maxw-R-scan/R-scan/R-3": {
+      "zzim-field_75.gkyl": 6892,
+      "zzim-ion_integrated_moms.gkyl": 245167,
+      "zzim-ion_source_integrated_moms.gkyl": 245182,
+      "zzim-ion_M0_75.gkyl": 6919,
+      "zzim-ion_BiMaxwellianMoments_75.gkyl": 26186,
+      "zzim-geo_corn_mc2nu_pos_deflated.gkyl": 6927
+    },
+    "1x-maxw-R-scan/R-scan/R-5": {
+      "zzim-field_75.gkyl": 6892,
+      "zzim-ion_integrated_moms.gkyl": 245167,
+      "zzim-ion_source_integrated_moms.gkyl": 245182,
+      "zzim-ion_M0_75.gkyl": 6919,
+      "zzim-ion_BiMaxwellianMoments_75.gkyl": 26186,
+      "zzim-geo_corn_mc2nu_pos_deflated.gkyl": 6927
+    },
+    "1x-maxw-R-scan/R-scan/R-10": {
+      "zzim-field_75.gkyl": 6892,
+      "zzim-ion_integrated_moms.gkyl": 245167,
+      "zzim-ion_source_integrated_moms.gkyl": 245182,
+      "zzim-ion_M0_75.gkyl": 6919,
+      "zzim-ion_BiMaxwellianMoments_75.gkyl": 26186,
+      "zzim-geo_corn_mc2nu_pos_deflated.gkyl": 6927
+    },
+    "1x-maxw-R-scan/R-scan/R-15": {
+      "zzim-field_75.gkyl": 6892,
+      "zzim-ion_integrated_moms.gkyl": 245167,
+      "zzim-ion_source_integrated_moms.gkyl": 245182,
+      "zzim-ion_M0_75.gkyl": 6919,
+      "zzim-ion_BiMaxwellianMoments_75.gkyl": 26186,
+      "zzim-geo_corn_mc2nu_pos_deflated.gkyl": 6927
+    },
+    "1x-maxw-R-scan/R-scan/R-22": {
+      "zzim-field_75.gkyl": 6892,
+      "zzim-ion_integrated_moms.gkyl": 245167,
+      "zzim-ion_source_integrated_moms.gkyl": 245182,
+      "zzim-ion_M0_75.gkyl": 6919,
+      "zzim-ion_BiMaxwellianMoments_75.gkyl": 26186,
+      "zzim-geo_corn_mc2nu_pos_deflated.gkyl": 6927
+    },
+    "1x-maxw": {
+      "zzim-field_75.gkyl": 6892,
+      "zzim-ion_integrated_moms.gkyl": 245167,
+      "zzim-ion_source_integrated_moms.gkyl": 245182,
+      "zzim-ion_M0_75.gkyl": 6919,
+      "zzim-ion_BiMaxwellianMoments_75.gkyl": 26186,
+      "zzim-geo_corn_mc2nu_pos_deflated.gkyl": 6927
+    },
+    "1x-maxw-R-scan/R-scan/R-50": {
+      "zzim-field_75.gkyl": 13292,
+      "zzim-ion_integrated_moms.gkyl": 245167,
+      "zzim-ion_source_integrated_moms.gkyl": 245182,
+      "zzim-ion_M0_75.gkyl": 13319,
+      "zzim-ion_BiMaxwellianMoments_75.gkyl": 51786,
+      "zzim-geo_corn_mc2nu_pos_deflated.gkyl": 13327
+    },
+    "1x-beams-R-scan/R-scan/R-3": {
+      "zzim-field_75.gkyl": 6892,
+      "zzim-ion_integrated_moms.gkyl": 245167,
+      "zzim-ion_source_integrated_moms.gkyl": 245182,
+      "zzim-ion_M0_75.gkyl": 6919,
+      "zzim-ion_BiMaxwellianMoments_75.gkyl": 26186,
+      "zzim-geo_corn_mc2nu_pos_deflated.gkyl": 6927
+    },
+    "1x-beams-R-scan/R-scan/R-5": {
+      "zzim-field_75.gkyl": 6892,
+      "zzim-ion_integrated_moms.gkyl": 245167,
+      "zzim-ion_source_integrated_moms.gkyl": 245182,
+      "zzim-ion_M0_75.gkyl": 6919,
+      "zzim-ion_BiMaxwellianMoments_75.gkyl": 26186,
+      "zzim-geo_corn_mc2nu_pos_deflated.gkyl": 6927
+    },
+    "1x-beams-R-scan/R-scan/R-10": {
+      "zzim-field_75.gkyl": 6892,
+      "zzim-ion_integrated_moms.gkyl": 245167,
+      "zzim-ion_source_integrated_moms.gkyl": 245182,
+      "zzim-ion_M0_75.gkyl": 6919,
+      "zzim-ion_BiMaxwellianMoments_75.gkyl": 26186,
+      "zzim-geo_corn_mc2nu_pos_deflated.gkyl": 6927
+    },
+    "1x-beams-R-scan/R-scan/R-15": {
+      "zzim-field_75.gkyl": 6892,
+      "zzim-ion_integrated_moms.gkyl": 245167,
+      "zzim-ion_source_integrated_moms.gkyl": 245182,
+      "zzim-ion_M0_75.gkyl": 6919,
+      "zzim-ion_BiMaxwellianMoments_75.gkyl": 26186,
+      "zzim-geo_corn_mc2nu_pos_deflated.gkyl": 6927
+    },
+    "1x-beams-R-scan/R-scan/R-22": {
+      "zzim-field_75.gkyl": 6892,
+      "zzim-ion_integrated_moms.gkyl": 245167,
+      "zzim-ion_source_integrated_moms.gkyl": 245182,
+      "zzim-ion_M0_75.gkyl": 6919,
+      "zzim-ion_BiMaxwellianMoments_75.gkyl": 26186,
+      "zzim-geo_corn_mc2nu_pos_deflated.gkyl": 6927
+    },
+    "1x-beams": {
+      "zzim-field_75.gkyl": 6892,
+      "zzim-ion_integrated_moms.gkyl": 245167,
+      "zzim-ion_source_integrated_moms.gkyl": 245182,
+      "zzim-ion_M0_75.gkyl": 6919,
+      "zzim-ion_BiMaxwellianMoments_75.gkyl": 26186,
+      "zzim-geo_corn_mc2nu_pos_deflated.gkyl": 6927
+    },
+    "1x-beams-R-scan/R-scan/R-50": {
+      "zzim-field_75.gkyl": 13292,
+      "zzim-ion_integrated_moms.gkyl": 245252,
+      "zzim-ion_source_integrated_moms.gkyl": 245267,
+      "zzim-ion_M0_75.gkyl": 13319,
+      "zzim-ion_BiMaxwellianMoments_75.gkyl": 51786,
+      "zzim-geo_corn_mc2nu_pos_deflated.gkyl": 13327
+    }
+  },
+  "time": "Every point uses frame 75 at the simulation time 0.500150 s.",
+  "inventory": "Component zero of both volume-integrated diagnostics interpolated on their own time arrays to the field time. Full tube between end plates, geometry weights included.",
+  "normalization": "tau_ms = 1000 * inventory / source_rate. tau_nu90 = tau_ms * 0.001 * nu90_s_inv. Coulomb ion-ion 90-degree reference frequency uses the final mapped midplane density and (T_parallel + 2*T_perp)/3 with flow removed; Egedal 2022, Eq. (28).",
+  "plot": "Log10 nominal mirror ratio, linear ordinate. Individual endpoints. Optional least-squares free-intercept lines use only the seven normalized values per family and span R = 3 to 50.",
+  "checks": {
+    "audited endpoints matched": 14,
+    "independently recomputed free-intercept fits": {
+      "maxwellian": {
+        "slope": 0.5749459714779684,
+        "intercept": -0.210858787147531
+      },
+      "beam": {
+        "slope": 0.6853694128285746,
+        "intercept": -0.2456518915824156
+      }
+    },
+    "local Postgkyl component-zero checks": {
+      "1x-beams-R-scan/R-scan/R-15/zzim-ion_integrated_moms.gkyl": 3.2700064520675246e+19,
+      "1x-beams-R-scan/R-scan/R-15/zzim-ion_source_integrated_moms.gkyl": 4.1620126894251324e+20,
+      "1x-beams/zzim-ion_integrated_moms.gkyl": 3.771191429944109e+19,
+      "1x-beams/zzim-ion_source_integrated_moms.gkyl": 4.161414816288839e+20
+    },
+    "serialisation": "Full-precision JSON round trip preserved all entries."
+  }
+}

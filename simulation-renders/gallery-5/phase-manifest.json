@@ -1,0 +1,131 @@
+{
+  "converter": "gallery-5/tools/phase_export.py",
+  "runs": [
+    "1x-beams",
+    "1x-maxw"
+  ],
+  "quantity": "Signed physical cell means f_i (s^3/m^6, frame 75, t=.500150 s) and static S_i (s^2/m^6, frame 0, t=0 s).",
+  "source_files": [
+    "zzim-ion_75.gkyl",
+    "zzim-ion_source_0.gkyl",
+    "zzim-ion_M0_75.gkyl",
+    "zzim-ion_source_M0_0.gkyl",
+    "zzim-ion_jacobvel.gkyl",
+    "zzim-ion_mapc2p_vel.gkyl",
+    "zzim-geo_int_jacobtot.gkyl",
+    "zzim-geo_int_jacobgeo.gkyl",
+    "zzim-geo_int_bmag.gkyl",
+    "zzim-geo_corn_mc2nu_pos_deflated.gkyl"
+  ],
+  "maxwellian": {
+    "bundle": "gkeyll-data/1x-maxw/gallery-5/native.npz",
+    "input_sha256": "5e1253b7bae9d882b6b91d3427848d606b1b0c0bd091fcca4423cb97db417e55",
+    "extractor": "gallery-5/tools/phase_extract_maxwellian.py",
+    "bundle_sha256": "0bac66bbe2d175a0c886d2071f0c1f2fbeb0b3dee1e234761f37ea7f8fecde7b"
+  },
+  "method": "Divide hybrid DG constant mode by sqrt(8), cell mean Jtot and Jvel. Signed gyrokinetic velocity integral compared with geometry-weighted independent M0 for all 400 axial cells. Use common flux-tube measure for inventory of injected ions after checking both maps, B and Jtot/Jgeo across baselines.",
+  "meshes": "Native cell-face boundary of f>=0.35 or 0.8, all three physical axes linear. Reopened GLB triangles match expected float32 coordinates and each enclosed volume matches the integrated native cell volume to relative tolerance 1e-6. Locations mapped as (+X=Z, +Y=mu, -Z=v_parallel).",
+  "presentation": "Default central Z frame spans \u00b11.1 m at 2.8 exhibit m per axial m. Full tube spans \u00b12.5 m at 1.188 exhibit m per axial m. The sheath uses the full frame. Both views map mu linearly at .020 exhibit m per keV/T and v_parallel at .50 exhibit m per 10^6 m/s, with a depth ruler spanning \u00b12\u00d710^6 m/s. The selected band and bead can be seen through the shell.",
+  "source": "Interpolated S=8 contours on selected native fixed-mu planes. Interpolate between physical cell centres. No electrostatic correction in the input source prescription. Near-zero-speed beam maximum sets positive-Z turn sample, held fixed for both cases.",
+  "prints": "PNG atlas of native cell values: orange positive, blue negative; log10|f| over [1e-6,2] s^3/m^6, smaller magnitudes dark. Mint source contour at 8 s^2/m^6. Band crop Z=\u00b11.05 m, v=\u00b12.2e6 m/s; velocity cuts v=\u00b13e6 m/s, mu=0..70.99 keV/T on asinh(mu/1 keV/T) axis. Cut probe and curves retain signed numbers independent of display mapping.",
+  "checks": {
+    "beam": {
+      "ions": {
+        "max_relative_error": 3.9968028886505635e-15,
+        "negative_cells": 191340,
+        "cut_reference": {
+          "199": 2.1723363542900797e+19,
+          "207": 2.266631808607442e+19,
+          "208": 2.2877355667174314e+19,
+          "215": 2.274873745847579e+19,
+          "216": 2.2177851348128182e+19,
+          "218": 2.0515377738095014e+19,
+          "298": 9470048155042692.0,
+          "399": 19081093230731.754
+        }
+      },
+      "source": {
+        "max_relative_error": 1.2212453270876722e-14,
+        "negative_cells": 0,
+        "cut_reference": {
+          "199": 1.6428462759385357e+20,
+          "207": 2.0859166873628282e+20,
+          "208": 2.2429261992959636e+20,
+          "215": 6.191403826875822e+20,
+          "216": 6.235130081586058e+20,
+          "218": 3.473793494431237e+20,
+          "298": 715.4461739512778,
+          "399": 0.5896765350786177
+        }
+      },
+      "whole_tube_source": {
+        "integrated": 4.16141481628884e+20,
+        "audited": 4.161414816288839e+20
+      }
+    },
+    "maxw": {
+      "ions": {
+        "max_relative_error": 3.9968028886505635e-15,
+        "negative_cells": 130416,
+        "cut_reference": {
+          "199": 2.02977083687264e+19,
+          "207": 2.0301162908845855e+19,
+          "208": 2.025921518320048e+19,
+          "215": 1.887676052448849e+19,
+          "216": 1.8489364950638195e+19,
+          "218": 1.757163806109983e+19,
+          "298": 1.1109076603323228e+16,
+          "399": 24105803035905.805
+        }
+      },
+      "source": {
+        "max_relative_error": 6.217248937900877e-15,
+        "negative_cells": 0,
+        "cut_reference": {
+          "199": 2.1259286405932325e+20,
+          "207": 2.2210404039691115e+20,
+          "208": 2.244677159001455e+20,
+          "215": 2.4123105731356276e+20,
+          "216": 2.4308710076686136e+20,
+          "218": 2.4613671760139308e+20,
+          "298": 2.4867032910723894e+20,
+          "399": 0.5896765350786181
+        }
+      },
+      "whole_tube_source": {
+        "integrated": 4.1611692863941155e+20,
+        "audited": 4.1611692863941155e+20
+      }
+    }
+  },
+  "assets": {
+    "phase-beam-rails.glb": {
+      "bytes": 313588,
+      "sha256": "4410e7988d37a8457c9c9584b5c39d3ec3bf475751a029476aac175523dd6fbe"
+    },
+    "phase-beam.glb": {
+      "bytes": 142452,
+      "sha256": "8dafd3b0bbd5c60887c8b223103e918be6c2700ac67d389d9477cafcf17a8a20"
+    },
+    "phase-beam.png": {
+      "bytes": 68431,
+      "sha256": "2dc61101e615614a685025eda553d5968bedb13c9a4ed0eb6c1b8e7ad63affde"
+    },
+    "phase-maxw-rails.glb": {
+      "bytes": 328532,
+      "sha256": "74a486c806a8470b22ff73c396055bce0b8b72de19fa6e5d101fa890c7c755ef"
+    },
+    "phase-maxw.glb": {
+      "bytes": 142952,
+      "sha256": "de15c89b2dec6eff70cfbf064aed284a628b9af30fa5be5ef5598f53f64a4ff9"
+    },
+    "phase-maxw.png": {
+      "bytes": 64836,
+      "sha256": "54cbd4433c9bdd187efe4233725dbf397186602793c6ee8b6de2b58f2b1534b8"
+    },
+    "phase.json": {
+      "bytes": 87576,
+      "sha256": "b677297addeb4da82f7059c0b9ec32221d81a237b386f86ac4b6bcba5b0a2fb6"
+    }
+  }
+}

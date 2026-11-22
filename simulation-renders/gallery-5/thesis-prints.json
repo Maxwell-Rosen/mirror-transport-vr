@@ -1,0 +1,122 @@
+{
+  "source": "Maxwell Rosen, PhD thesis, Chapter 5",
+  "conversion": "Uncropped one-page print master, Poppler pdftoppm at 1536 pixels on the long edge, lossless RGB PNG. Frame uses native image aspect ratio. Native figure axes, scales, signs and legends retained.",
+  "plates": [
+    {
+      "figure": "5.1",
+      "file": "fig-5-1.png",
+      "pixels": [
+        1536,
+        922
+      ],
+      "master": "Chapter Gkeyll POA simulations/figures/equilibrium/equilibrium-moments.pdf",
+      "plot_script": "Chapter Gkeyll POA simulations/figures/equilibrium/equilibrium-moments.py",
+      "caption_source": "Chapter Gkeyll POA simulations/tex-files/results_lorentzian.tex",
+      "runs": [
+        "1x-maxw",
+        "1x-beams"
+      ],
+      "sampling": "Frame 75, 0.500150 s",
+      "diagnostic": "Ion BiMaxwellianMoments and mapped axial coordinate",
+      "source_sha256": "8edd17302d13b4f7772df65b23063617ffc7229d12a1957073290b3f58264114",
+      "png_sha256": "2405895ef05c6fd2509f22096ef8e3f86051f6212a292d2d01b8fe9bd4e01cad"
+    },
+    {
+      "figure": "5.2",
+      "file": "fig-5-2.png",
+      "pixels": [
+        1536,
+        924
+      ],
+      "master": "Chapter Gkeyll POA simulations/figures/equilibrium/distribution-functions.pdf",
+      "plot_script": "Chapter Gkeyll POA simulations/figures/equilibrium/distribution-functions.py",
+      "caption_source": "Chapter Gkeyll POA simulations/tex-files/results_lorentzian.tex",
+      "runs": [
+        "1x-maxw",
+        "1x-beams"
+      ],
+      "sampling": "Frame 75, 0.500150 s, midplane, right throat and sheath",
+      "diagnostic": "Absolute ion distribution, mapped velocity and configuration coordinates and Jacobians",
+      "source_sha256": "05f6ad6c505a50beb59183da1e17d2620edd4a2277d8db2849eb2a6938592251",
+      "png_sha256": "02d3e18aec2facf56e468ec6ff7c4fa5dd78c13ed0fd50ed6a81839636325bbe"
+    },
+    {
+      "figure": "5.3",
+      "file": "fig-5-3.png",
+      "pixels": [
+        1536,
+        922
+      ],
+      "master": "Chapter Gkeyll POA simulations/figures/verification/fdp-continuation.pdf",
+      "plot_script": "Chapter Gkeyll POA simulations/figures/verification/fdp-continuation.py",
+      "caption_source": "Chapter Gkeyll POA simulations/tex-files/verification.tex",
+      "runs": [
+        "1x-maxw",
+        "1x-beams",
+        "1x-maxw-fdp-continuation",
+        "1x-beams-fdp-continuation"
+      ],
+      "sampling": "POA frame 75 at 0.500150 s and final frame of 300 microsecond FDP continuation",
+      "diagnostic": "Ion density, parallel flow and ion temperatures on the mapped field line",
+      "source_sha256": "e504ed7666235cb2f74d46610e25b995d4a32ca2c84b438c7c27439f670e8e32",
+      "png_sha256": "2f5e3a11f14bc1dd8d9cea29d0d0f24799cd921b2a15d240b027025a7239f842"
+    },
+    {
+      "figure": "5.4",
+      "file": "fig-5-4.png",
+      "pixels": [
+        1534,
+        1536
+      ],
+      "master": "Chapter Gkeyll POA simulations/figures/verification/integrated-diagnostics.pdf",
+      "plot_script": "Chapter Gkeyll POA simulations/figures/verification/integrated-diagnostics.py",
+      "caption_source": "Chapter Gkeyll POA simulations/tex-files/verification.tex",
+      "runs": [
+        "1x-maxw",
+        "1x-beams",
+        "1x-maxw-fdp-continuation",
+        "1x-beams-fdp-continuation"
+      ],
+      "sampling": "Final 90 microseconds of POA through frame 75 and 0 to 300 microseconds of continuation",
+      "diagnostic": "Inventory, kinetic energy, midplane density, summed wall losses relative to feed, total ion wall power",
+      "source_sha256": "af9f878a91c36da4d273769ec93fc59fb3ebea790dfd8519f4e96999ea51fc76",
+      "png_sha256": "51327ed89c07a2a07c3404c75ecdae294e9b4cffcefd35e8f4d885859ac8933d"
+    },
+    {
+      "figure": "5.5",
+      "file": "fig-5-5.png",
+      "pixels": [
+        1536,
+        1229
+      ],
+      "master": "Chapter Gkeyll POA simulations/figures/equilibrium/potential-evolution.pdf",
+      "plot_script": "Chapter Gkeyll POA simulations/figures/equilibrium/potential-evolution.py",
+      "caption_source": "Chapter Gkeyll POA simulations/tex-files/confinement-scan.tex",
+      "runs": [
+        "1x-maxw"
+      ],
+      "sampling": "Frames 0 to 75 ending at 0.500150 s",
+      "diagnostic": "Electrostatic potential at three axial samples",
+      "source_sha256": "673e0a9f60c2d630fdd0652ee73711df606424124cb8137a43a9a6ce9681c4d4",
+      "png_sha256": "7d7da73b84ab9771f517b0450dd8b7c0d7694575d27e16149816bde251a4be35"
+    },
+    {
+      "figure": "5.6",
+      "file": "fig-5-6.png",
+      "pixels": [
+        1536,
+        1229
+      ],
+      "master": "Chapter Gkeyll POA simulations/figures/confinement/confinement-time.pdf",
+      "plot_script": "Chapter Gkeyll POA simulations/figures/confinement/confinement-time.py",
+      "caption_source": "Chapter Gkeyll POA simulations/tex-files/confinement-scan.tex",
+      "runs": [
+        "All fourteen simulations identified by the scan's individual run directories in scan.json"
+      ],
+      "sampling": "Frame 75 at 0.500150 s in each run",
+      "diagnostic": "Ion inventory / injection times reference midplane scattering frequency",
+      "source_sha256": "056129f15b884660348e220ca654d8da189bd2822a1c059e5c86a254c3948281",
+      "png_sha256": "b8d785ff67d8cf785e9262b6a7ba85a9afc101501c95701298721eb1b21b8f00"
+    }
+  ]
+}
