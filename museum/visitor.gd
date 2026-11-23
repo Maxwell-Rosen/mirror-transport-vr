@@ -10,6 +10,7 @@ const Mirror := preload("res://gallery-1/game/exhibit.gd")
 const Bounces := preload("res://gallery-2/game/exhibit.gd")
 const Dilation := preload("res://gallery-3/game/exhibit.gd")
 const IonLosses := preload("res://gallery-4/game/exhibit.gd")
+const SimpleMirror := preload("res://gallery-5/game/exhibit.gd")
 const Tandem := preload("res://gallery-6/game/exhibit.gd")
 const InstrumentPanel := preload("res://gallery-1/game/panel.gd")
 const TeleportArc := preload("res://museum/teleport.gd")
@@ -17,12 +18,13 @@ const STICK_DEADZONE := 0.15
 const STICK_CENTER := 0.10
 const POINTER_REST := 0.18
 enum Teleport { READY, AIMING, WAIT_FOR_CENTER }
-enum Station { MIRROR, BEADS, LAMPS, LOSSES, TANDEM }
+enum Station { MIRROR, BEADS, LAMPS, LOSSES, TANDEM, SIMPLE }
 
 @onready var mirror: Mirror = $"../MagneticMirror"
 @onready var bounces: Bounces = $"../BetweenBounces"
 @onready var dilation: Dilation = $"../TimeDilation"
 @onready var losses: IonLosses = $"../IonLosses"
+@onready var simple: SimpleMirror = $"../SimpleMirror"
 @onready var tandem: Tandem = $"../TandemMirror"
 var xr_active := false
 var skip_capture_motion := true
@@ -50,6 +52,7 @@ func _ready() -> void:
 	var xr := XRServer.find_interface("OpenXR")
 	xr_active = xr != null and xr.is_initialized()
 	if xr_active:
+		get_viewport().msaa_3d = Viewport.MSAA_4X
 		get_viewport().use_xr = true
 		DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
 		origin = XROrigin3D.new()
@@ -105,6 +108,8 @@ func _unhandled_input(event: InputEvent) -> void:
 			desk = losses
 		elif dilation.at_desk(camera.global_position):
 			desk = dilation
+		elif simple.at_desk(camera.global_position):
+			desk = simple
 		elif tandem.at_desk(camera.global_position):
 			desk = tandem
 		if desk:
@@ -151,6 +156,7 @@ func cancel_interaction() -> void:
 	bounces.rings.clear_focus()
 	dilation.clear_focus()
 	losses.clear_focus()
+	simple.clear_focus()
 	tandem.clear_focus()
 	_hover(-1)
 	if reticle:
@@ -169,6 +175,7 @@ func _hover(widget: int, station := Station.MIRROR) -> void:
 	bounces.rings.point(widget if station == Station.BEADS else -1)
 	dilation.point(widget if station == Station.LAMPS else -1)
 	losses.point(widget if station == Station.LOSSES else -1)
+	simple.point(widget if station == Station.SIMPLE else -1)
 	tandem.point(widget if station == Station.TANDEM else -1)
 	if reticle:
 		reticle.queue_redraw()
@@ -194,7 +201,7 @@ func _physics_process(_delta: float) -> void:
 		forward = forward.normalized()
 		motion = (forward * walk.y + forward.cross(Vector3.UP) * walk.x) * speed
 		var eye := camera.global_position
-		reticle.visible = mirror.contains_visitor(eye) or bounces.contains_visitor(eye) or dilation.contains_visitor(eye) or losses.contains_visitor(eye) or tandem.contains_visitor(eye)
+		reticle.visible = mirror.contains_visitor(eye) or bounces.contains_visitor(eye) or dilation.contains_visitor(eye) or losses.contains_visitor(eye) or simple.contains_visitor(eye) or tandem.contains_visitor(eye)
 		var aim := -camera.global_basis.z
 		for down in mouse_edges:
 			aim_pointer(camera.global_position, aim, down)
@@ -252,12 +259,13 @@ func aim_pointer(start: Vector3, direction: Vector3, down: bool) -> float:
 	var in_bounces := bounces.contains_visitor(camera.global_position)
 	var in_dilation := dilation.contains_visitor(camera.global_position)
 	var in_losses := losses.contains_visitor(camera.global_position)
+	var in_simple := simple.contains_visitor(camera.global_position)
 	var in_tandem: bool = tandem.contains_visitor(camera.global_position)
 	if mirror.grabbed >= 0:
 		if down and inside:
 			return start.distance_to(mirror.drag(start, direction))
 		mirror.release()
-	if inside or in_bounces or in_dilation or in_losses or in_tandem:
+	if inside or in_bounces or in_dilation or in_losses or in_simple or in_tandem:
 		var query := PhysicsRayQueryParameters3D.create(start, start + direction * 20)
 		query.exclude = [get_rid()]
 		var hit := get_world_3d().direct_space_state.intersect_ray(query)
@@ -268,12 +276,15 @@ func aim_pointer(start: Vector3, direction: Vector3, down: bool) -> float:
 			if widget >= 0 and just_pressed:
 				bounces.rings.press(widget)
 			return start.distance_to(hit.position)
-		if (in_dilation or in_losses or in_tandem) and surface:
+		if (in_dilation or in_losses or in_simple or in_tandem) and surface:
 			var room: Node3D = dilation
 			var station := Station.LAMPS
 			if in_losses:
 				room = losses
 				station = Station.LOSSES
+			elif in_simple:
+				room = simple
+				station = Station.SIMPLE
 			elif in_tandem:
 				room = tandem
 				station = Station.TANDEM
@@ -285,6 +296,9 @@ func aim_pointer(start: Vector3, direction: Vector3, down: bool) -> float:
 						losses.press_at(widget, hit.position)
 					else:
 						room.press(widget)
+				return start.distance_to(hit.position)
+			if surface.is_in_group("pointer_boards"):
+				_hover(-1, station)
 				return start.distance_to(hit.position)
 		if inside and (surface == mirror.touch_surface or surface == mirror.loss_surface):
 			var widget := mirror.widget_at(surface, hit.position)

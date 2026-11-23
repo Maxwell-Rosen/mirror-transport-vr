@@ -116,27 +116,31 @@ def corner_bits(b, electric, v_faces, mu_faces, kinetic_coefficient):
     return answer
 
 
-def make_loss(data, nodes):
+def make_loss(data, nodes, frame=FRAME):
     meta = data["mask"].ctx
     mask = data["mask"].get_values()[..., 0]
     assert mask.shape == (400, 64, 32) and meta["changeset"] == "3e32cda94b0d"
-    assert data["potential"].ctx["frame"] == meta["frame"] == FRAME
+    assert data["potential"].ctx["frame"] == meta["frame"] == frame
     assert data["potential"].ctx["time"] == meta["time"]
     assert meta["value_form"] == "nodal" and meta["poly_order"] == 0
     for key in ("position", "bmag", "nodes"):
         assert data[key].ctx["frame"] == 0 and data[key].ctx["time"] == 0.0
-    np.testing.assert_array_equal(np.unique(mask), (0, 1))
+    binary = np.array_equal(np.unique(mask), [0, 1])
     vm = data["velocity"].get_values()
     v, moments = traces(vm[:, 0, :2]), traces(vm[0, :, 2:])
     b, phi = traces(data["bmag"].get_values()), traces(data["potential"].get_values())
     predicted = classify(meta["mass"], meta["charge"], b, phi, v, moments)
-    np.testing.assert_array_equal(mask, predicted)
+    if binary:
+        np.testing.assert_array_equal(mask, predicted)
+    else:
+        mask = predicted  # FDP multiplier is continuous. Classify from the frozen fields.
     z = np.column_stack((nodes[:-1], nodes[1:])).ravel()
     np.testing.assert_allclose(z, traces(data["position"].get_values()).ravel(), atol=1e-13)
     electric = meta["charge"] * phi.ravel() / KEV
     output = {
         "run": RUN.name,
-        "frame": FRAME,
+        "frame": frame,
+        "mask_origin": "saved" if binary else "calculated",
         "time_s": meta["time"],
         "z_m": z.tolist(),
         "b_t": b.ravel().tolist(),

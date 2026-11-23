@@ -5,15 +5,11 @@ const Architecture := preload("res://museum/architecture.gd")
 const Lighting := preload("res://museum/gallery_lighting.gd")
 const ROOM_DEPTH := 19.0
 const DETAIL_PATH := "res://gallery-4/game/installation.tscn"
-const OPENING_PLATE := preload("res://simulation-renders/gallery-4/entrance.png")
-const END_PRINT := preload("res://simulation-renders/gallery-4/magnetic-field-coordinates.png")
-const Prints := preload("res://gallery-4/game/grid_prints.gd")
-
 var installation: Node3D
 var requested := false
 var occupied := false
 var saved: Dictionary = {}
-var opening_plate: MeshInstance3D
+var hall_boards := Architecture.new()
 var focus := -1
 var hover := -1
 
@@ -24,45 +20,27 @@ func _ready() -> void:
 		cabinet.box(Vector3(side * 2.95, 0.74, 0.04), Vector3(0.22, 0.90, 0.23), "wood")
 		cabinet.box(Vector3(side * 3.29, 2.03, 0.05), Vector3(0.044, 2.46, 0.13), "brass")
 	cabinet.box(Vector3(0, 3.25, 0.049), Vector3(6.58, 0.015, 0.065), "brass")
-	opening_plate = _opening_print(cabinet)
+	add_child(hall_boards)
+	hall_boards.add_child(hall_boards.structure)
+	hall_boards.finish_board()
 	Lighting.spotlight(cabinet, Vector3(-1.48, Lighting.HEAD_Y, 2.12), Vector3(-1.48, 1.84, 0.31))
 	cabinet.assemble()
 
 	var grid_case := _plinth($GridMount, 6.24, 1.08)
 	Lighting.exhibit(grid_case, Vector3(0, 1.55, 0.68), Vector3(0, 0, -0.055), 5.8)
 	grid_case.assemble()
-	var fixtures := Architecture.new()
-	add_child(fixtures)
-	fixtures.add_child(fixtures.structure)
-	fixtures.finish_board()
-	var title_mount := Vector3(-4.83, 1.86, -1.39)
-	fixtures.box(title_mount, Vector3(1.65, 1.44, 0.050), "board", false, Vector3.UP * PI / 2)
-	fixtures.lettering("Which ions\ncan reach\na wall?", title_mount + Vector3.RIGHT * 0.035, 0.215, PI / 2, true)
-	Lighting.reading(fixtures, title_mount + Vector3.LEFT * 0.044, PI / 2, Vector2(1.65, 1.44))
-	_energy_label(fixtures)
-	_flux_label(fixtures)
-	var coordinates: Node3D = $CoordinatesMount
-	Prints.mount(self, END_PRINT, 1, coordinates.position, coordinates.rotation.y, 4.24)
-	for mount: Node3D in [$PhaseMount, $CoordinatesMount]:
-		var size := Vector2(3.40, 1.70) if mount == $PhaseMount else Vector2(4.24, 4.24 * END_PRINT.get_height() / END_PRINT.get_width())
-		var centre := mount.transform * Vector3(0, size.y / 2.0, -0.05)
-		Lighting.reading(fixtures, centre, mount.rotation.y, size)
-	var velocity_mount: Node3D = $VelocityMount
-	Lighting.reading(fixtures, velocity_mount.transform * Vector3(0, 2.1, -0.04),
-		velocity_mount.rotation.y, Vector2(4.90, 2.23))
-	fixtures.assemble()
-
-func _energy_label(wall: Architecture) -> void:
-	var mount := Transform3D(Basis(Vector3.UP, PI / 2), Vector3(-4.83, 1.89, -10.99))
-	wall.box(mount.origin, Vector3(2.95, 1.73, 0.05), "board", false, mount.basis.get_euler())
-	wall.lettering("Where does the parallel motion go?", mount * Vector3(0, 0.61, 0.034), 0.137, PI / 2, true)
-	wall.lettering("H − U = ½ mᵢ v∥²", mount * Vector3(0, 0.24, 0.034), 0.208, PI / 2, true)
-	wall.lettering("In frozen fields a collisionless ion keeps its total\n" +
-		"energy H and magnetic moment μ. The gap above\n" +
-		"the ridge U gives its kinetic energy along the field.\n\n" +
-		"Where that gap closes on a rising slope, the ion turns.",
-		mount * Vector3(0, -0.34, 0.034), 0.096, PI / 2)
-	Lighting.reading(wall, mount.origin + Vector3.LEFT * 0.047, PI / 2, Vector2(2.95, 1.73))
+	for row: Array in [
+		[$EnergyMount, Vector3(0,2.03,0.10), Vector2(6.47,2.25)],
+		[$GridMount, Vector3(0,1.87,0.10), Vector2(6.14,2.04)],
+		[$VelocityMount, Vector3(0,2.22,0.07), Vector2(4.86,2.22)],
+		[$PhaseMount, Vector3.UP * 0.85, Vector2(3.40,1.70)],
+		[$CoordinatesMount, Vector3.UP * 0.95, Vector2(4.24,1.91)]]:
+		var mount: Node3D = row[0]
+		var size: Vector2 = row[2]
+		hall_boards.box(mount.transform * row[1], Vector3(size.x,size.y,0.04), "board", false, mount.rotation)
+	for row: Array in [[-4.83,1.86,-1.39,1.65,1.44], [-4.83,1.89,-10.99,2.95,1.73], [4.83,1.92,-3.74,4.10,1.88]]:
+		hall_boards.box(Vector3(row[0],row[1],row[2]), Vector3(row[3],row[4],0.05), "board", false, Vector3.UP * (-signf(row[0]) * PI/2))
+	hall_boards.assemble()
 
 func _plinth(mount: Node3D, width: float, depth: float) -> Architecture:
 	var plinth := Architecture.new()
@@ -78,39 +56,6 @@ func _plinth(mount: Node3D, width: float, depth: float) -> Architecture:
 	plinth.box(Vector3(0, 0.279, z), Vector3(width, 0.018, depth), "brass")
 	plinth.box(Vector3(0, 0.305, z), Vector3(width, 0.034, depth), "enamel")
 	return plinth
-
-func _flux_label(wall: Architecture) -> void:
-	var mount := Transform3D(Basis(Vector3.UP, -PI / 2), Vector3(4.83, 1.92, -3.74))
-	var size := Vector2(4.10, 1.88)
-	wall.box(mount.origin, Vector3(size.x, size.y, 0.05), "board", false, mount.basis.get_euler())
-	wall.lettering("How many ions actually escape?", mount * Vector3(0, 0.67, 0.034), 0.176, -PI / 2, true)
-	wall.lettering("Mean loss rate  =", mount * Vector3(-0.79, 0.12, 0.034), 0.151, -PI / 2, true)
-	wall.lettering("ions crossing the walls", mount * Vector3(0.88, 0.25, 0.034), 0.130, -PI / 2)
-	wall.finish("flux_rule", "ffffff")
-	wall.finishes.flux_rule.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	wall.box(mount * Vector3(0.88, 0.11, 0.034), Vector3(1.63, 0.009, 0.006), "flux_rule", false, mount.basis.get_euler())
-	wall.lettering("elapsed time", mount * Vector3(0.88, -0.02, 0.034), 0.130, -PI / 2)
-	wall.lettering("The mask shows which paths can reach a wall. The distribution\n" +
-		"shows how many ions occupy those paths. To measure losses,\n" +
-		"count the ions that cross the two ends during a time interval.",
-		mount * Vector3(0, -0.48, 0.034), 0.100, -PI / 2)
-	Lighting.reading(wall, mount.origin + Vector3.RIGHT * 0.047, -PI / 2, size)
-
-func _opening_print(cabinet: Architecture) -> MeshInstance3D:
-	var paper := StandardMaterial3D.new()
-	paper.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	paper.albedo_texture = OPENING_PLATE
-	paper.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC
-	var face := QuadMesh.new()
-	face.size = Vector2(6.47, 6.47 * OPENING_PLATE.get_height() / OPENING_PLATE.get_width())
-	face.material = paper
-	var print_face := MeshInstance3D.new()
-	print_face.name = "OpeningState"
-	print_face.mesh = face
-	print_face.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	cabinet.add_child(print_face)
-	print_face.position = Vector3(0, 2.03, 0.10)
-	return print_face
 
 func contains_visitor(eye: Vector3) -> bool:
 	var p := to_local(eye)
@@ -130,7 +75,7 @@ func _process(delta: float) -> void:
 			installation = null
 			focus = -1
 			hover = -1
-			opening_plate.show()
+			hall_boards.show()
 	if requested:
 		match ResourceLoader.load_threaded_get_status(DETAIL_PATH):
 			ResourceLoader.THREAD_LOAD_LOADED:
@@ -140,7 +85,7 @@ func _process(delta: float) -> void:
 					installation = scene.instantiate()
 					add_child(installation)
 					installation.install(self, saved)
-					opening_plate.hide()
+					hall_boards.hide()
 			ResourceLoader.THREAD_LOAD_FAILED, ResourceLoader.THREAD_LOAD_INVALID_RESOURCE:
 				requested = false
 				push_error("Could not load the Gallery 4 installation")

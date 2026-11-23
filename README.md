@@ -1,6 +1,6 @@
 # Mirror Transport VR
 
-Walk through the museum for Maxwell Rosen’s PhD thesis on magnetic mirror equilibrium and plasma transport. The first doors on the left and right lead to **The Magnetic Mirror** and **Between Bounces**. The second pair opens into **Time Dilation** on the left and **Which ions can reach a wall?** on the right. The third right-hand arch opens into **The tandem mirror**. Three galleries are under construction.
+Walk through the museum for Maxwell Rosen’s PhD thesis on magnetic mirror equilibrium and plasma transport. The first doors on the left and right lead to **The Magnetic Mirror** and **Between Bounces**. The second pair opens into **Time Dilation** on the left and **Which ions can reach a wall?** on the right. The third pair compares **Fuel in a simple mirror** on the left with **The tandem mirror** on the right. Galleries 7 and 8 are under construction.
 
 ## Gallery layout
 
@@ -12,6 +12,7 @@ The 16 m wide atrium has four 10 m bays on each side. Numbering runs from the fo
 | [2 · Between Bounces](gallery-2/README.md) | Can you predict how much plasma escapes without computing every bounce? | Playable |
 | [3 · Time Dilation](gallery-3/README.md) | Does a slower clock change the final glow? | Playable |
 | [4 · Which ions can reach a wall?](gallery-4/README.md) | Can a trapped ion sit inside a cell that Gkeyll holds? | Playable |
+| [5 · Fuel in a simple mirror](gallery-5/README.md) | With the same feed, does beam or Maxwellian injection hold more fuel? | Playable |
 | [6 · The tandem mirror](gallery-6/README.md) | Can an end plug turn a field-aligned ion? | Playable |
 
 Each gallery has a top-level folder named for its entrance number, such as `gallery-1/` or `gallery-2/`. Start a new gallery’s plan in its `README.md`. Put its Godot scenes, scripts, and resources in `game/`, design drawings in `sketches/`, and its exporters and checks in `tools/`. The Quest APK and editor ZIP automatically collect each numbered gallery’s `game/` files.

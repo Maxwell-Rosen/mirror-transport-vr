@@ -10,16 +10,22 @@ from matplotlib.ticker import NullLocator, ScalarFormatter
 from PIL import Image
 
 
-def draw_cut(path, label, z, f, s, v, mu, time, source_time, frame, source_frame):
-    # Anchor colours at stated physical values for all four cuts.
+def phase_palettes():
+    """One physical value has the same ink on a cut, shell and legend key."""
     fnorm = colors.SymLogNorm(1e-4, linscale=.7, vmin=-.002, vmax=2)
-    stops = [(-.002, "#77c6ff"), (-1e-4, "#235e83"), (0, "#15151a"),
-             (1e-4, "#44213e"), (.01, "#b95340"), (1., "#ffc063"), (2., "#fff3a2")]
-    fmap = colors.LinearSegmentedColormap.from_list(
-        "signed", [(float(fnorm(value)), colour) for value, colour in stops], N=1024)
+    zero = float(fnorm(0))
+    inferno = matplotlib.colormaps["inferno"]
+    stops = [(0, "#77c6ff"), (float(fnorm(-1e-4)), "#235e83")]
+    stops += [(x, inferno(i)) for i, x in enumerate(np.linspace(zero, 1, inferno.N))]
+    fmap = colors.LinearSegmentedColormap.from_list("signed_inferno", stops, N=4096)
     snorm = colors.LogNorm(1e-5, 200)
     smap = colors.LinearSegmentedColormap.from_list(
-        "beam", ["#153141", "#186f76", "#5ad5ab", "#f6eca5"]).with_extremes(under="#15151a")
+        "beam", ["#102416", "#236a36", "#55bb66", "#c6f697"]).with_extremes(under="#15151a")
+    return (fnorm, fmap), (snorm, smap)
+
+
+def draw_cut(path, label, z, f, s, v, mu, time, source_time, frame, source_frame):
+    (fnorm, fmap), (snorm, smap) = phase_palettes()
     assert f.min() >= fnorm.vmin and f.max() <= fnorm.vmax
     assert s.min() > 0 and s.max() <= snorm.vmax
 
@@ -36,7 +42,7 @@ def draw_cut(path, label, z, f, s, v, mu, time, source_time, frame, source_frame
             (s, r"Beam source   $S_i$  (s$^2$/m$^6$)", snorm, smap),
         ]):
             left = .095 + idx * .495
-            ax = fig.add_axes([left, .325, .38, .475])
+            ax = fig.add_axes([left, .365, .38, .435])
             axes.append(ax)
             mesh = ax.pcolormesh(v, mu, values.T, norm=norm, cmap=cmap, shading="flat",
                                  antialiased=False)
@@ -49,7 +55,7 @@ def draw_cut(path, label, z, f, s, v, mu, time, source_time, frame, source_frame
             ax.yaxis.set_minor_locator(NullLocator())
             if idx == 0:
                 ax.set_ylabel(r"Magnetic moment  $\mu$  (keV/T)")
-            bar_ax = fig.add_axes([left, .17, .38, .025])
+            bar_ax = fig.add_axes([left, .21, .38, .025])
             bar = fig.colorbar(mesh, cax=bar_ax, orientation="horizontal",
                                extend="min" if idx == 1 else "neither")
             ticks, tick_text = (([-.001, 0, .001, .1, 1.], ["−.001", "0", ".001", ".1", "1"])
@@ -57,14 +63,17 @@ def draw_cut(path, label, z, f, s, v, mu, time, source_time, frame, source_frame
                                                   ["10⁻⁵", ".001", ".1", "10", "200"]))
             bar.set_ticks(ticks, labels=tick_text)
             bar.minorticks_off()
+            key = ("Blue marks negative numerical cell means." if idx == 0 else
+                   "Dark grey marks source rates below 10⁻⁵ s²/m⁶.")
+            fig.text(left + .19, .132, key, fontsize=12, ha="center")
         observation = {
             "Central cell": "The beam is injected in the end plugs. Here the source stays at its numerical floor.",
             "Inner throat": "This cell lies just inside the central region. The beam source begins across the throat.",
             "Plug midplane": "The two bright source peaks inject ions moving in opposite directions along the field.",
             "Expander": "Ions here stream toward the right wall. Beam injection ends at the outer throat.",
         }
-        fig.text(.5, .095, observation[label], fontsize=14, ha="center")
-        fig.text(.5, .032,
+        fig.text(.5, .076, observation[label], fontsize=14, ha="center")
+        fig.text(.5, .021,
                  f"1x-tandem   ·   Ions at {time:.6f} s (frame {frame})   ·   "
                  f"Static source saved at {source_time:.6f} s (frame {source_frame})",
                  fontsize=13, ha="center")

@@ -1,5 +1,5 @@
 extends "res://museum/architecture.gd"
-## The velocity integral of the prescribed ion source, on all 1,000 physical axial cells.
+## Injection per local ion, on all 1,000 physical axial cells.
 const PIXELS := Vector2i(1400, 772)
 const WIDTH := 4.72
 const HEIGHT := WIDTH * PIXELS.y / PIXELS.x
@@ -21,6 +21,7 @@ func _ready() -> void:
 	add_child(sheet)
 	panel.size = PIXELS
 	sheet.add_child(panel)
+	pointer_face(self, CENTRE + Vector3.BACK * 0.044, Vector2(WIDTH,HEIGHT))
 	var quad := QuadMesh.new()
 	quad.size = Vector2(WIDTH, HEIGHT)
 	var page := MeshInstance3D.new()
@@ -39,7 +40,7 @@ func select_cut(index: int) -> void:
 
 class SourcePlot extends Control:
 	const PLOT := Rect2(96, 190, 1208, 235)
-	const SOURCE := Color("#77d3bc")
+	const SOURCE := Color("#78d985")
 	const PLUG := Color("#1d3432")
 	var data: Dictionary
 	var cut := 0
@@ -51,27 +52,27 @@ class SourcePlot extends Control:
 	func project(z_m: float, source: float) -> Vector2:
 		var edges: Array = data.geometry.z_nodes_m
 		return Vector2(remap(z_m, edges.front(), edges.back(), PLOT.position.x, PLOT.end.x),
-			PLOT.end.y - (source / 7.0e20) * PLOT.size.y)
+			PLOT.end.y - (source / 40.0) * PLOT.size.y)
 
 	func _draw() -> void:
 		draw_rect(Rect2(Vector2.ZERO, PIXELS), Board.FACE)
 		var selected: Dictionary = data.cuts[cut]
-		var rate: Array = data.profiles.source_m3_s
-		words(0, 60, "Where does the beam add ions?", 52, true, PIXELS.x)
-		words(0, 110, "%s   ·   static ion source   ·   frame %d   ·   saved at %.6f s" %
-			[data.run, data.source_frame, data.source_time_s], 26, false, PIXELS.x)
+		var rate: Array = data.profiles.source_per_ion_s
+		words(0, 60, "Where is injection per ion strongest?", 52, true, PIXELS.x)
+		words(0, 110, "%s   ·   static source #%d at %.6f s   ·   ion density #%d at %.6f s" %
+			[data.run, data.source_frame, data.source_time_s, data.frame, data.time_s], 26, false, PIXELS.x)
 		draw_line(Vector2(38, 133), Vector2(1362, 133), Board.RULE, 2)
-		words(60, 173, "Local ion injection rate   Sₙ  (10²⁰ m⁻³ s⁻¹)", 29)
+		words(60, 173, "Injection per local ion   Sₙ / nᵢ  (s⁻¹)", 29)
 		for i in [0, 2]:
 			var coils: Array = data.geometry.coil_z_m
 			var a := project(coils[i], 0)
-			var b := project(coils[i + 1], 7.0e20)
+			var b := project(coils[i + 1], 40.0)
 			draw_rect(Rect2(Vector2(a.x, b.y), Vector2(b.x - a.x, PLOT.size.y)), PLUG)
-		for tick in [0, 2, 4, 6]:
-			var y := project(0, tick * 1e20).y
+		for tick in [0, 10, 20, 30, 40]:
+			var y := project(0, tick).y
 			draw_line(Vector2(PLOT.position.x, y), Vector2(PLOT.end.x, y), Board.RULE, 1)
 			words(55, y + 8, str(tick), 24)
-		# These horizontal segments are the physical-volume-weighted native cell means.
+		# Each step divides two physical-volume-weighted means in the same native cell.
 		var edges: Array = data.geometry.z_nodes_m
 		var points := PackedVector2Array()
 		for i in rate.size():
@@ -87,8 +88,11 @@ class SourcePlot extends Control:
 			words(x - 40, PLOT.end.y + 33, str(z), 23, false, 80)
 		words(0, 492, "Axial position   Z (m)     ·     Shading marks the two plugs", 26, false, PIXELS.x)
 		var actual := float(rate[int(selected.iz)])
-		var numerical := "%.2f × 10²⁰" % (actual * 1e-20) if actual >= 1e20 else "%.2f" % actual
-		words(0, 548, "%s   ·   Z = %+.3f m   ·   Sₙ = %s m⁻³ s⁻¹" %
+		var numerical := "%.2f" % actual
+		if actual > 0 and actual < 0.01:
+			var exponent := floori(log(actual) / log(10.0))
+			numerical = "%.2f × 10^%d" % [actual / pow(10.0, exponent), exponent]
+		words(0, 548, "%s   ·   Z = %+.3f m   ·   Sₙ / nᵢ = %s s⁻¹" %
 			[selected.label, selected.z_m, numerical], 31, true, PIXELS.x)
 		draw_line(Vector2(38, 572), Vector2(1362, 572), Board.RULE, 2)
 		words(0, 619, "Compare Central cell and Plug midplane on the distribution panel.", 31, true, PIXELS.x)

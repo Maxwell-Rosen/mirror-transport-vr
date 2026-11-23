@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=13 format=3]
 
 [ext_resource type="Script" path="res://museum/museum.gd" id="1"]
 [ext_resource type="Script" path="res://museum/visitor.gd" id="2"]
@@ -13,6 +13,8 @@
 [ext_resource type="PackedScene" path="res://gallery-4/game/loss_classification.tscn" id="10"]
 
 [ext_resource type="PackedScene" path="res://gallery-6/game/tandem_mirror.tscn" id="11"]
+
+[ext_resource type="PackedScene" path="res://gallery-5/game/simple_mirror.tscn" id="12"]
 
 [node name="MirrorTransportMuseum" type="Node3D"]
 script = ExtResource("1")
@@ -40,6 +42,10 @@ rotation = Vector3(0, 1.5707963, 0)
 [node name="IonLosses" parent="." instance=ExtResource("10")]
 position = Vector3(8, 0, -17.5)
 rotation = Vector3(0, -1.5707963, 0)
+
+[node name="SimpleMirror" parent="." instance=ExtResource("12")]
+position = Vector3(-8, 0, -27.5)
+rotation = Vector3(0, 1.5707963, 0)
 
 [node name="TandemMirror" parent="." instance=ExtResource("11")]
 position = Vector3(8, 0, -27.5)

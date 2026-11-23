@@ -87,6 +87,8 @@ func _plinth() -> void:
 
 func _print_and_keys() -> void:
 	var size := Vector2(PRINT_WIDTH, PRINT_WIDTH * print_texture.get_height() / print_texture.get_width())
+	pointer_face(print_mount, Vector3.ZERO, size)
+	pointer_face(key_mount, Vector3(0,-0.465,0.031), Vector2(3.70 * contours.scale.x,0.915))
 	var mount := print_mount.transform
 	box(mount * Vector3(0, 0, -0.023), Vector3(size.x + 0.05, size.y + 0.05, 0.042), "brass", false, print_mount.rotation)
 	var paper := StandardMaterial3D.new()

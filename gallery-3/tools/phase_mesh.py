@@ -102,7 +102,7 @@ def export_glb(surfaces, edges, metadata):
     for surface in surfaces:
         mesh = restored.geometry[surface.name]
         expected = godot_quads(surface.quads)[:, TRIANGLES].reshape(-1, 3, 3)
-        np.testing.assert_allclose(mesh.triangles, expected, rtol=0, atol=1e-7)
+        np.testing.assert_array_equal(mesh.triangles, expected.astype(np.float32))
         # Independently integrate the selected native cells in exhibit coordinates.
         widths = [np.diff(axis) * scale for axis, scale in zip(edges, SCALE)]
         volume = np.einsum("ijk,i,j,k->", surface.cells, *widths)

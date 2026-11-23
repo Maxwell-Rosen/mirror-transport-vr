@@ -1,6 +1,7 @@
 extends Node3D
 
 const Face := preload("res://museum/menu_face.gd")
+const BoardViewport := preload("res://museum/board_viewport.gd")
 const Spring := preload("res://museum/spring.gd")
 const Visitor := preload("res://museum/visitor.gd")
 # World-space placement and controller hits use logical menu pixels.
@@ -25,7 +26,7 @@ var title_camera: Camera3D
 var spring: Spring
 var panel: MeshInstance3D
 var pointer_ring: MeshInstance3D
-var surface: SubViewport
+var surface: BoardViewport
 var pause_down := false
 var trigger_down := false
 var placed_for_head := false
@@ -62,18 +63,16 @@ func _ready() -> void:
 	face.exit_requested.connect(_exit_game)
 
 func _build_xr_panel() -> void:
-	surface = SubViewport.new()
-	surface.disable_3d = true
+	surface = BoardViewport.new()
 	surface.size_2d_override_stretch = true
 	add_child(surface)
+	surface.gui_disable_input = false
 	surface.add_child(face)
 	for button: Button in [face.primary, face.restart, face.exit_button]:
 		button.action_mode = BaseButton.ACTION_MODE_BUTTON_PRESS
 	panel = MeshInstance3D.new()
 	panel.mesh = QuadMesh.new()
-	var material := StandardMaterial3D.new()
-	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	material.albedo_texture = surface.get_texture()
+	var material := surface.paper
 	material.no_depth_test = true
 	material.render_priority = 20
 	material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
@@ -116,7 +115,7 @@ func _build_xr_panel() -> void:
 
 func _refresh_xr_panel() -> void:
 	if panel.visible:
-		surface.render_target_update_mode = SubViewport.UPDATE_ONCE
+		surface.request_print()
 
 func _blackout(opacity: float) -> void:
 	var black := Color(0, 0, 0, opacity)

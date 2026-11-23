@@ -62,7 +62,7 @@ func _visit() -> void:
 	await physics_frame
 	var pictures := "--pictures" in OS.get_cmdline_user_args() and DisplayServer.get_name() != "headless"
 	_arrive(room, Vector3(0, 0.015, 1.7))
-	check(room.installation == null and room.opening_plate.is_visible_in_tree(), "The hall sees the opening trial")
+	check(room.installation == null and room.hall_boards.is_visible_in_tree(), "The hall sees the opening trial")
 	check(not ResourceLoader.has_cached(DATA + "loss.json"), "The hall holds only the light entrance plate")
 	if pictures:
 		await _picture("entrance", room.to_global(Vector3(0, 1.72, -17.5)))
@@ -71,7 +71,7 @@ func _visit() -> void:
 	room._process(0)
 	_arrive(room, Vector3(0, 0.015, 0.1))
 	await _settle()
-	check(room.installation == null and room.opening_plate.visible, "An abandoned load cannot mount the exhibition")
+	check(room.installation == null and room.hall_boards.visible, "An abandoned load cannot mount the exhibition")
 	_arrive(room, Vector3(0, 0.015, 0.45))
 	check(visitor.move_and_collide(room.global_basis * Vector3.FORWARD * 17.6) == null,
 		"The visitor capsule clears the centre aisle from the doorway to the reading wall")
@@ -86,12 +86,12 @@ func _visit() -> void:
 	var rail: Rail = room.installation.energy
 	var grid: Grid = room.installation.grid
 	var velocity = room.installation.velocity
-	check(not room.opening_plate.visible, "The live trial replaces the hall plate")
+	check(not room.hall_boards.visible, "The live trial replaces the hall plate")
 	check(int(rail.cell.flag) == 0 and int(rail.cell.trapped_corners) == 1 and rail.sample.open == [false, false],
 		"The opening shows the only trapped corner of a passing cell")
 	for mount_name in ["EnergyMount", "GridMount", "VelocityMount"]:
 		check(absf(room.get_node(mount_name).position.x) > 4.7, "Instrument keeps the central aisle clear")
-	var end_print: Node3D = room.get_node("FieldCoordinates")
+	var end_print: Node3D = room.installation.get_node("FieldCoordinates")
 	check(is_zero_approx(end_print.position.x) and end_print.centre_caption,
 		"The end-wall print and its caption share the wall centreline")
 	check(is_equal_approx(room.get_node("PhaseMount").position.z, -Room.ROOM_DEPTH / 2.0)
@@ -114,7 +114,8 @@ func _visit() -> void:
 	_pick_cell(rail, 40, 8)
 	check(absf(rail.sample.h_kev - 10.0590) < 0.001, "The linked line returns to the selected ion energy")
 	room.clear_focus()
-	room.tab(true)
+	for i in 4:
+		room.tab(true)
 	check(room.mask_focused(), "The velocity plot is a keyboard stop")
 	if DisplayServer.get_name() == "headless":
 		room.step_mask(Vector2i.RIGHT)
@@ -147,7 +148,6 @@ func _visit() -> void:
 	_aim(rail.buttons[Rail.Widget.EDGE], true)
 	_aim(rail.buttons[Rail.Widget.PASSING], true)
 	_aim(rail.buttons[Rail.Widget.PAUSE], true)
-	var energy_state := rail.snapshot()
 
 	var velocity_wall: Node3D = room.get_node("VelocityMount")
 	_arrive(velocity_wall, Vector3(0, 0.015, 2.75))
@@ -155,6 +155,16 @@ func _visit() -> void:
 		visitor.camera.position.y = height
 		for button in velocity.buttons:
 			_aim(button)
+	for key in 3:
+		_aim(velocity.buttons[4 + key], true)
+		var frame: int = [2,40,75][key]
+		check(int(rail.data.frame) == frame and int(velocity.panel.data.frame) == frame, "Linked frame %d" % frame)
+	var energy_state := rail.snapshot()
+	var eye: Vector3 = visitor.camera.global_position
+	var blank: Vector3 = velocity.to_global(velocity.CENTRE + Vector3.UP * 0.55)
+	var distance: float = visitor.aim_pointer(eye, eye.direction_to(blank), true)
+	check(absf(distance - eye.distance_to(blank)) < 0.01 and room.hover < 0, "Beam stops on passive board face")
+	visitor.aim_pointer(eye, eye.direction_to(blank), false)
 	_aim(velocity.buttons[1], true)
 	var velocity_state: Dictionary = velocity.snapshot()
 	room.clear_focus()
@@ -201,7 +211,7 @@ func _visit() -> void:
 	check(room.installation != null, "Re-entry restores the installation")
 	rail = room.installation.energy
 	grid = room.installation.grid
-	check(rail.snapshot() == energy_state and grid.fraction >= fraction and grid.target == 1.0,
+	check(int(rail.data.frame) == 75 and rail.snapshot() == energy_state and grid.fraction >= fraction and grid.target == 1.0,
 		"Re-entry restores the selected corner and resumes the grid from its saved position")
 	check(room.installation.velocity.snapshot() == velocity_state, "Velocity-grid selections survive leaving the room")
 	grid.advance(3.0)
@@ -219,7 +229,7 @@ func _visit() -> void:
 		_arrive(room, Vector3(0.95, 0.015, turns.position.z))
 		await _picture("turning-points", room.to_global(turns.position + Vector3.UP * 0.39))
 		_arrive(room, Vector3(0.95, 0.015, -3.74))
-		await _picture("wall-flux", room.to_global(Vector3(4.83, 1.92, -3.74)))
+		await _picture("passing-cell", room.to_global(Vector3(4.83, 1.92, -3.74)))
 	for audio in current_scene.find_children("*", "AudioStreamPlayer", true, false):
 		audio.stop()
 	for audio in current_scene.find_children("*", "AudioStreamPlayer3D", true, false):

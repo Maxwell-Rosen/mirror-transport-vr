@@ -1,0 +1,46 @@
+[gd_scene load_steps=22 format=3]
+
+[ext_resource type="Script" path="res://gallery-5/game/installation.gd" id="install"]
+[ext_resource type="Script" path="res://gallery-5/game/phase_station.gd" id="phase_script"]
+[ext_resource type="JSON" path="res://simulation-renders/gallery-5/phase.json" id="phase"]
+[ext_resource type="Script" path="res://gallery-5/game/timeline_station.gd" id="timeline_script"]
+[ext_resource type="JSON" path="res://simulation-renders/gallery-5/timeline.json" id="timeline"]
+[ext_resource type="Script" path="res://gallery-5/game/potential_station.gd" id="potential_script"]
+[ext_resource type="JSON" path="res://simulation-renders/gallery-5/potential.json" id="potential"]
+[ext_resource type="Script" path="res://gallery-5/game/scan_station.gd" id="scan_script"]
+[ext_resource type="JSON" path="res://simulation-renders/gallery-5/scan.json" id="scan"]
+[ext_resource type="PackedScene" path="res://simulation-renders/gallery-5/phase-beam.glb" id="beam_shell"]
+[ext_resource type="PackedScene" path="res://simulation-renders/gallery-5/phase-beam-rails.glb" id="beam_rails"]
+[ext_resource type="Texture2D" path="res://simulation-renders/gallery-5/phase-beam.png" id="beam_atlas"]
+[ext_resource type="PackedScene" path="res://simulation-renders/gallery-5/phase-maxw.glb" id="maxw_shell"]
+[ext_resource type="PackedScene" path="res://simulation-renders/gallery-5/phase-maxw-rails.glb" id="maxw_rails"]
+[ext_resource type="Texture2D" path="res://simulation-renders/gallery-5/phase-maxw.png" id="maxw_atlas"]
+[ext_resource type="Texture2D" path="res://simulation-renders/gallery-5/fig-5-1.png" id="fig1"]
+[ext_resource type="Texture2D" path="res://simulation-renders/gallery-5/fig-5-2.png" id="fig2"]
+[ext_resource type="Texture2D" path="res://simulation-renders/gallery-5/fig-5-3.png" id="fig3"]
+[ext_resource type="Texture2D" path="res://simulation-renders/gallery-5/fig-5-4.png" id="fig4"]
+[ext_resource type="Texture2D" path="res://simulation-renders/gallery-5/fig-5-5.png" id="fig5"]
+[ext_resource type="Texture2D" path="res://simulation-renders/gallery-5/fig-5-6.png" id="fig6"]
+
+[node name="SimpleMirrorInstallation" type="Node3D"]
+script = ExtResource("install")
+artwork = Array[Texture2D]([ExtResource("fig1"), ExtResource("fig2"), ExtResource("fig3"), ExtResource("fig4"), ExtResource("fig5"), ExtResource("fig6")])
+
+[node name="Phase" type="Node3D" parent="."]
+script = ExtResource("phase_script")
+diagnostic = ExtResource("phase")
+populations = Array[PackedScene]([ExtResource("beam_shell"), ExtResource("maxw_shell")])
+sources = Array[PackedScene]([ExtResource("beam_rails"), ExtResource("maxw_rails")])
+atlases = Array[Texture2D]([ExtResource("beam_atlas"), ExtResource("maxw_atlas")])
+
+[node name="Timeline" type="Node3D" parent="."]
+script = ExtResource("timeline_script")
+diagnostic = ExtResource("timeline")
+
+[node name="Potential" type="Node3D" parent="."]
+script = ExtResource("potential_script")
+diagnostic = ExtResource("potential")
+
+[node name="Scan" type="Node3D" parent="."]
+script = ExtResource("scan_script")
+diagnostic = ExtResource("scan")

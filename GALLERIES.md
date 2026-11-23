@@ -22,6 +22,8 @@ Simple mirror results with beams vs Maxwellian. PRE results, with distribution f
 
 Show the source on top of the distribution function and how it's orbit distributed
 
+[Gallery 5 instruments and visitor trials](gallery-5/README.md) · [Beam source on the measured distribution](gallery-5/sketches/beam-source-slice.png) · [Completed Maxwellian data request](needdata.md)
+
 ## Gallery 6
 
 **Can an end plug turn a field-aligned ion?** Trace the four throats on a coil sculpture, compare the saved ion distribution and beam source at four axial cuts, then test whether the measured plug potential reflects a central ion. Relate its path to the whole-tube inventory and wall loss rate. [Gallery 6 trial and simulation checks](gallery-6/README.md)
@@ -29,6 +31,8 @@ Show the source on top of the distribution function and how it's orbit distribut
 ## Gallery 7
 
 Kinetic electron data / simulations
+
+Explain why kinetic electron simulations are hard. These are using deuterium, so the mass ratio is large. Create a 3D sculpture to explain the time scale disparities between ions and electrons. Perhaps it's explaining the difference in cyclotron frequency, or that ions respond much slower than electrons to forces, or that ions collide much slower. Each of these time scale differences can be a seperate statue
 
 ## Gallery 8
 

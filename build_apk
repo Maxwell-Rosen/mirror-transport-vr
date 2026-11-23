@@ -98,7 +98,11 @@ def verify_apk(apk, sdk, env, project):
                      "gallery-2/game/between_bounces.tscn", "simulation-renders/gallery-2/river.png",
                      "simulation-renders/gallery-2/transport.json", "gallery-3/game/time_dilation.tscn",
                      "simulation-renders/gallery-3/manifest.json", "gallery-4/game/loss_classification.tscn",
-                     "gallery-4/game/installation.tscn", "simulation-renders/gallery-4/entrance.png",
+                     "gallery-4/game/installation.tscn", "gallery-5/game/simple_mirror.tscn",
+                     "gallery-5/game/installation.tscn", *(f"simulation-renders/gallery-5/fig-5-{i}.png" for i in range(1, 7)),
+                     *(f"simulation-renders/gallery-5/phase-{case}{suffix}" for case in ("beam", "maxw")
+                       for suffix in (".glb", "-rails.glb", ".png")), "gallery-6/game/tmx.jpg",
+                     "simulation-renders/gallery-6/phase.glb",
                      "simulation-renders/gallery-4/phase-compression.png",
                      "simulation-renders/gallery-4/magnetic-field-coordinates.png", "gallery-6/game/tandem_mirror.tscn",
                      "gallery-6/game/installation.tscn", *(f"simulation-renders/gallery-6/cut-{i}.png" for i in range(4))):
@@ -109,6 +113,9 @@ def verify_apk(apk, sdk, env, project):
                      "simulation-renders/gallery-2/manifest.json", "simulation-renders/gallery-3/manifest.json",
                      "simulation-renders/gallery-4/manifest.json", "simulation-renders/gallery-4/loss.json",
                      "simulation-renders/gallery-4/grid.json", "simulation-renders/gallery-4/velocity.json",
+                     *(f"simulation-renders/gallery-4/{field}-{frame}.json"
+                       for field in ("loss", "velocity") for frame in (40, 75)),
+                     *(path.relative_to(project).as_posix() for path in (project / "simulation-renders/gallery-5").glob("*.json")),
                      "simulation-renders/gallery-6/manifest.json", "simulation-renders/gallery-6/tandem.json"):
             if package.read(f"assets/{path}") != (project / path).read_bytes():
                 raise ValueError(f"Packaged reference data differs from {path}")

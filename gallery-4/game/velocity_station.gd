@@ -7,6 +7,8 @@ const CENTRE := Vector3(0, 2.22, 0.092)
 enum Action { FULL_GRID, TIP, GRID_LINES, MASK_BOUNDARY }
 
 var panel := Face.new()
+signal frame_selected(frame: int)
+var frame_keys := preload("res://gallery-4/game/frame_keys.gd").new()
 var buttons: Array[StaticBody3D] = []
 var focus_marks: Array[MeshInstance3D] = []
 var chosen: Array[MeshInstance3D] = []
@@ -24,6 +26,13 @@ func configure(values: Dictionary, loss: Dictionary, state: Dictionary) -> void:
 func snapshot() -> Dictionary:
 	return {"zoomed": zoomed, "grid": grid_visible, "mask": mask_visible}
 
+func change_frame(values: Dictionary, loss: Dictionary) -> void:
+	panel.configure(values, loss)
+	panel.cell_meshes.clear()
+	frame_keys.active = int(values.frame)
+	frame_keys.point(-1)
+	_refresh()
+
 func _ready() -> void:
 	zone = "VelocityGrid"
 	add_child(structure)
@@ -35,6 +44,7 @@ func _ready() -> void:
 	finishes.white.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	box(CENTRE + Vector3.FORWARD * 0.065, Vector3(WIDTH + 0.04, HEIGHT + 0.04, 0.05), "wood")
 	box(CENTRE + Vector3.FORWARD * 0.028, Vector3(WIDTH + 0.019, HEIGHT + 0.019, 0.045), "brass")
+	pointer_face(self, CENTRE, Vector2(WIDTH, HEIGHT))
 	var viewport := Board.InstrumentViewport.new()
 	viewport.name = "VelocityInstrument"
 	viewport.size = Face.PIXELS
@@ -50,6 +60,8 @@ func _ready() -> void:
 	page.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(page)
 	_controls()
+	frame_keys.active = int(panel.data.frame)
+	frame_keys.mount(self, buttons, Vector3(0,0.68,0.32))
 	assemble()
 	_refresh()
 
@@ -59,6 +71,7 @@ func _controls() -> void:
 	box(desk.origin, Vector3(4.72, 0.275, 0.10), "wood", false, angle)
 	box(desk * Vector3(0, 0, 0.056), Vector3(4.70, 0.257, 0.017), "brass", false, angle)
 	box(desk * Vector3(0, 0, 0.069), Vector3(4.681, 0.238, 0.011), "board", false, angle)
+	pointer_face(self, desk * Vector3(0,0,0.073), Vector2(4.681,0.238), angle)
 	var titles := ["Full grid", "Loss-cone tip", "Hide grid lines", "Hide boundary"]
 	for i in titles.size():
 		var local := Vector3((i - 1.5) * 1.15, 0, 0.082)
@@ -104,6 +117,9 @@ func _refresh() -> void:
 	labels[Action.MASK_BOUNDARY].text = "Hide boundary" if mask_visible else "Show boundary"
 
 func press(index: int) -> void:
+	if index >= 4 and index < 7:
+		frame_selected.emit(frame_keys.FRAMES[index - 4])
+		return
 	match index:
 		Action.FULL_GRID, Action.TIP:
 			zoomed = index == Action.TIP
@@ -116,6 +132,7 @@ func press(index: int) -> void:
 	_refresh()
 
 func point(index: int) -> void:
+	frame_keys.point(index - 4)
 	for i in focus_marks.size():
 		focus_marks[i].visible = index == i
 

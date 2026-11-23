@@ -132,6 +132,7 @@ func _desk_text(words: String, at: Vector3, height: float, title := false, left 
 func _build_desk() -> void:
 	_desk_box(Vector3(0,0,-0.045), Vector3(2.56,1.52,0.11), "wood")
 	_desk_box(Vector3(0,0,0.014), Vector3(2.54,1.50,0.018), "brass")
+	Architecture.pointer_face(desk, Vector3(0,0,0.038), Vector2(2.515,1.475))
 	_desk_box(Vector3(0,0,0.030), Vector3(2.515,1.475,0.016), "board")
 	for x: float in [-0.86,0.86]:
 		var mount := desk.transform * Vector3(x,-0.38,-0.075)

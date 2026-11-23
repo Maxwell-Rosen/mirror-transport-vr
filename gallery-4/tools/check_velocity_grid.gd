@@ -19,7 +19,7 @@ func run() -> void:
 	station.configure(VALUES.data, LOSS.data, {})
 	root.add_child(station)
 	var panel := station.panel
-	expect(station.buttons.size() == 4 and panel.bounds() == Face.FULL, "Missing full-grid opening view")
+	expect(station.buttons.size() == 7 and panel.bounds() == Face.FULL, "Missing full-grid opening view")
 	expect(is_equal_approx(panel._tip_area_percent(), 0.09837331), "Incorrect physical extent of the tip")
 	# Independently known native-face and colour references from velocity_grid.py's verified cut.
 	var f: float = panel.data.f_rows[0][32]

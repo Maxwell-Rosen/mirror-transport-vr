@@ -57,6 +57,7 @@ func _ready() -> void:
 	panel.data = data
 	panel.size = viewport.size
 	viewport.add_child(panel)
+	pointer_face(self, Vector3(0, plate_y, FACE_Z), Vector2(Face.WIDTH, Face.HEIGHT))
 	var paper := QuadMesh.new()
 	paper.size = Vector2(Face.WIDTH, Face.HEIGHT)
 	paper.material = viewport.paper
@@ -172,6 +173,7 @@ func _controls() -> void:
 	# Keep the remaining span above the shared base open.
 	for x: float in [-1.85, 1.85]:
 		box(Vector3(x, 0.56, 0.63), Vector3(0.11, 0.49, 0.11), "wood")
+	pointer_face(desk, Vector3.BACK * 0.070, Vector2(4.765,0.255))
 	var widths := [1.04, 1.09, 0.79, 0.70, 0.82]
 	var names := ["Uniform spacing", "Simulation grid", "Pause fins", "Midplane", "Steep flank"]
 	var left := -2.32

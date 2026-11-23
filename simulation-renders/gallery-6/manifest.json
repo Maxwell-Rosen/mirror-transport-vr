@@ -28,10 +28,27 @@
   "geometry_and_beam_input": "gkeyll-data/1x-tandem/sim.c",
   "interpretation": "PhD-thesis-latex/Chapter Gkeyll Extensions/tex-files/tandem_mirrors.tex",
   "assets": {
-    "tandem.json": "Native corner R and Z (m), 1001 points. Coil Z marks the nominal sim.c throat locations, winding dimensions schematic. All 1000 mapped cell centres and |B| (T), phi (V) use P1 constant coefficient/sqrt(2). Density and source M0 are physical-volume-weighted means. Static geometry frame 0 at 0 s. Velocity mapping/Jv diagnostics have no frame/time.",
+    "tandem.json": "Native corner R and Z (m), 1001 points. Coil Z marks the nominal sim.c throat locations, winding dimensions schematic. All 1000 mapped cell centres and |B| (T), phi (V) use P1 constant coefficient/sqrt(2). Density and source M0 are physical-volume-weighted means. The local injection frequency divides static ion source M0 (frame 43) by total ion M0 (frame 75) in each native axial cell. Static geometry frame 0 at 0 s. Velocity mapping/Jv diagnostics have no frame/time.",
+    "phase.glb": "Native cell faces enclose f_i >= each listed Ions level (s^3/m^6, frame 75) and S_i >= each Source level (s^2/m^6, static source frame 43). Absolute thresholds and sRGB colours are recorded in tandem.json under podium.levels and podium.colors. The palettes are sampled from the same physical-value normalizations used in cut-*.png. Axes map (Z, v_parallel, mu) to (+X, -Z, +Y) using podium.scale before scene placement. Full native grid, no smoothing. phase_podium.py checks serialized triangles and enclosed volumes. Podium probe reports the largest signed mean on the selected native Z slice for each field.",
     "sculpture": "Eight azimuths of one saved axisymmetric field line. The 3D tube joins every fourth node and both endpoints, axial scale 0.65 and radial scale 3.2 (4.92 relative). The selectable pointer follows each cut's physical Z. Geometry check in gallery-6/tools/check_sculpture.gd.",
-    "cut-*.png": "Side-by-side signed velocity distributions on native physical cell faces, full mu range shown on asinh axis (linear width 1 keV/T), v_parallel cropped to ±3e6 m/s. No interpolation. f is phase-volume-weighted hybrid DG constant mode divided by sqrt(8) J_total_cellmean J_vel. Same formula for S. Signed symlog colour for f with linear core at ±1e-4 s³/m⁶. Source colour log above 1e-5 s²/m⁶, all lower values dark. Scales fixed across cuts. Source floor from sim.c is 1e-20 s²/m⁶. Source independent of time.",
-    "confinement": "Instantaneous gross inventory divided by total outward loss rate at final FDP endpoint. Take component 0 of final sample in both outward-positive boundary histories, inventory and injection. Multiply raw numbers/rates by 2π for axisymmetric quantities per unit poloidal flux label; this factor cancels in ratios. No plug-off lifetime comparison is available from this run."
+    "cut-*.png": "Side-by-side signed velocity distributions on native physical cell faces, full mu range shown on asinh axis (linear width 1 keV/T), v_parallel cropped to ±3e6 m/s. No interpolation. f is phase-volume-weighted hybrid DG constant mode divided by sqrt(8) J_total_cellmean J_vel. Same formula for S. Signed symlog colour for f from -0.002 to 2 s³/m⁶ with a linear core at ±1e-4 s³/m⁶. Negative numerical means use blue, positive means use Matplotlib inferno. Source colour varies from dark to pale green on a log scale from 1e-5 to 200 s²/m⁶, all lower values dark. Scales fixed across cuts. Source floor from sim.c is 1e-20 s²/m⁶. Source independent of time.",
+    "confinement": "Whole-tube injection frequency is integrated injection divided by integrated inventory (s^-1). Loss time is inventory divided by total outward loss rate at final FDP endpoint. Take component 0 of final sample in both outward-positive boundary histories, inventory and injection. Multiply raw numbers/rates by 2π for axisymmetric quantities per unit poloidal flux label; this factor cancels in ratios.",
+    "simple_mirror_comparison": {
+      "run": "1x-beams-R-scan/R-scan/R-15",
+      "frame": 75,
+      "time_s": 0.50015,
+      "thesis": "Chapter Gkeyll Extensions/tex-files/tandem_mirrors.tex, final continuous FDP",
+      "thesis_reported_loss_source_ratio": 0.835,
+      "status": "Only the thesis-reported loss/source ratio is available. See NEED_DATA.md.",
+      "missing": [
+        "zzim-ion_integrated_moms.gkyl",
+        "zzim-ion_bflux_xlower_integrated_HamiltonianMoments.gkyl",
+        "zzim-ion_bflux_xupper_integrated_HamiltonianMoments.gkyl",
+        "zzim-ion_source_integrated_moms.gkyl",
+        "zzim-ion_M0_75.gkyl",
+        "zzim-geo_int_jacobgeo.gkyl"
+      ]
+    }
   },
   "verification": {
     "distribution": {

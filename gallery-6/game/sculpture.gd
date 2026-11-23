@@ -12,10 +12,16 @@ const TUBE_SIDES := 5
 const DESK_ANGLE := -0.42
 const DESK := Vector3(0, 0.81, 0.615)
 
+const Orbit := preload("res://gallery-1/game/orbit.gd")
+const Field := preload("res://gallery-1/game/field.gd")
+var preview := false
+var orbit: Orbit
+var ions: Array[MeshInstance3D] = []
+var elapsed := 0.0
 var geometry: Dictionary
 var run_name: String
 var probe_z := 0.0
-var probe := Node3D.new()
+var probe: Node3D
 var probe_label: Label3D
 
 func configure(data: Dictionary) -> void:
@@ -39,6 +45,11 @@ func _ready() -> void:
 	finishes.probe.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	_build_bed()
 	_build_windings()
+	if preview:
+		assemble()
+		set_process(false)
+		return
+	_build_ions()
 	_build_surface()
 	_build_labels()
 	_build_probe()
@@ -60,19 +71,47 @@ func _build_windings() -> void:
 	var torus := TorusMesh.new()
 	torus.inner_radius = WINDING_RADIUS - METAL_RADIUS
 	torus.outer_radius = WINDING_RADIUS + METAL_RADIUS
-	torus.rings = 48
-	torus.ring_segments = 10
+	torus.rings = 16 if preview else 48
+	torus.ring_segments = 5 if preview else 10
 	for z: float in geometry.coil_z_m:
 		var x := z * AXIAL_SCALE
 		var h := AXIS_Y - WINDING_RADIUS - BED_Y
 		box(Vector3(x, BED_Y + h / 2, 0), Vector3(0.16, h, 0.2), "copper")
-		for turn in range(-1, 2):
+		for turn in ([0] if preview else [-1,0,1]):
 			var winding := MeshInstance3D.new()
 			winding.mesh = torus
 			winding.material_override = finishes.copper if turn == 0 else finishes.winding
 			winding.position = Vector3(x + turn * 0.042, AXIS_Y, 0)
 			winding.rotation.z = PI / 2
 			add_child(winding)
+
+func _build_ions() -> void:
+	var field := Field.new()
+	field.set_ratio(15)
+	var mu := Field.KEV
+	orbit = Orbit.new(field, 480000, mu, field.barrier(mu))
+	var ball := SphereMesh.new()
+	ball.radius = 0.031
+	ball.height = 0.062
+	ball.radial_segments = 10
+	ball.rings = 5
+	for i in 6:
+		var ion := MeshInstance3D.new()
+		ion.mesh = ball
+		ion.material_override = finishes.probe
+		ion.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		add_child(ion)
+		ions.append(ion)
+	_process(0)
+
+func _process(delta: float) -> void:
+	elapsed += delta
+	for i in ions.size():
+		var region := i % 3 - 1
+		var sample := orbit.sample(elapsed + 0.63 * i)
+		var z := 3.0 * region + sample.x * (2.02 / Field.A if region == 0 else 1.0)
+		var r := 0.15 * sqrt(Field.B0 / orbit.field.magnitude(sample.x))
+		ions[i].position = Vector3(z * AXIAL_SCALE, AXIS_Y + r * cos(sample.y), r * sin(sample.y))
 
 func _build_surface() -> void:
 	var z: Array = geometry.z_nodes_m
@@ -131,7 +170,7 @@ func _build_labels() -> void:
 		var kind := "Outer" if i == 0 or i == 3 else "Inner"
 		_desk_label("%s throat %+.2f m" % [kind, z], mount, z * AXIAL_SCALE, 0.046, 0.062)
 	probe_label = _desk_label("", mount, 0, 0.046, 0.062)
-	_desk_label("Copper rings mark mirror throats. Blue lines follow the simulated flux surface.",
+	_desk_label("Blue lines trace the saved field. Dots are idealized bouncing ions; gyro radius enlarged, clock 2 μs/s.",
 		mount, 0, -0.065, 0.071)
 	var scales := "%s   ·   static geometry   ·   axial scale %.2f×   ·   radial scale %.1f× (%.2f× relative)   ·   schematic coils"
 	_desk_label(scales % [run_name, AXIAL_SCALE, RADIAL_SCALE, RADIAL_SCALE / AXIAL_SCALE],
@@ -144,6 +183,7 @@ func _desk_label(words: String, mount: Transform3D, x: float, y: float, height: 
 
 func _build_probe() -> void:
 	# White sliding pointer aligns the active distribution slice with the coils.
+	probe = Node3D.new()
 	probe.name = "DistributionSlice"
 	add_child(probe)
 	var arrow := CylinderMesh.new()

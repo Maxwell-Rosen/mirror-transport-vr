@@ -27,7 +27,9 @@ At the Gallery 4 energy rail, **Cut cell** selects the sole trapped corner in a 
 
 At the velocity-grid board, **Loss-cone tip** enlarges the same cells on the computational and physical axes. Toggle the grid lines and mask boundary over the ion distribution independently. At the axial grid, switch between **Uniform spacing** and **Simulation grid** with a probe fixed at **Midplane** or **Steep flank**. [Gallery 4 trials](gallery-4/README.md)
 
-In Gallery 6, select an axial cut to move the pointer on the coil sculpture and change both velocity plots. At the far wall, switch between **Flat potential** and **Saved potential** for the same ion. Use the mouse, right trigger, or Tab and Enter at either instrument. [The tandem mirror](gallery-6/README.md)
+In Gallery 5, switch **Beam / Maxwellian** at the plinth, choose **Follow band**, and use **Next slice** to inspect the throat or sheath. At the density and potential desks, step or play saved frames and zoom the final full-dynamics phase. At the end wall, a numbered button selects both runs at that mirror ratio. Use the mouse or right trigger, or Tab / Shift+Tab and Enter at the nearest desk. Leaving the room holds the current samples. [Gallery 5 visitor trials](gallery-5/README.md)
+
+In Gallery 6, walk or teleport into the distribution podium. Toggle the ion or source surfaces, or choose a colour on either podium scale to isolate that threshold. Choose the same colour again to restore the full family. **Next slice** moves the marker and the pointer on the coils to the section shown on the opposite board. Its four buttons select a section directly. At the far wall, switch between **Flat potential** and **Saved potential** for the same ion. Use the mouse, right trigger, or Tab and Enter at each instrument. [The tandem mirror](gallery-6/README.md)
 
 ## Title screen and pause menu
 

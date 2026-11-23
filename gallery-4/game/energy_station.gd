@@ -26,6 +26,8 @@ var parts := false
 var direction := -1
 var progress := 1.0
 var playing := false
+signal frame_selected(frame: int)
+var frame_keys := preload("res://gallery-4/game/frame_keys.gd").new()
 var buttons: Array[StaticBody3D] = []
 var button_labels: Array[Label3D] = []
 var button_marks: Array[MeshInstance3D] = []
@@ -57,6 +59,21 @@ func configure(snapshot_data: Dictionary, state: Dictionary) -> void:
 	progress = state.get("progress", 1.0)
 	playing = state.get("playing", false)
 
+func change_frame(values: Dictionary) -> void:
+	data = values
+	energy.data = data
+	mask.data = data
+	mask.cell = {}
+	loaded_cell = Vector3i(-1,-1,-1)
+	probe = null
+	ridge_mu = -1
+	playing = false
+	progress = 1
+	direction = -1
+	preset = Trial.PICKED
+	frame_keys.active = int(data.frame)
+	_select()
+
 func snapshot() -> Dictionary:
 	return {"slice":slice_index, "preset":preset, "cell":velocity_cell, "corner":corner, "parts":parts, "zoom":zoom, "well_lens":well_lens,
 		"direction":direction, "progress":progress, "playing":playing}
@@ -82,11 +99,14 @@ func _ready() -> void:
 	_mount(mask, MASK_ORIGIN)
 	_build_controls()
 	_mount_mask_surface()
+	frame_keys.active = int(data.frame)
+	frame_keys.mount(self, buttons, Vector3(0,0.63,0.86))
 	assemble()
 	_make_rail()
 	_select()
 
 func _mount(panel: Control, centre: Vector3) -> void:
+	pointer_face(self, centre, PANEL_SIZE)
 	var viewport := Board.InstrumentViewport.new()
 	viewport.size = EnergyPlot.PIXELS
 	add_child(viewport)
@@ -120,6 +140,7 @@ func _build_controls() -> void:
 		box(desk.origin,Vector3(3.22,0.57,0.084),"wood",false,angle)
 		box(desk * Vector3(0,0,0.043),Vector3(3.205,0.56,0.016),"brass",false,angle)
 		box(desk * Vector3(0,0,0.056),Vector3(3.18,0.535,0.015),"board",false,angle)
+		pointer_face(self, desk * Vector3(0,0,0.063), Vector2(3.18,0.535), angle)
 		var count := 8 if panel_index == 0 else 9
 		for i in count:
 			var widget := 8 * panel_index + i
@@ -315,6 +336,9 @@ func advance(delta: float) -> void:
 		_refresh_energy()
 
 func press(widget: int) -> void:
+	if widget >= 18 and widget < 21:
+		frame_selected.emit(frame_keys.FRAMES[widget - 18])
+		return
 	if widget < 0 or widget >= buttons.size() or not buttons[widget].visible:
 		return
 	match widget:
@@ -395,6 +419,7 @@ func at_desk(eye: Vector3) -> bool:
 	return absf(p.x) < 3.55 and p.z > 0.25 and p.z < 3.85
 
 func point(widget: int) -> void:
+	frame_keys.point(widget - 18)
 	pointed = widget
 	mask.point_plot(widget == Widget.MASK)
 	for i in button_marks.size():

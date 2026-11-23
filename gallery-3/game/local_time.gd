@@ -39,6 +39,7 @@ func _ready() -> void:
 	var face := Vector2(5.34, 0.93) if role == Role.RELIEF else Vector2(2.48, 1.61)
 	box(Vector3(0,0,-0.058), Vector3(face.x + 0.04, face.y + 0.04, 0.105), "wood")
 	box(Vector3.ZERO, Vector3(face.x + 0.02, face.y + 0.02, 0.014), "brass")
+	pointer_face(self, Vector3.BACK * 0.017, face)
 	box(Vector3.BACK * 0.011, Vector3(face.x, face.y, 0.012), "board")
 	var data: Dictionary = manifest.data
 	if role == Role.RELIEF:

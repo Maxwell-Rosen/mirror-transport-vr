@@ -1,8 +1,11 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://gallery-6/game/installation.gd" id="1"]
 [ext_resource type="JSON" path="res://simulation-renders/gallery-6/tandem.json" id="2"]
 
+[ext_resource type="PackedScene" path="res://simulation-renders/gallery-6/phase.glb" id="3"]
+
 [node name="TandemInstallation" type="Node3D"]
 script = ExtResource("1")
 diagnostic = ExtResource("2")
+phase_scene = ExtResource("3")

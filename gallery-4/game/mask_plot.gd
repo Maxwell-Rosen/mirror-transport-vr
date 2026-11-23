@@ -89,32 +89,32 @@ func _draw() -> void:
 	if cell.is_empty():
 		return
 	var cut: Dictionary = data.slices[slice_index]
-	_text(35, 60, "Which cells does Gkeyll evolve?", 48, true)
-	_text(37, 103, "%s   ·   saved ion loss-cone mask   ·   orbit-average phase" % data.run, 25)
+	_text(35, 60, "Which cells are trapped?", 48, true)
+	_text(37, 103, "%s   ·   %s" % [data.run, "Calculated from frozen fields" if data.get("mask_origin") == "calculated" else "Saved orbit-average mask"], 25)
 	draw_line(Vector2(35,124), Vector2(1165,124), Board.RULE, 2)
 	_text(37, 164, "%s   ·   Z = %.4f to %.4f m" % [SLICES[slice_index], cut.z_bounds_m[0], cut.z_bounds_m[1]], 29)
 	_text(80, 201, "Magnetic moment μ (keV/T)", 22)
 	draw_rect(Rect2(400,183,21,17), TRAPPED)
-	_text(429, 201, "Evolve", 22)
+	_text(429, 201, "Trapped", 22)
 	draw_rect(Rect2(551,183,21,17), OPEN)
-	_text(580, 201, "Hold", 22)
+	_text(580, 201, "Passing", 22)
 	_paint_cells(cut.mask)
 	_axes_and_selection()
 	draw_line(Vector2(735,145), Vector2(735,562), Board.RULE, 2)
 	_draw_faces()
 	draw_line(Vector2(35,577), Vector2(1165,577), Board.RULE, 2)
 	var trapped := int(cell.trapped_corners)
-	var label := "Trapped cell   ·   1   Evolve" if int(cell.flag) == 1 else "Passing cell   ·   0   Hold"
+	var label := "Trapped cell   ·   1" if int(cell.flag) == 1 else "Passing cell   ·   0"
 	_text(36, 624, label, 36, true)
 	_text(706, 624, "%d of 8 corners trapped" % trapped, 31, true)
-	var explanation := "All eight corners turn before reaching either wall, so this cell evolves."
+	var explanation := "All eight corners turn before reaching either wall."
 	if trapped == 0:
-		explanation = "Every corner reaches a wall. Gkeyll holds the cell during this phase."
+		explanation = "Every corner has a path to a wall."
 	elif trapped < 8:
-		explanation = "The loss boundary cuts this cell. Gkeyll holds its trapped and passing points together."
+		explanation = "The loss boundary cuts this cell. At least one corner can reach a wall."
 	_text(38, 664, explanation, 25)
 	_text(38, 706, "Select a cell on the mask to move the energy line on the left.", 25)
-	_text(38, 745, "%d of 2,048 cells evolve here   ·   Frame %d   ·   t = %.6f ms" %
+	_text(38, 745, "%d of 2,048 cells are trapped   ·   Frame %d   ·   t = %.6f ms" %
 		[cut.evolved, data.frame, float(data.time_s) * 1000], 21)
 
 func _paint_cells(rows: Array) -> void:

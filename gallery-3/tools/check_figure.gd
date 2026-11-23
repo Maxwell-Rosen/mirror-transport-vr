@@ -104,6 +104,11 @@ func _run() -> void:
 			_aim(swatch)
 	_aim(room.figure.key_buttons[8], true)
 	_approach(room.figure.print_mount, 1.65)
+	var board_eye: Vector3 = visitor.camera.global_position
+	var target: Vector3 = room.figure.print_mount.to_global(Vector3.ZERO)
+	var distance: float = visitor.aim_pointer(board_eye, board_eye.direction_to(target), true)
+	check(absf(distance - board_eye.distance_to(target)) < 0.01 and room.hover < 0, "The beam reaches the print between its controls")
+	visitor.aim_pointer(board_eye, board_eye.direction_to(target), false)
 	check(room.figure.selected == [8, -1], "The desktop and controller ray selects the 10% distribution surface")
 	room.tab(true)
 	room.press(room.focus)

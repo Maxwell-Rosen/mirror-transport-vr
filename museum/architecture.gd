@@ -61,6 +61,21 @@ func box(at: Vector3, size: Vector3, surface: String, solid := false, angles := 
 	if solid:
 		barrier(at, size, angles)
 
+# A passive target gives the controller beam a distance across the entire board.
+static func pointer_face(parent: Node3D, at: Vector3, size: Vector2, angles := Vector3.ZERO) -> void:
+	var body := StaticBody3D.new()
+	body.collision_layer = 2
+	body.collision_mask = 0
+	body.add_to_group("pointer_boards")
+	parent.add_child(body)
+	body.position = at
+	body.rotation = angles
+	var hit := CollisionShape3D.new()
+	var shape := BoxShape3D.new()
+	shape.size = Vector3(size.x, size.y, 0.002)
+	hit.shape = shape
+	body.add_child(hit)
+
 func barrier(at: Vector3, size: Vector3, angles := Vector3.ZERO) -> void:
 	var shape := BoxShape3D.new()
 	shape.size = size

@@ -13,7 +13,6 @@ func _ready() -> void:
 	if DisplayServer.get_name() == "headless":
 		paper.albedo_texture = get_texture()
 	else:
-		print_texture.setup(size.x, size.y, DrawableTexture2D.DRAWABLE_FORMAT_RGBA8, Color.BLACK, true)
 		paper.albedo_texture = print_texture
 	request_print()
 
@@ -23,5 +22,7 @@ func request_print() -> void:
 		RenderingServer.frame_post_draw.connect(_copy_print, CONNECT_ONE_SHOT)
 
 func _copy_print() -> void:
+	if print_texture.get_size() != Vector2(size):
+		print_texture.setup(size.x, size.y, DrawableTexture2D.DRAWABLE_FORMAT_RGBA8, Color.BLACK, true)
 	print_texture.blit_rect(Rect2i(Vector2i.ZERO, size), get_texture())
 	print_texture.generate_mipmaps()

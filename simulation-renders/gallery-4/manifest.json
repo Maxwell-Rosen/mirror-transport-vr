@@ -5,7 +5,7 @@
   "source_directory": "gkeyll-data/1x-beams/",
   "loss": {
     "asset": "loss.json",
-    "sha256": "5ea58a43eba990f303115efcb41a4da07066ea393dce29a3f76ae1c50f684b06",
+    "sha256": "40fd45ab68e33f657004f0e1328ba4fa97a3056d980141edf8348f97be7a44f9",
     "frame": 2,
     "saved_time_s": 0.04000047056236778,
     "species": "ion",
@@ -85,7 +85,78 @@
   "velocity_grid": {
     "asset": "velocity.json",
     "converter": "gallery-4/tools/velocity_grid.py",
-    "provenance": "The asset records its diagnostic sources, dimensions, transformations and verification."
+    "provenance": "The asset records its diagnostic sources, dimensions, transformations and verification.",
+    "snapshots": [
+      {
+        "frame": 2,
+        "time_s": 0.04000047056236778,
+        "velocity": "velocity.json",
+        "loss": "loss.json",
+        "mask_origin": "saved",
+        "sources": {
+          "distribution": "zzim-ion_2.gkyl",
+          "density": "zzim-ion_M0_2.gkyl",
+          "mask": "zzim-ion_fdot_multiplier_2.gkyl",
+          "velocity_map": "zzim-ion_mapc2p_vel.gkyl",
+          "axial_map": "zzim-geo_corn_mc2nu_pos_deflated.gkyl",
+          "velocity_jacobian": "zzim-ion_jacobvel.gkyl",
+          "total_jacobian": "zzim-geo_int_jacobtot.gkyl",
+          "geometry_jacobian": "zzim-geo_int_jacobgeo.gkyl",
+          "potential": "zzim-field_2.gkyl",
+          "bmag": "zzim-geo_corn_bmag.gkyl",
+          "position": "zzim-geo_corn_mc2nu_pos_deflated.gkyl",
+          "nodes": "zzim-geo_corn_nodes.gkyl",
+          "velocity": "zzim-ion_mapc2p_vel.gkyl"
+        },
+        "max_relative_density_error": 4.440892098500626e-15
+      },
+      {
+        "frame": 40,
+        "time_s": 0.40006051879732163,
+        "velocity": "velocity-40.json",
+        "loss": "loss-40.json",
+        "mask_origin": "saved",
+        "sources": {
+          "distribution": "zzim-ion_40.gkyl",
+          "density": "zzim-ion_M0_40.gkyl",
+          "mask": "zzim-ion_fdot_multiplier_40.gkyl",
+          "velocity_map": "zzim-ion_mapc2p_vel.gkyl",
+          "axial_map": "zzim-geo_corn_mc2nu_pos_deflated.gkyl",
+          "velocity_jacobian": "zzim-ion_jacobvel.gkyl",
+          "total_jacobian": "zzim-geo_int_jacobtot.gkyl",
+          "geometry_jacobian": "zzim-geo_int_jacobgeo.gkyl",
+          "potential": "zzim-field_40.gkyl",
+          "bmag": "zzim-geo_corn_bmag.gkyl",
+          "position": "zzim-geo_corn_mc2nu_pos_deflated.gkyl",
+          "nodes": "zzim-geo_corn_nodes.gkyl",
+          "velocity": "zzim-ion_mapc2p_vel.gkyl"
+        },
+        "max_relative_density_error": 5.218048215738236e-15
+      },
+      {
+        "frame": 75,
+        "time_s": 0.50015,
+        "velocity": "velocity-75.json",
+        "loss": "loss-75.json",
+        "mask_origin": "calculated",
+        "sources": {
+          "distribution": "zzim-ion_75.gkyl",
+          "density": "zzim-ion_M0_75.gkyl",
+          "mask": "zzim-ion_fdot_multiplier_75.gkyl",
+          "velocity_map": "zzim-ion_mapc2p_vel.gkyl",
+          "axial_map": "zzim-geo_corn_mc2nu_pos_deflated.gkyl",
+          "velocity_jacobian": "zzim-ion_jacobvel.gkyl",
+          "total_jacobian": "zzim-geo_int_jacobtot.gkyl",
+          "geometry_jacobian": "zzim-geo_int_jacobgeo.gkyl",
+          "potential": "zzim-field_75.gkyl",
+          "bmag": "zzim-geo_corn_bmag.gkyl",
+          "position": "zzim-geo_corn_mc2nu_pos_deflated.gkyl",
+          "nodes": "zzim-geo_corn_nodes.gkyl",
+          "velocity": "zzim-ion_mapc2p_vel.gkyl"
+        },
+        "max_relative_density_error": 5.218048215738236e-15
+      }
+    ]
   },
   "prints": {
     "source": "Maxwell Rosen, PhD thesis, PhD-thesis-latex",

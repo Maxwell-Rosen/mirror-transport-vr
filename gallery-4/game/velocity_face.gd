@@ -15,6 +15,7 @@ const HEAT := [Color("#231c35"), Color("#482951"), Color("#833455"),
 
 var data: Dictionary
 var loss: Dictionary
+var color_reference := 0.0
 var zoomed := false
 var grid_visible := true
 var mask_visible := true
@@ -24,6 +25,8 @@ var cell_meshes: Array[ArrayMesh] = []
 
 func configure(values: Dictionary, loss_values: Dictionary) -> void:
 	data = values
+	if color_reference == 0.0:
+		color_reference = float(data.peak_abs_f)
 	loss = loss_values
 	var speeds := PackedFloat64Array(loss.v_edges_m_s)
 	for i in speeds.size():
@@ -72,7 +75,7 @@ func _cells(view: int) -> ArrayMesh:
 			var a := project_face(view, iv, im + 1)
 			var c := project_face(view, iv + 1, im)
 			vertices.append_array([a, Vector2(c.x, a.y), c, Vector2(a.x, c.y)])
-			var ink := heat_color(absf(data.f_rows[im][iv]) / float(data.peak_abs_f))
+			var ink := heat_color(absf(data.f_rows[im][iv]) / color_reference)
 			colors.append_array([ink, ink, ink, ink])
 			indices.append_array([n, n + 1, n + 2, n, n + 2, n + 3])
 	var arrays := []
@@ -177,18 +180,18 @@ func _tip_area_percent() -> float:
 func _draw_legend() -> void:
 	var left := 80.0
 	var step := 60.0
-	_text(left, 570, "Ion distribution  |⟨fᵢ⟩| / peak", 26)
+	_text(left, 570, "Ion distribution  |⟨fᵢ⟩| / reference", 26)
 	for i in 120:
 		var color := heat_color(pow(10.0, -6.0 + i * 6.0 / 119.0))
 		draw_rect(Rect2(left + i * 3, 585, 3, 17), color)
 	for i in 4:
 		_center(left + 2 * step * i, 630, ["≤10⁻⁶","10⁻⁴","10⁻²","1"][i], 20, 82)
-	_text(475, 570, "Brightest |⟨fᵢ⟩| = %.3f s³/m⁶" % float(data.peak_abs_f), 24)
+	_text(475, 570, "Reference = %.3f s³/m⁶" % color_reference, 24)
 	draw_line(Vector2(476,609), Vector2(522,609), MASK_INK, 4)
-	_text(537, 618, "Inside the cyan lines, cells evolve" if mask_visible else "Mask boundary hidden", 23)
+	_text(537, 618, "Cyan lines separate trapped and passing" if mask_visible else "Mask boundary hidden", 23)
 	draw_arc(Vector2(963, 558), 7, 0, TAU, 32, Board.TEXT, 2.5, true)
 	_text(982, 567, "Same cell near the tip  (32, 0)", 26)
 	var dv := (float(loss.v_edges_m_s[33]) - float(loss.v_edges_m_s[32])) * 0.001
 	var dm := float(loss.mu_edges_kev_t[1]) - float(loss.mu_edges_kev_t[0])
 	_text(944, 606, "Δv∥ = %.1f km/s   ·   Δμ = %.4f keV/T" % [dv, dm], 23)
-	_text(944, 638, "⟨fᵢ⟩ = %+.3f s³/m⁶    ·    trapped cell" % float(data.f_rows[0][32]), 23)
+	_text(944, 638, "⟨fᵢ⟩ = %+.3f s³/m⁶    ·    %s" % [float(data.f_rows[0][32]), "trapped" if loss.slices[0].mask[0][32] == "1" else "passing"], 23)

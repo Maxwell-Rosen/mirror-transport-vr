@@ -73,11 +73,13 @@ func _run() -> void:
 	hand.set_input(&"interact", 0.0)
 	visitor.update_controller()
 	_check_teleport()
-	_check_walkthrough()
+	_check_walkthrough(visitor.mirror)
+	_check_walkthrough(visitor.bounces.rings)
 	_check_exhibit_trigger()
 	_check_bead_trigger()
 	await _check_lamp_trigger()
 	await _check_loss_trial()
+	await _check_simple_trial()
 	await _check_tandem_trial()
 	await _check_pause_and_reset()
 
@@ -174,30 +176,30 @@ func _check_teleport() -> void:
 	_stick(Vector2.ZERO)
 	check(visitor.position == HALL and not arc.visible, "Losing tracking cancels the pending jump until a fresh tilt")
 
-	var approach := Vector3(-6, 0.01, -27.5)
+	# The fourth left arch is still under construction.
+	var approach := Vector3(-6, 0.01, -37.5)
 	visitor.face_atrium(approach)
 	for x: float in [-9.5, -7.69]:
-		_point_at(Vector3(-6.5, 0, -27.5))
+		_point_at(Vector3(-6.5, 0, -37.5))
 		_stick(Vector2.RIGHT)
 		check(arc.ring.is_visible_in_tree(), "Clear floor beside the gallery is reachable")
-		_point_at(Vector3(x, 0, -27.5))
+		_point_at(Vector3(x, 0, -37.5))
 		visitor.update_controller()
 		check(arc.visible and not arc.ring.is_visible_in_tree(), "The arc stops at a barrier and the circle requires capsule clearance")
 		_stick(Vector2.ZERO)
 		check(visitor.position == approach, "Releasing over an invalid spot cancels the previous landing")
 
-func _check_walkthrough() -> void:
-	for stand: Node3D in [visitor.mirror, visitor.bounces.rings]:
-		var start := stand.to_global(Vector3(0, 0.01, 2.0))
-		var inside := stand.to_global(Vector3(0, 0.01, 0))
-		visitor.face_atrium(start)
-		check(visitor.move_and_collide(inside - start) == null, "Visitor capsule can cross the " + stand.name + " podium")
-		visitor.face_atrium(start)
-		_point_at(inside)
-		_stick(Vector2.RIGHT)
-		check(visitor.teleport_arc.ring.is_visible_in_tree(), "Podium controls leave the landing visible")
-		_stick(Vector2.ZERO)
-		check(visitor.position.distance_to(inside) < 0.06, "Teleport reaches the floor inside " + stand.name)
+func _check_walkthrough(stand: Node3D) -> void:
+	var start := stand.to_global(Vector3(0, 0.01, 2.0))
+	var inside := stand.to_global(Vector3(0, 0.01, 0))
+	visitor.face_atrium(start)
+	check(visitor.move_and_collide(inside - start) == null, "Visitor capsule can cross the " + stand.name + " podium")
+	visitor.face_atrium(start)
+	_point_at(inside)
+	_stick(Vector2.RIGHT)
+	check(visitor.teleport_arc.ring.is_visible_in_tree(), "Podium controls leave the landing visible")
+	_stick(Vector2.ZERO)
+	check(visitor.position.distance_to(inside) < 0.06, "Teleport reaches the floor inside " + stand.name)
 
 func _check_exhibit_trigger() -> void:
 	var mirror := visitor.mirror
@@ -321,6 +323,31 @@ func _check_loss_trial() -> void:
 	check(velocity.zoomed and not velocity.grid_visible and velocity.mask_visible,
 		"The right trigger enlarges the loss-cone tip and toggles its native grid")
 
+func _check_simple_trial() -> void:
+	var room := visitor.simple
+	visitor.face_atrium(room.to_global(Vector3(0, 0.01, 1.80)))
+	var landing := room.to_global(Vector3(0, 0, -1.3))
+	_point_at(landing)
+	_stick(Vector2.RIGHT)
+	check(visitor.teleport_arc.ring.is_visible_in_tree(), "Arch 5 accepts a floor teleport from the atrium")
+	_stick(Vector2.ZERO)
+	check(room.contains_visitor(visitor.camera.global_position), "Teleport crosses the simple mirror threshold")
+	var deadline := Time.get_ticks_msec() + 15000
+	while not room.installation and Time.get_ticks_msec() < deadline:
+		await process_frame
+	if not room.installation:
+		check(false, "Gallery 5 loads after teleport")
+		return
+	await physics_frame
+	var scan = room.installation.get_node("Scan")
+	visitor.face_atrium(scan.to_global(Vector3(-3.52, 0.01, 2.0)))
+	_trigger_at(scan.buttons[0])
+	check(scan.face.selected == 0, "The right trigger selects the measured ratio-3 pair")
+	var potential = room.installation.get_node("Potential")
+	_stand_in_front(room.get_node("PotentialMount"))
+	_trigger_at(potential.buttons[potential.FINAL])
+	check(potential.face.frame == 75, "The right trigger brings all potential traces to the last saved frame")
+
 func _check_tandem_trial() -> void:
 	var room = current_scene.get_node("TandemMirror")
 	visitor.face_atrium(room.to_global(Vector3(0, 0.01, 1.85)))
@@ -338,6 +365,16 @@ func _check_tandem_trial() -> void:
 		check(false, "The tandem instruments load after teleport")
 		return
 	await physics_frame
+	_check_walkthrough(room.get_node("PodiumMount"))
+	var podium: Node3D = room.installation.podium
+	for index in [0, podium.level_keys.size() - 1]:
+		var swatch: StaticBody3D = podium.buttons[3 + index]
+		var local_key := podium.to_local(swatch.global_position)
+		visitor.face_atrium(podium.to_global(Vector3(local_key.x, 0.01, 2.8)))
+		_trigger_at(swatch)
+		var level: Vector2i = podium.level_keys[index]
+		check(room.levels[level.x] == level.y and podium.marks[index].visible,
+			"The seated controller isolates the labelled threshold on each colour bar")
 	_stand_in_front(room.get_node("SliceMount"))
 	_trigger_at(room.installation.buttons[2])
 	check(room.cut == 2, "The trigger selects the third distribution slice")

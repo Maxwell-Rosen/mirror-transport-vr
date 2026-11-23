@@ -62,7 +62,7 @@ func _draw() -> void:
 	_text(35, 60, "Can this ion clear the ridge?", 51, true)
 	_text(37, 103, "%s   ·   frame %d   ·   t = %.6f ms   ·   frozen fields" %
 		[data.run, data.frame, float(data.time_s) * 1000], 25)
-	_text(864, 103, "H = U + ½mᵢv∥²", 26)
+	_text(800, 103, "H = ½mᵢv∥² + qᵢφ + μB", 26)
 	draw_line(Vector2(35,124), Vector2(1165,124), Board.RULE, 2)
 	_text(39, 166, "Energy (keV)  ·  0–%s" % String.num(ceiling_kev, 1), 25)
 	draw_line(Vector2(380,157), Vector2(435,157), Board.TEXT, 4)
